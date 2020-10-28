@@ -13,16 +13,23 @@ var y_input := 0.0
 export var player_speed := 300.0
 #export var dash_multiplier := 2.0
 var is_dashing := false
+puppet var can_dash := false
+puppet var dash_direction := Vector2()
+puppet var vel := Vector2()
 #networked variables
 puppet var player_velocity := Vector2()
 puppet var player_position := Vector2()
 puppet var facing_left := false
 
+puppet var wall_sliding = false
+
 var gravity := 1200
 var jump_force := 600
+export var dash_force := 5000
 var air_jumps := 2 #number of air jumps
 var air_jumps_left = air_jumps
 var is_jumping := false
+
 
 #enum Direction{UP, DOWN, LEFT, RIGHT, UP_LEFT, UP_RIGHT, DOWN_LEFT, DOWN_RIGHT}
 #var current_direction = Direction.UP
@@ -79,18 +86,25 @@ func get_input(delta):
 	if is_network_master():
 		x_input = Input.get_action_strength("move_right") - Input.get_action_strength("move_left")
 		#y_input = Input.get_action_strength("move_down") - Input.get_action_strength("move_up")
-	
+		can_dash = is_on_floor() or !is_on_floor()
+		#wall_sliding = is_on_wall()
 		#check for facing direction
 		if(x_input >= 0):
 			facing_left = false
 		else:
 			facing_left = true
 	
+		if Input.is_action_pressed("move_right"):
+			dash_direction = Vector2(1,0)
+			#print(dash_direction)
+		if Input.is_action_pressed("move_left"):
+			dash_direction = Vector2(-1,0)
+		
 		shield_pressed = Input.is_action_pressed("shield")
 		
 		# setting states
 		is_shooting = Input.is_action_pressed("shoot")
-	
+		is_dashing = Input.is_action_just_pressed("dash")
 		is_jumping = Input.is_action_just_pressed("jump_pressed")
 		
 		# set shooting direction
@@ -98,8 +112,11 @@ func get_input(delta):
 		var bullet_angle := atan2(mouse_direction.y, mouse_direction.x)
 		
 		shoot_direction = Vector2(cos(bullet_angle), sin(bullet_angle))
-		
+		rset("dash_direction", dash_direction)
+		rset("is_dashing", is_dashing)
+		rset("can_dash", can_dash)
 		rset("is_shooting", is_shooting)
+		rset("wall_sliding", wall_sliding)
 		rset("shoot_direction", shoot_direction) #make sure that the other instances can see this
 	pass
 
@@ -131,9 +148,16 @@ func set_movement(delta):
 		elif(is_on_floor()):
 			velocity.y = 0
 			air_jumps_left = air_jumps
+		#elif(is_on_wall()):
+			#velocity.y = clamp(300, 290, -200)
 		elif(!is_on_floor()):
 			velocity.y += gravity * delta
-		
+		if (can_dash and is_dashing):
+			print(can_dash)
+			print(is_dashing)
+			velocity = dash(velocity)
+			can_dash = false
+			
 		rset("player_velocity", velocity)
 		player_velocity = velocity # so i can save the data of this velocity to use elsewhere
 		rset_unreliable("player_position", position)
@@ -229,3 +253,13 @@ func _to_string():
 	player_string += "Shoot Direction" + str(shoot_direction) + "\n"
 
 	return player_string
+func dash(velocity):
+	velocity = dash_direction * dash_force
+	can_dash = false
+	get_tree().create_timer(0.3)
+	is_dashing = false
+	return velocity
+func wall_slide(velocity):
+	if is_on_wall() and velocity.y > 50:
+		velocity.y = clamp(50, 25, 75)
+		return velocity
