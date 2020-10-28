@@ -9,7 +9,7 @@ func _ready() -> void:
 	"""
 	
 	# Connects the given signals to the given functions.
-	gamestate.connect( "connection_succeeded", self, "_on_connection_succeeded" )
+	gamestate.connect( "connection_succeeded", self, "_display_pregame_screen" )
 	gamestate.connect( "connection_failed", self, "_on_connection_failed" )
 	
 	gamestate.connect( "game_error", self, "_on_game_error" )
@@ -32,7 +32,7 @@ func _on_join_button_pressed() -> void:
 	
 	var player_name: String = get_node( "LoginScreen/NameTextbox" ).text
 	
-	if len( player_name ) == 0:
+	if player_name == null or len( player_name ) == 0:
 		get_node( "LoginScreen/ErrorText" ).text = "Please enter a name!"
 		return
 	
@@ -43,6 +43,9 @@ func _on_join_button_pressed() -> void:
 		return
 
 	get_node( "LoginScreen/ErrorText" ).text = "Connecting to host..."
+	
+	get_node( "LoginScreen/JoinButton" ).disabled = true
+	get_node( "LoginScreen/HostButton" ).disabled = true
 
 	gamestate.join_game( ip, player_name )
 
@@ -53,16 +56,15 @@ func _on_host_button_pressed() -> void:
 	for the game.
 	"""
 	
-	var player_name: String = get_node( "Login/NameTextbox" ).text
+	var player_name: String = get_node( "LoginScreen/NameTextbox" ).text
 	
-	if len( player_name ) == 0:
-		get_node( "Login/ErrorText" ).text = "Please enter a name."
+	if player_name == null or len( player_name ) == 0:
+		get_node( "LoginScreen/ErrorText" ).text = "Please enter a name."
 		return
 
-	get_node( "Login/ErrorText" ).text = "Setting up server..."
-
 	gamestate.host_game( player_name )
-	refresh_player_list()
+	
+	_display_pregame_screen()
 
 
 func _on_start_button_pressed() -> void:
@@ -71,25 +73,50 @@ func _on_start_button_pressed() -> void:
 	"""
 	
 	gamestate.begin_game()
+	
 
-
-func _on_connection_succeeded() -> void:
+func _display_login_screen() -> void:
 	"""
-	Called from the connection_succeeded signal. Shows the pregame screen
-	to the user.
+	Displays the LoginScreen to the user. Re-activates all disabled buttons.
 	"""
 	
+	get_node( "PregameScreen" ).hide()
+	get_node( "LoginScreen" ).show()
+	
+	get_node( "LoginScreen/HostButton" ).disabled = false
+	get_node( "LoginScreen/JoinButton" ).disabled = false
+
+
+func _display_pregame_screen() -> void:
+	"""
+	Called from the connection_succeeded signal. Displays the 
+	PregameScreen to the user.
+	"""
+	
+	get_node( "LoginScreen/HostButton" ).disabled = true
+	get_node( "LoginScreen/JoinButton" ).disabled = true
+	get_node( "LoginScreen/ErrorText" ).text = ""
 	get_node( "LoginScreen" ).hide()
+	
 	get_node( "PregameScreen" ).show()
+	get_node( "PregameScreen/PlayerList" ).add_item( gamestate.get_player_name() + " (You)" )
+	
+	# Condition is true if the user is hosting the server.
+	if get_tree().is_network_server():
+		get_node( "PregameScreen/StartButton" ).show()
+		get_node( "PregameScreen/WaitingText" ).hide()
+	else:
+		get_node( "PregameScreen/StartButton" ).hide()
+		get_node( "PregameScreen/WaitingText" ).show()
 
 
 func _on_connection_failed() -> void:
 	"""
-	Called from the connection_failed signal. Notifies the user that
-	the connection failed.
+	Called from the connection_failed signal if the user failed to connect
+	to the host. Notifies the user that the connection failed.
 	"""
 	
-	get_node( "Login/ErrorText" ).text = "Failed to connect to host."
+	get_node( "LoginScreen/ErrorText" ).text = "Failed to connect to the host."
 
 
 func _on_game_error( error_text: String ) -> void:
@@ -97,6 +124,8 @@ func _on_game_error( error_text: String ) -> void:
 	Called from the game_ended signal. Shows an error popup to the user
 	with the error.
 	"""
+	
+	_display_login_screen()
 	
 	get_node( "ErrorDialog" ).dialog_text = error_text
 	get_node( "ErrorDialog" ).show()
@@ -108,8 +137,7 @@ func _on_game_ended() -> void:
 	the LoginScreen Node.
 	"""
 	
-	get_node( "PregameScreen" ).hide()
-	get_node( "Login" ).show()
+	_display_login_screen()
 
 
 func refresh_player_list() -> void:
@@ -125,8 +153,7 @@ func refresh_player_list() -> void:
 	
 	get_node( "PregameScreen/PlayerList" ).add_item( gamestate.get_player_name() + " (You)" )
 	
+	# Every player name besides the player name for this user is in this list.
 	for player_name in player_list:
 		get_node( "PregameScreen/PlayerList" ).add_item( player_name )
-
-	get_node( "PregameScreen/StartGame" ).disabled = not get_tree().is_network_server()
 

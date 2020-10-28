@@ -11,7 +11,6 @@ __meta__ = {
 }
 
 [node name="PregameScreen" type="Panel" parent="."]
-visible = false
 margin_left = 379.67
 margin_top = 105.663
 margin_right = 672.67
@@ -31,16 +30,25 @@ margin_left = 39.0
 margin_top = 13.0
 margin_right = 145.0
 margin_bottom = 37.0
-text = "Awaiting Players..."
+text = "Game Lobby"
 
 [node name="StartButton" type="Button" parent="PregameScreen"]
+visible = false
 margin_left = 105.0
 margin_top = 372.0
 margin_right = 191.0
 margin_bottom = 395.0
 text = "START!"
 
+[node name="WaitingText" type="Label" parent="PregameScreen"]
+margin_left = 40.3673
+margin_top = 373.612
+margin_right = 275.367
+margin_bottom = 392.612
+text = "Waiting for host to start the game..."
+
 [node name="LoginScreen" type="Panel" parent="."]
+visible = false
 margin_left = 358.0
 margin_top = 222.0
 margin_right = 696.0
@@ -113,6 +121,6 @@ margin_left = 487.148
 margin_top = 289.595
 margin_right = 570.148
 margin_bottom = 347.595
-[connection signal="pressed" from="PregameScreen/StartButton" to="." method="_on_StartGame_pressed"]
-[connection signal="pressed" from="LoginScreen/HostButton" to="." method="_on_HostButton_pressed"]
-[connection signal="pressed" from="LoginScreen/JoinButton" to="." method="_on_JoinButton_pressed"]
+[connection signal="pressed" from="PregameScreen/StartButton" to="." method="_on_start_button_pressed"]
+[connection signal="pressed" from="LoginScreen/HostButton" to="." method="_on_host_button_pressed"]
+[connection signal="pressed" from="LoginScreen/JoinButton" to="." method="_on_join_button_pressed"]
