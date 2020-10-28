@@ -11,6 +11,12 @@ script = ExtResource( 2 )
 __meta__ = {
 "_edit_group_": true
 }
+player_speed = null
+default_health = null
+player_health = null
+default_shield = null
+shield_health = null
+bullet_speed = null
 
 [node name="icon" type="Sprite" parent="."]
 texture = ExtResource( 1 )

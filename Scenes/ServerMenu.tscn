@@ -88,6 +88,9 @@ margin_top = 101.568
 margin_right = 57.1591
 margin_bottom = 119.568
 text = "IP:"
+__meta__ = {
+"_edit_use_anchors_": false
+}
 
 [node name="EnterAddress" type="LineEdit" parent="Login"]
 margin_left = 60.1591
