@@ -1,11 +1,6 @@
 extends Control
 
 
-# Declare member variables here. Examples:
-# var a = 2
-# var b = "text"
-
-
 # Called when the node enters the scene tree for the first time.
 func _ready():
 	# Called every time the node is added to the scene.
@@ -24,12 +19,6 @@ func _ready():
 	
 	# Set IP address to default, home
 	get_node("Login/EnterAddress").text = "127.0.0.1"
-	pass # Replace with function body.
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-#func _process(delta):
-#	pass
 
 
 func _on_JoinButton_pressed():
@@ -49,7 +38,6 @@ func _on_JoinButton_pressed():
 
 	var player_name = get_node("Login/EnterName").text
 	gamestate.join_game(ip, player_name)
-	pass # Replace with function body.
 
 
 func _on_HostButton_pressed():
@@ -64,7 +52,6 @@ func _on_HostButton_pressed():
 	var player_name = get_node("Login/EnterName").text
 	gamestate.host_game(player_name)
 	refresh_lobby()
-	pass # Replace with function body.
 
 func _on_connection_success():
 	get_node("Login").hide()
@@ -100,4 +87,3 @@ func refresh_lobby():
 
 func _on_StartGame_pressed():
 	gamestate.begin_game()
-	pass # Replace with function body.
