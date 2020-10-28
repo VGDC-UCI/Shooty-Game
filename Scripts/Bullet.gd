@@ -1,60 +1,69 @@
+# Handles interactions with a bullet after it is fired.
+
+
 extends KinematicBody2D
 
+export var bullet_speed: float = 100
+export var bullet_damage: float = 1
+export var life_span: float = 60 # In seconds.
+var bullet_direction: Vector2 = Vector2(1, 0)
 
-# Declare member variables here. Examples:
-# var a = 2
-# var b = "text"
+var parent_node := KinematicBody2D.new()
 
-export var bullet_speed := 100
-var bullet_direction := Vector2(1, 0)
-export var bullet_damage := 1
-export var life_span := 300 #seconds
-var node_this_belongs_to := KinematicBody2D.new()
-
-# Called when the node enters the scene tree for the first time.
-func _ready():
-	#connect()
-	pass # Replace with function body.
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _physics_process(delta):
-	life_span -= delta
-	var bullet_velocity := bullet_speed * bullet_direction
-	if(life_span > 0):
-		move_and_slide(bullet_velocity)
-	else:
-		#print(str(bullet_velocity))
-		destroy()
+func _ready() -> void:
+	"""
+	Called when the bullet is created.
+	"""
+	
 	pass
 
-func set_direction(direction):
+
+func _physics_process( delta: float ) -> void:
+	"""
+	Called every frame and moves the bullet every frame. Destroys the bullet
+	if it's been alive for too long.
+	
+	delta: The amount of time since the last frame.
+	"""
+	
+	life_span -= delta
+	
+	if life_span > 0:
+		move_and_slide( bullet_speed * bullet_direction )
+	else:
+		destroy()
+
+
+func set_direction( direction: Vector2 ) -> void:
+	"""
+	Sets the direction of the bullet.
+	
+	direction: The new direction of the bullet.
+	"""
+	
 	bullet_direction = direction
 
-#when the bullet hits something
-func on_hit(body):
-	#self.queue_free()
-	if body.is_in_group("Hittable"):
-		body.on_hit(bullet_damage)
-		body.set_attacking(node_this_belongs_to)
-		pass
+
+func _on_hit( hit_object: Node ) -> void:
+	"""
+	Called when the bullet hits an object. Destroys the bullet and
+	damages a player if one was hit.
+	"""
+	
+	if hit_object == parent_node:
+		return
+	
+	if hit_object.is_in_group( "Hittable" ):
+		hit_object.on_hit( bullet_damage )
+		hit_object.set_attacking( parent_node )
+	
 	destroy()
-	pass
 
-#destroy bullet
-#might add animations or sounds or something later
-func destroy():
+
+func destroy() -> void:
+	"""
+	Destroys the bullet.
+	"""
+	
 	queue_free()
-	pass
 
-func _on_Area2D_body_entered(body):
-	#print("works")
-	if body.is_in_group("Collision") and (body != node_this_belongs_to):
-		#print("AER")
-		on_hit(body)
-	pass # Replace with function body.
-
-
-func _on_Area2D_body_shape_entered(body_id, body, body_shape, area_shape):
-	#print("works")
-	pass # Replace with function body.

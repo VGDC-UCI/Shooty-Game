@@ -5,8 +5,6 @@
 [ext_resource path="res://Scenes/Enemy.tscn" type="PackedScene" id=3]
 [ext_resource path="res://icon.png" type="Texture" id=5]
 
-
-
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 642.85, 361.715 )
 
@@ -57,4 +55,4 @@ position = Vector2( 200, 0 )
 
 [node name="Camera2D" type="Camera2D" parent="."]
 zoom = Vector2( 4, 4 )
-[connection signal="body_entered" from="Deadline" to="Deadline" method="_on_Deadline_body_entered"]
+[connection signal="body_entered" from="Deadline" to="Deadline" method="_on_deadline_entered"]

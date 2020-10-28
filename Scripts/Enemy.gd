@@ -3,23 +3,24 @@ extends StaticBody2D
 class_name Enemy
 
 
-#var enemy_angle := 0
-var score_worth := 1
+var score_worth: int = 1
 
-export var default_health := 10
-export(int) var enemy_health := default_health
+export var max_health: float = 10
+export var current_health: float = max_health
 
-export var default_shield := 10
-export(int) var shield_health := default_shield
-var shield_pressed := false
+export var max_shield: float = 10
+export var current_shield: float = max_shield
+
+var shield_pressed: bool = false
 
 puppet var who_is_attacking
 
-# Called when the node enters the scene tree for the first time.
-func _ready():
-	self.add_to_group("Collision")
-	self.add_to_group("Hittable")
-	pass # Replace with function body.
+
+func _ready() -> void:
+	'Called when the enemy is spawned.'
+	
+	add_to_group( "Collision" )
+	add_to_group( "Hittable" )
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -33,11 +34,11 @@ func set_attacking(player_responsible):
 
 
 func on_hit(damage):
-	enemy_health -= damage
-	if(shield_health > 0):
-		shield_health -= damage
-	elif(enemy_health > 0):
-		enemy_health -= damage
+	current_health -= damage
+	if(current_shield > 0):
+		current_shield -= damage
+	elif(current_health > 0):
+		current_health -= damage
 	else:
 		who_is_attacking.add_to_score(score_worth)
 		death()
@@ -50,8 +51,8 @@ func death():
 func _to_string():
 	var enemy_string := ""
 	
-	enemy_string += "Health:" + str(enemy_health) + "\n"
+	enemy_string += "Health:" + str(current_health) + "\n"
 	
-	enemy_string += "Shield: " + str(shield_pressed) + "\nShield Health: " + str(shield_health) + "\n"
+	enemy_string += "Shield: " + str(shield_pressed) + "\nShield Health: " + str(current_shield) + "\n"
 	
 	return enemy_string

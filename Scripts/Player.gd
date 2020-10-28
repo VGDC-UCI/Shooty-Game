@@ -236,7 +236,7 @@ func do_attack(delta):
 		bullet.bullet_speed = bullet_speed
 		bullet.position = get_node("BulletExit").position
 		#print(bullet.position)
-		bullet.node_this_belongs_to = self
+		bullet.parent_node = self
 		get_tree().get_root().add_child(bullet)
 		time_left_till_next_bullet = fire_rate
 		pass
