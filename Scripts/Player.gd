@@ -20,11 +20,13 @@ puppet var facing_left := false
 
 var gravity := 1200
 var jump_force := 600
-var air_jumps := 0 #number of air jumps
+var air_jumps := 2 #number of air jumps
 var air_jumps_left = air_jumps
 
-var	jump_persistance_time_frame := 0.5 # The time frame after the last jump press will still activate
+var	jump_persistance_time_frame := 0.2 # The time frame after the last jump press will still activate
 var jump_persistance_time_left := 0.0 # The current time frame left for jump to be called
+var on_ground_persistance_time_frame := 0.2 # The time frame since last ground touch that will still count as on ground
+var on_ground_persistance_time_left := 0.0 # The current time frame left for on ground to be true
 
 #enum Direction{UP, DOWN, LEFT, RIGHT, UP_LEFT, UP_RIGHT, DOWN_LEFT, DOWN_RIGHT}
 #var current_direction = Direction.UP
@@ -94,10 +96,10 @@ func get_input(delta):
 		is_shooting = Input.is_action_pressed("shoot")
 	
 		if Input.is_action_just_pressed("jump_pressed"):
-			jump_persistance_time_left = 0.5
+			jump_persistance_time_left = jump_persistance_time_frame
 		elif jump_persistance_time_left > 0:
 			jump_persistance_time_left -= delta
-			jump_persistance_time_left = clamp(jump_persistance_time_left, 0, 2)
+			jump_persistance_time_left = clamp(jump_persistance_time_left, 0, jump_persistance_time_frame)
 		
 		# set shooting direction
 		var mouse_direction := get_position().direction_to(get_global_mouse_position()) # getting direction to mouse
@@ -121,8 +123,9 @@ func set_movement(delta):
 		velocity.x = player_speed * x_input
 		velocity.y = player_velocity.y
 	
-		if(jump_persistance_time_left > 0 and is_on_floor()):
+		if(jump_persistance_time_left > 0 and on_ground_persistance_time_left > 0):
 			velocity = jump(velocity)
+			air_jumps_left = air_jumps
 			print("normal_jump")
 			print(str(velocity))
 		elif(jump_persistance_time_left > 0 and is_on_wall()):
@@ -136,9 +139,12 @@ func set_movement(delta):
 			print(str(velocity))
 		elif(is_on_floor()):
 			velocity.y = 0
+			on_ground_persistance_time_left = on_ground_persistance_time_frame
 			air_jumps_left = air_jumps
 		elif(!is_on_floor()):
 			velocity.y += gravity * delta
+			on_ground_persistance_time_left -= delta
+			on_ground_persistance_time_left = clamp(on_ground_persistance_time_left, 0, on_ground_persistance_time_frame)
 		
 		rset("player_velocity", velocity)
 		player_velocity = velocity # so i can save the data of this velocity to use elsewhere
