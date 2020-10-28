@@ -10,7 +10,9 @@ var player_name := ""
 
 var x_input := 0.0
 var y_input := 0.0
-export var player_speed := 300.0
+export var player_speed := 400.0
+export var player_acceleration := 6.0
+export var player_deceleration := 12.0
 #export var dash_multiplier := 2.0
 var is_dashing := false
 #networked variables
@@ -115,13 +117,31 @@ func jump(velocity):
 	velocity.y = -jump_force
 	jump_persistance_time_left = 0
 	return velocity
+	
+
+func calc_velocity(delta): # Calculates velocity, accelerating, decelerating based on input
+	var velocity := Vector2()
+	var target_speed := x_input * player_speed
+	var interpolation_amount := 0.0
+
+	if x_input == 0:
+		interpolation_amount = player_deceleration * delta
+	elif facing_left and player_velocity.x > 0 or not facing_left and player_velocity.x < 0:
+		interpolation_amount = player_deceleration * delta
+	else:
+		interpolation_amount = player_acceleration * delta
+	interpolation_amount = clamp(interpolation_amount, 0, 1)
+
+	velocity.x = lerp(player_velocity.x, target_speed, interpolation_amount)
+	velocity.y = player_velocity.y
+
+	return velocity
+
 
 func set_movement(delta):
-	var velocity := Vector2()
+	var velocity: Vector2 = calc_velocity(delta)
 	
 	if is_network_master():
-		velocity.x = player_speed * x_input
-		velocity.y = player_velocity.y
 	
 		if(jump_persistance_time_left > 0 and on_ground_persistance_time_left > 0):
 			velocity = jump(velocity)
