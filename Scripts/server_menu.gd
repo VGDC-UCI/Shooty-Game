@@ -1,3 +1,6 @@
+# Handles the functionality of the ServerMenu.
+
+
 extends Control
 
 
