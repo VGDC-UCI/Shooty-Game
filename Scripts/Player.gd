@@ -10,7 +10,9 @@ var player_name := ""
 
 var x_input := 0.0
 var y_input := 0.0
-export var player_speed := 300.0
+export var player_speed := 400.0
+export var player_acceleration := 6.0
+export var player_deceleration := 12.0
 #export var dash_multiplier := 2.0
 var is_dashing := false
 puppet var can_dash := false
@@ -28,7 +30,11 @@ var jump_force := 600
 export var dash_force := 5000
 var air_jumps := 2 #number of air jumps
 var air_jumps_left = air_jumps
-var is_jumping := false
+
+var	jump_persistance_time_frame := 0.2 # The time frame after the last jump press will still activate
+var jump_persistance_time_left := 0.0 # The current time frame left for jump to be called
+var on_ground_persistance_time_frame := 0.2 # The time frame since last ground touch that will still count as on ground
+var on_ground_persistance_time_left := 0.0 # The current time frame left for on ground to be true
 
 
 #enum Direction{UP, DOWN, LEFT, RIGHT, UP_LEFT, UP_RIGHT, DOWN_LEFT, DOWN_RIGHT}
@@ -105,7 +111,12 @@ func get_input(delta):
 		# setting states
 		is_shooting = Input.is_action_pressed("shoot")
 		is_dashing = Input.is_action_just_pressed("dash")
-		is_jumping = Input.is_action_just_pressed("jump_pressed")
+	
+		if Input.is_action_just_pressed("jump_pressed"):
+			jump_persistance_time_left = jump_persistance_time_frame
+		elif jump_persistance_time_left > 0:
+			jump_persistance_time_left -= delta
+			jump_persistance_time_left = clamp(jump_persistance_time_left, 0, jump_persistance_time_frame)
 		
 		# set shooting direction
 		var mouse_direction := get_position().direction_to(get_global_mouse_position()) # getting direction to mouse
@@ -122,42 +133,65 @@ func get_input(delta):
 
 func jump(velocity):
 	velocity.y = -jump_force
-	is_jumping = false
+	jump_persistance_time_left = 0
+	return velocity
+	
+
+func calc_velocity(delta): # Calculates velocity, accelerating, decelerating based on input
+	var velocity := Vector2()
+	var target_speed := x_input * player_speed
+	var interpolation_amount := 0.0
+
+	if x_input == 0:
+		interpolation_amount = player_deceleration * delta
+	elif facing_left and player_velocity.x > 0 or not facing_left and player_velocity.x < 0:
+		interpolation_amount = player_deceleration * delta
+	else:
+		interpolation_amount = player_acceleration * delta
+	interpolation_amount = clamp(interpolation_amount, 0, 1)
+
+	velocity.x = lerp(player_velocity.x, target_speed, interpolation_amount)
+	velocity.y = player_velocity.y
+
 	return velocity
 
+
 func set_movement(delta):
-	var velocity := Vector2()
+	var velocity: Vector2 = calc_velocity(delta)
 	
 	if is_network_master():
-		velocity.x = player_speed * x_input
-		velocity.y = player_velocity.y
 	
-		if(is_jumping and is_on_floor()):
+		if(jump_persistance_time_left > 0 and on_ground_persistance_time_left > 0):
 			velocity = jump(velocity)
+			air_jumps_left = air_jumps
 			print("normal_jump")
 			print(str(velocity))
-		elif(is_jumping and is_on_wall()):
+		elif(jump_persistance_time_left > 0 and is_on_wall()):
 			velocity = jump(velocity)
 			print("wall_jump")
 			print(str(velocity))
-		elif(is_jumping and air_jumps_left > 0):
+		elif(jump_persistance_time_left > 0 and air_jumps_left > 0):
 			velocity = jump(velocity)
 			air_jumps_left -= 1
 			print("air_jumps_left: " + str(air_jumps_left))
 			print(str(velocity))
 		elif(is_on_floor()):
 			velocity.y = 0
+			on_ground_persistance_time_left = on_ground_persistance_time_frame
 			air_jumps_left = air_jumps
 		#elif(is_on_wall()):
 			#velocity.y = clamp(300, 290, -200)
 		elif(!is_on_floor()):
-			velocity.y += gravity * delta
-		if (can_dash and is_dashing):
+            velocity.y += gravity * delta
+            on_ground_persistance_time_left -= delta
+			on_ground_persistance_time_left = clamp(on_ground_persistance_time_left, 0, on_ground_persistance_time_frame)
+        
+        if (can_dash and is_dashing):
 			print(can_dash)
 			print(is_dashing)
 			velocity = dash(velocity)
-			can_dash = false
-			
+            can_dash = false
+            
 		rset("player_velocity", velocity)
 		player_velocity = velocity # so i can save the data of this velocity to use elsewhere
 		rset_unreliable("player_position", position)
