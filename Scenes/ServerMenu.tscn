@@ -1,6 +1,6 @@
 [gd_scene load_steps=2 format=2]
 
-[ext_resource path="res://Scripts/ServerMenu.gd" type="Script" id=1]
+[ext_resource path="res://Scripts/server_menu.gd" type="Script" id=1]
 
 [node name="ServerMenu" type="Control"]
 margin_right = 1020.0
@@ -10,7 +10,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="PlayersReady" type="Panel" parent="."]
+[node name="PregameScreen" type="Panel" parent="."]
 visible = false
 margin_left = 379.67
 margin_top = 105.663
@@ -20,27 +20,27 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="PlayerList" type="ItemList" parent="PlayersReady"]
+[node name="PlayerList" type="ItemList" parent="PregameScreen"]
 margin_left = 38.0
 margin_top = 43.0
 margin_right = 266.0
 margin_bottom = 358.0
 
-[node name="Label" type="Label" parent="PlayersReady"]
+[node name="Title" type="Label" parent="PregameScreen"]
 margin_left = 39.0
 margin_top = 13.0
 margin_right = 145.0
 margin_bottom = 37.0
 text = "Awaiting Players..."
 
-[node name="StartGame" type="Button" parent="PlayersReady"]
+[node name="StartButton" type="Button" parent="PregameScreen"]
 margin_left = 105.0
 margin_top = 372.0
 margin_right = 191.0
 margin_bottom = 395.0
 text = "START!"
 
-[node name="Login" type="Panel" parent="."]
+[node name="LoginScreen" type="Panel" parent="."]
 margin_left = 358.0
 margin_top = 222.0
 margin_right = 696.0
@@ -49,30 +49,31 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="HostButton" type="Button" parent="Login"]
+[node name="HostButton" type="Button" parent="LoginScreen"]
 margin_left = 269.0
 margin_top = 55.0
 margin_right = 320.0
 margin_bottom = 75.0
 text = "Host"
 
-[node name="NameLabel" type="Label" parent="Login"]
+[node name="NameLabel" type="Label" parent="LoginScreen"]
 margin_left = 16.0
 margin_top = 57.0
 margin_right = 58.0
 margin_bottom = 75.0
 text = "Name:"
 
-[node name="EnterName" type="LineEdit" parent="Login"]
+[node name="NameTextbox" type="LineEdit" parent="LoginScreen"]
 margin_left = 61.0
 margin_top = 53.0
 margin_right = 264.0
 margin_bottom = 77.0
+max_length = 20
 __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="JoinButton" type="Button" parent="Login"]
+[node name="JoinButton" type="Button" parent="LoginScreen"]
 margin_left = 268.159
 margin_top = 99.5675
 margin_right = 319.159
@@ -82,7 +83,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="IPLabel" type="Label" parent="Login"]
+[node name="IPLabel" type="Label" parent="LoginScreen"]
 margin_left = 15.1591
 margin_top = 101.568
 margin_right = 57.1591
@@ -92,7 +93,7 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="EnterAddress" type="LineEdit" parent="Login"]
+[node name="IPTextbox" type="LineEdit" parent="LoginScreen"]
 margin_left = 60.1591
 margin_top = 97.5675
 margin_right = 263.159
@@ -101,15 +102,17 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="ErrorLabel" type="Label" parent="Login"]
+[node name="ErrorText" type="Label" parent="LoginScreen"]
 margin_left = 16.0
 margin_top = 136.0
 margin_right = 318.0
 margin_bottom = 150.0
 
 [node name="ErrorDialog" type="AcceptDialog" parent="."]
-margin_right = 83.0
-margin_bottom = 58.0
-[connection signal="pressed" from="PlayersReady/StartGame" to="." method="_on_StartGame_pressed"]
-[connection signal="pressed" from="Login/HostButton" to="." method="_on_HostButton_pressed"]
-[connection signal="pressed" from="Login/JoinButton" to="." method="_on_JoinButton_pressed"]
+margin_left = 487.148
+margin_top = 289.595
+margin_right = 570.148
+margin_bottom = 347.595
+[connection signal="pressed" from="PregameScreen/StartButton" to="." method="_on_StartGame_pressed"]
+[connection signal="pressed" from="LoginScreen/HostButton" to="." method="_on_HostButton_pressed"]
+[connection signal="pressed" from="LoginScreen/JoinButton" to="." method="_on_JoinButton_pressed"]

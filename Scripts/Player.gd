@@ -182,16 +182,16 @@ func set_movement(delta):
 		#elif(is_on_wall()):
 			#velocity.y = clamp(300, 290, -200)
 		elif(!is_on_floor()):
-            velocity.y += gravity * delta
-            on_ground_persistance_time_left -= delta
+			velocity.y += gravity * delta
+			on_ground_persistance_time_left -= delta
 			on_ground_persistance_time_left = clamp(on_ground_persistance_time_left, 0, on_ground_persistance_time_frame)
-        
-        if (can_dash and is_dashing):
+		
+		if (can_dash and is_dashing):
 			print(can_dash)
 			print(is_dashing)
 			velocity = dash(velocity)
-            can_dash = false
-            
+			can_dash = false
+			
 		rset("player_velocity", velocity)
 		player_velocity = velocity # so i can save the data of this velocity to use elsewhere
 		rset_unreliable("player_position", position)
