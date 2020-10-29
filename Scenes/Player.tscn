@@ -1,4 +1,4 @@
-[gd_scene load_steps=4 format=2]
+[gd_scene load_steps=7 format=2]
 
 [ext_resource path="res://icon.png" type="Texture" id=1]
 [ext_resource path="res://Scripts/Player.gd" type="Script" id=2]
@@ -6,7 +6,26 @@
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 32, 32 )
 
+[sub_resource type="Curve" id=2]
+_data = [ Vector2( 0, 1 ), 0.0, 0.0, 0, 0, Vector2( 1, 0.0291631 ), -2.74067, 0.0, 0, 0 ]
+
+[sub_resource type="CurveTexture" id=3]
+curve = SubResource( 2 )
+
+[sub_resource type="ParticlesMaterial" id=4]
+emission_shape = 1
+emission_sphere_radius = 1.0
+flag_disable_z = true
+spread = 180.0
+gravity = Vector3( 0, 0, 0 )
+initial_velocity = 19.0
+angular_velocity = -193.85
+orbit_velocity = 0.0
+orbit_velocity_random = 0.0
+scale_curve = SubResource( 3 )
+
 [node name="Player" type="KinematicBody2D"]
+position = Vector2( 0, 2.52269 )
 script = ExtResource( 2 )
 __meta__ = {
 "_edit_group_": true
@@ -41,3 +60,11 @@ margin_bottom = 51.7757
 __meta__ = {
 "_edit_use_anchors_": false
 }
+
+[node name="dash_timer" type="Timer" parent="."]
+
+[node name="dash_particles" type="Particles2D" parent="."]
+emitting = false
+amount = 80
+local_coords = false
+process_material = SubResource( 4 )
