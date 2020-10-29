@@ -32,7 +32,7 @@ var	jump_persistance_time_frame := 0.2 # The time frame after the last jump pres
 var jump_persistance_time_left := 0.0 # The current time frame left for jump to be called
 var on_ground_persistance_time_frame := 0.2 # The time frame since last ground touch that will still count as on ground
 var on_ground_persistance_time_left := 0.0 # The current time frame left for on ground to be true
-
+var half_jump := false
 
 #enum Direction{UP, DOWN, LEFT, RIGHT, UP_LEFT, UP_RIGHT, DOWN_LEFT, DOWN_RIGHT}
 #var current_direction = Direction.UP
@@ -116,6 +116,7 @@ func get_input(delta):
 		elif jump_persistance_time_left > 0:
 			jump_persistance_time_left -= delta
 			jump_persistance_time_left = clamp(jump_persistance_time_left, 0, jump_persistance_time_frame)
+		half_jump = Input.is_action_just_released("jump_pressed")
 		
 		# set shooting direction
 		var mouse_direction := get_position().direction_to(get_global_mouse_position()) # getting direction to mouse
@@ -181,7 +182,10 @@ func set_movement(delta):
 		elif(is_on_wall() and velocity.y > wall_slide_speed):
 			velocity.y = wall_slide_speed
 		elif(!is_on_floor()):
-			velocity.y += gravity * delta
+			if half_jump and velocity.y < 0:
+				velocity.y *= 0.5
+			else:
+				velocity.y += gravity * delta
 			on_ground_persistance_time_left -= delta
 			on_ground_persistance_time_left = clamp(on_ground_persistance_time_left, 0, on_ground_persistance_time_frame)
 		
