@@ -26,6 +26,7 @@ puppet var wall_sliding = false
 var gravity := 1200
 var jump_force := 600
 export var dash_force := 5000
+export var wall_slide_speed := 150
 var air_jumps := 2 #number of air jumps
 var air_jumps_left = air_jumps
 var is_jumping := false
@@ -148,8 +149,8 @@ func set_movement(delta):
 		elif(is_on_floor()):
 			velocity.y = 0
 			air_jumps_left = air_jumps
-		#elif(is_on_wall()):
-			#velocity.y = clamp(300, 290, -200)
+		elif(is_on_wall() and velocity.y > wall_slide_speed):
+			velocity.y = wall_slide_speed
 		elif(!is_on_floor()):
 			velocity.y += gravity * delta
 		if (can_dash and is_dashing):
@@ -261,5 +262,5 @@ func dash(velocity):
 	return velocity
 func wall_slide(velocity):
 	if is_on_wall() and velocity.y > 50:
-		velocity.y = clamp(50, 25, 75)
+		velocity.y = 50
 		return velocity
