@@ -87,6 +87,7 @@ func _physics_process(delta):
 	get_node("NameLabel").set_text(player_name + ", " + str(score))
 	pass
 
+
 func get_input(delta):
 	if is_network_master():
 		x_input = Input.get_action_strength("move_right") - Input.get_action_strength("move_left")
@@ -129,7 +130,7 @@ func get_input(delta):
 		rset("is_shooting", is_shooting)
 		rset("wall_sliding", wall_sliding)
 		rset("shoot_direction", shoot_direction) #make sure that the other instances can see this
-	pass
+
 
 func jump(velocity):
 	velocity.y = -jump_force
@@ -209,7 +210,6 @@ func set_movement(delta):
 	
 	if not is_network_master():
 		player_position = position # To avoid jitter
-	pass
 
 #this is inefficent
 func set_camera():
@@ -225,11 +225,12 @@ func set_camera():
 func set_shoot_position():
 	get_node("BulletExit").position = shoot_direction * bullet_exit_radius + self.position
 
+
 func set_attacking(player_responsible):
 	# this is so that the last person who hits the player gets the kill
 	who_is_attacking = player_responsible
 	rset("who_is_attacking", who_is_attacking)
-	pass
+
 
 func do_attack(delta):
 	time_left_till_next_bullet -= delta
@@ -244,8 +245,7 @@ func do_attack(delta):
 		bullet.parent_node = self
 		get_tree().get_root().add_child(bullet)
 		time_left_till_next_bullet = fire_rate
-		pass
-	pass
+
 
 func on_hit(damage):
 	#print("PLAYER HIT")
@@ -257,7 +257,7 @@ func on_hit(damage):
 	else:
 		who_is_attacking.add_to_score(score_worth)
 		death()
-	pass
+
 
 func death():
 	#RESPAWN
@@ -267,15 +267,16 @@ func death():
 	position = spawn_point
 	rset("player_position", position)
 	rset("score", score)
-	pass
+
 
 func add_to_score(points):
 	score += points
 	rset("score", score)
-	pass
+
 
 func set_player_name(new_name):
 	player_name = new_name
+
 
 func _to_string():
 	var player_string := ""
@@ -292,12 +293,16 @@ func _to_string():
 	player_string += "Shoot Direction" + str(shoot_direction) + "\n"
 
 	return player_string
+
+
 func dash(velocity):
 	velocity = dash_direction * dash_force
 	can_dash = false
 	get_tree().create_timer(0.3)
 	is_dashing = false
 	return velocity
+
+
 func wall_slide(velocity):
 	if is_on_wall() and velocity.y > 50:
 		velocity.y = 50
