@@ -2,10 +2,6 @@ extends KinematicBody2D
 
 class_name Player
 
-
-# Declare member variables here. Examples:
-# var a = 2
-# var b = "text"
 var player_name := ""
 
 var x_input := 0.0
@@ -63,7 +59,9 @@ var score_worth := 1
 var bullet_template = preload("res://Scenes/Bullet.tscn")
 var bullet_exit_radius := 54.0
 export var bullet_speed := 500.0
-var fire_rate := 0.2
+export var bullet_damage := 1.0
+export var bullet_scale := 1.0
+export var fire_rate := 0.2
 var time_left_till_next_bullet = fire_rate
 
 
@@ -234,7 +232,9 @@ func do_attack(delta):
 		var bullet = bullet_template.instance()
 		bullet.set_direction(shoot_direction)
 		bullet.bullet_speed = bullet_speed
+		bullet.bullet_damage = bullet_damage
 		bullet.position = get_node("BulletExit").position
+		bullet.scale *= bullet_scale
 		#print(bullet.position)
 		bullet.parent_node = self
 		get_tree().get_root().add_child(bullet)
