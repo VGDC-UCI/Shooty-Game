@@ -79,10 +79,8 @@ func _ready() -> void:
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _physics_process(delta: float) -> void:
 	get_input(delta)
-	set_movement(delta)
+	update_state(delta)
 	set_camera()
-	set_shoot_position()
-	do_attack(delta)
 	# send information to ui, make this a function later
 	get_node("DebugLabel").text = to_string()
 	get_node("NameLabel").set_text(player_name + ", " + str(score))
@@ -152,13 +150,12 @@ func get_input(delta: float) -> void:
 		get_wall_sliding_input()
 
 
-func update_movement(delta: float) -> void: # Detects for movement
-	velocity.x = player_velocity.x + x_input * player_acceleration * delta
+func apply_movement(delta: float) -> void:
+	velocity.x += x_input * player_acceleration * delta
 	velocity.x *= pow(player_damp, delta * 10.0)
-	velocity.y = player_velocity.y
 	
 
-func update_jumping() -> void: # Detects for jumping
+func apply_jump() -> void:
 	if jump_persistance_time_left > 0 and on_ground_persistance_time_left > 0: # Jumping off ground
 		jump()
 		air_jumps_left = air_jumps
@@ -177,12 +174,12 @@ func update_jumping() -> void: # Detects for jumping
 		velocity.y *= 0.5
 		
 
-func jump() -> void: # Adds jump velocity
+func jump() -> void:
 	velocity.y = -jump_force
 	jump_persistance_time_left = 0
 		
 
-func update_gravity(delta: float) -> void: # Applies gravity
+func apply_gravity(delta: float) -> void:
 	if is_on_floor():
 		velocity.y = 0
 		on_ground_persistance_time_left = on_ground_persistance_time_frame
@@ -193,12 +190,12 @@ func update_gravity(delta: float) -> void: # Applies gravity
 		on_ground_persistance_time_left = clamp(on_ground_persistance_time_left, 0, on_ground_persistance_time_frame)
 		
 
-func update_wall_slide() -> void: # Detects for wall slide
+func apply_wall_slide() -> void:
 	if is_on_wall() and velocity.y > wall_slide_speed:
 		velocity.y = wall_slide_speed
 		
 
-func update_dash() -> void: # Detects for dash
+func apply_dash() -> void:
 	if can_dash and is_dashing:
 		print(can_dash)
 		print(is_dashing)
@@ -211,17 +208,41 @@ func dash() -> void:
 	can_dash = false
 	get_tree().create_timer(0.3)
 	is_dashing = false
+	
+
+func apply_shooting(delta) -> void:
+	set_shoot_position()
+	do_attack(delta)
 
 
-func set_movement(delta: float) -> void: # Updates movement
-	velocity = Vector2()
+func set_shoot_position() -> void:
+	get_node("BulletExit").position = shoot_direction * bullet_exit_radius + self.position
+
+
+func do_attack(delta: float) -> void:
+	time_left_till_next_bullet -= delta
+	if is_shooting and time_left_till_next_bullet <= 0:
+		var bullet = bullet_template.instance()
+		bullet.set_direction(shoot_direction)
+		bullet.bullet_speed = bullet_speed
+		bullet.bullet_damage = bullet_damage
+		bullet.position = get_node("BulletExit").position
+		bullet.scale *= bullet_scale
+		bullet.parent_node = self
+		get_tree().get_root().add_child(bullet)
+		time_left_till_next_bullet = fire_rate
+
+
+func update_state(delta: float) -> void: # Updates state
+	velocity = player_velocity
 	
 	if is_network_master():
-		update_gravity(delta)
-		update_movement(delta)
-		update_jumping()
-		update_wall_slide()
-		update_dash()
+		apply_gravity(delta)
+		apply_movement(delta)
+		apply_jump()
+		apply_wall_slide()
+		apply_dash()
+		apply_shooting(delta)
 
 		rset("player_velocity", velocity)
 		player_velocity = velocity # so i can save the data of this velocity to use elsewhere
@@ -246,28 +267,10 @@ func set_camera() -> void:
 			pass
 
 
-func set_shoot_position() -> void:
-	get_node("BulletExit").position = shoot_direction * bullet_exit_radius + self.position
-
-
 func set_attacking(player_responsible: Player) -> void:
 	# this is so that the last person who hits the player gets the kill
 	who_is_attacking = player_responsible
 	rset("who_is_attacking", who_is_attacking)
-
-
-func do_attack(delta: float) -> void:
-	time_left_till_next_bullet -= delta
-	if is_shooting and time_left_till_next_bullet <= 0:
-		var bullet = bullet_template.instance()
-		bullet.set_direction(shoot_direction)
-		bullet.bullet_speed = bullet_speed
-		bullet.bullet_damage = bullet_damage
-		bullet.position = get_node("BulletExit").position
-		bullet.scale *= bullet_scale
-		bullet.parent_node = self
-		get_tree().get_root().add_child(bullet)
-		time_left_till_next_bullet = fire_rate
 
 
 func on_hit(damage: float) -> void:
