@@ -40,7 +40,7 @@ func on_hit(damage):
 	elif(current_health > 0):
 		current_health -= damage
 	else:
-		who_is_attacking.add_to_score(score_worth)
+		who_is_attacking.add_to_numb_of_kills(score_worth)
 		death()
 	pass
 

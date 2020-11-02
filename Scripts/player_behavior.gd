@@ -13,7 +13,8 @@ var spawn_point := Vector2()
 export var default_health = 10
 # Player States
 export (int) onready var player_health = default_health
-puppet var score := 0
+puppet var numb_of_kills := 0
+puppet var numb_of_deaths := 0
 export (States) puppet var current_state := States.AIR
 
 # Shield Properties
@@ -87,7 +88,7 @@ func _physics_process(delta: float) -> void:
 	set_camera()
 	# send information to ui, make this a function later
 	get_node("DebugLabel").text = to_string()
-	get_node("NameLabel").set_text(player_name + ", " + str(score))
+	get_node("NameLabel").set_text(player_name + ", K: " + str(numb_of_kills) + " / D: " + str(numb_of_deaths))
 	
 
 func get_movement_input() -> void:
@@ -332,7 +333,7 @@ func on_hit(damage: float) -> void:
 	elif player_health > 0:
 		player_health -= damage
 	else:
-		who_is_attacking.add_to_score(score_worth)
+		who_is_attacking.add_to_numb_of_kills(score_worth)
 		death()
 
 
@@ -340,15 +341,15 @@ func death() -> void:
 	#RESPAWN
 	shield_health = default_shield
 	player_health = default_health
-	score -= 1
+	numb_of_deaths += 1
 	position = spawn_point
 	rset("player_position", position)
-	rset("score", score)
+	rset("numb_of_deaths", numb_of_deaths)
 
 
-func add_to_score(points: int) -> void:
-	score += points
-	rset("score", score)
+func add_to_numb_of_kills(points: int) -> void:
+	numb_of_kills += points
+	rset("numb_of_kills", numb_of_kills)
 
 
 func set_player_name(new_name: String) -> void:
