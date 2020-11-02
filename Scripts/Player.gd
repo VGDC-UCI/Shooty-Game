@@ -373,6 +373,8 @@ func _to_string() -> String:
 	
 	player_string += "Shield: " + str(shield_pressed) + "\nShield Health: " + str(shield_health) + "\n"
 	
+	player_string += "Can Dash: " + str(can_dash) + "\nIs Dashing:" + str(is_dashing) + "\n"
+	
 	player_string += "Shooting: " + str(is_shooting) + "\n"
 	
 	player_string += "Shoot Direction" + str(shoot_direction) + "\n"
