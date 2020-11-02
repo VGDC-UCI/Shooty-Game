@@ -4,6 +4,7 @@ class_name Player
 
 # Constants
 const GRAVITY := 1200
+enum States {GROUND, AIR, WALL}
 
 # Player Properties
 var player_name := ""
@@ -13,6 +14,7 @@ export var default_health = 10
 # Player States
 export (int) onready var player_health = default_health
 puppet var score := 0
+export (States) puppet var current_state := States.AIR
 
 # Shield Properties
 export var default_shield := 10
@@ -80,7 +82,8 @@ func _ready() -> void:
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _physics_process(delta: float) -> void:
 	get_input(delta)
-	update_state(delta)
+	update_state()
+	apply_state(delta)
 	set_camera()
 	# send information to ui, make this a function later
 	get_node("DebugLabel").text = to_string()
@@ -143,12 +146,84 @@ func get_wall_sliding_input() -> void:
 
 func get_input(delta: float) -> void:
 	if is_network_master():
-		get_movement_input()
-		get_jumping_input(delta)
-		get_dashing_input()
-		get_shooting_input()
-		get_shield_input()
-		get_wall_sliding_input()
+		match current_state:
+			States.GROUND:
+				get_movement_input()
+				get_jumping_input(delta)
+				get_dashing_input()
+				get_shooting_input()
+				get_shield_input()
+			States.AIR:
+				get_movement_input()
+				get_jumping_input(delta)
+				get_dashing_input()
+				get_shooting_input()
+				get_shield_input()
+			States.WALL:
+				get_movement_input()
+				get_jumping_input(delta)
+				get_dashing_input()
+				get_shooting_input()
+				get_shield_input()
+				get_wall_sliding_input()
+			
+
+func update_state() -> void: # Detects for state transitions
+	if is_network_master():
+		match current_state:
+			States.GROUND:
+				if not is_on_floor():
+					current_state = States.AIR
+			States.AIR:
+				if is_on_floor():
+					current_state = States.GROUND
+				elif is_on_wall():
+					current_state = States.WALL
+			States.WALL:
+				if not is_on_wall():
+					current_state = States.AIR
+				elif is_on_floor():
+					current_state = States.GROUND
+		rset("current_state", current_state)
+
+
+func apply_state(delta: float) -> void: # Apply the functions of the current state
+	velocity = player_velocity
+	
+	if is_network_master():
+		match current_state:
+			States.GROUND:
+				apply_gravity(delta) # Gravity must be applied on every state or is_on_ground() won't work correctly. (Apply before everything else)
+				apply_movement(delta)
+				apply_jump()
+				apply_dash()
+				apply_shooting(delta)
+			States.AIR:
+				apply_gravity(delta)
+				apply_movement(delta)
+				apply_jump()
+				apply_dash()
+				apply_shooting(delta)
+				apply_wall_slide()
+			States.WALL:
+				apply_gravity(delta)
+				apply_movement(delta)
+				apply_jump()
+				apply_dash()
+				apply_shooting(delta)
+				apply_wall_slide()
+
+		rset("player_velocity", velocity)
+		player_velocity = velocity # so i can save the data of this velocity to use elsewhere
+		rset_unreliable("player_position", position)
+	else:
+		position = player_position
+		velocity = player_velocity
+	
+	move_and_slide(velocity, Vector2(0, -1)) #added a floor 
+	
+	if not is_network_master():
+		player_position = position # To avoid jitter
 
 
 func apply_movement(delta: float) -> void:
@@ -182,7 +257,7 @@ func jump() -> void:
 
 func apply_gravity(delta: float) -> void:
 	if is_on_floor():
-		velocity.y = 0
+		velocity.y = GRAVITY * delta
 		on_ground_persistance_time_left = on_ground_persistance_time_frame
 		air_jumps_left = air_jumps
 	else:
@@ -234,29 +309,6 @@ func do_attack(delta: float) -> void:
 		time_left_till_next_bullet = fire_rate
 
 
-func update_state(delta: float) -> void: # Updates state
-	velocity = player_velocity
-	
-	if is_network_master():
-		apply_gravity(delta)
-		apply_movement(delta)
-		apply_jump()
-		apply_wall_slide()
-		apply_dash()
-		apply_shooting(delta)
-
-		rset("player_velocity", velocity)
-		player_velocity = velocity # so i can save the data of this velocity to use elsewhere
-		rset_unreliable("player_position", position)
-	else:
-		position = player_position
-		velocity = player_velocity
-	
-	move_and_slide(velocity, Vector2(0, -1)) #added a floor 
-	
-	if not is_network_master():
-		player_position = position # To avoid jitter
-
 #this is inefficent
 func set_camera() -> void:
 	if is_network_master():
@@ -305,7 +357,15 @@ func set_player_name(new_name: String) -> void:
 
 func _to_string() -> String:
 	var player_string := ""
+
 	player_string += "Current State: "
+	match current_state:
+		States.GROUND:
+			player_string += "GROUND\n" 
+		States.AIR:
+			player_string += "AIR\n"
+		States.WALL:
+			player_string += "WALL\n"
 	
 	player_string += "\n"
 	
