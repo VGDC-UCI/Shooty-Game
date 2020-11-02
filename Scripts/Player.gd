@@ -16,6 +16,7 @@ puppet var dash_direction := Vector2()
 puppet var vel := Vector2()
 #networked variables
 puppet var player_velocity := Vector2()
+var velocity := Vector2()
 puppet var player_position := Vector2()
 puppet var facing_left := false
 
@@ -151,59 +152,77 @@ func get_input(delta: float) -> void:
 		get_wall_sliding_input()
 
 
-func jump(velocity: Vector2) -> Vector2:
-	velocity.y = -jump_force
-	jump_persistance_time_left = 0
-	return velocity
-	
-
-func accelerate(velocity: Vector2, delta: float) -> Vector2: # Calculates velocity, accelerating, decelerating based on input
+func update_movement(delta: float) -> void: # Detects for movement
 	velocity.x = player_velocity.x + x_input * player_acceleration * delta
 	velocity.x *= pow(player_damp, delta * 10.0)
 	velocity.y = player_velocity.y
-	return velocity
+	
+
+func update_jumping() -> void: # Detects for jumping
+	if jump_persistance_time_left > 0 and on_ground_persistance_time_left > 0: # Jumping off ground
+		jump()
+		air_jumps_left = air_jumps
+		print("normal_jump")
+		print(str(velocity))
+	elif jump_persistance_time_left > 0 and is_on_wall(): # Jumping off wall
+		jump()
+		print("wall_jump")
+		print(str(velocity))
+	elif jump_persistance_time_left > 0 and air_jumps_left > 0: # Jumping in air
+		jump()
+		air_jumps_left -= 1
+		print("air_jumps_left: " + str(air_jumps_left))
+		print(str(velocity))
+	elif half_jump and velocity.y < 0: # Half jumping
+		velocity.y *= 0.5
+		
+
+func jump() -> void: # Adds jump velocity
+	velocity.y = -jump_force
+	jump_persistance_time_left = 0
+		
+
+func update_gravity(delta: float) -> void: # Applies gravity
+	if is_on_floor():
+		velocity.y = 0
+		on_ground_persistance_time_left = on_ground_persistance_time_frame
+		air_jumps_left = air_jumps
+	else:
+		velocity.y += gravity * delta
+		on_ground_persistance_time_left -= delta
+		on_ground_persistance_time_left = clamp(on_ground_persistance_time_left, 0, on_ground_persistance_time_frame)
+		
+
+func update_wall_slide() -> void: # Detects for wall slide
+	if is_on_wall() and velocity.y > wall_slide_speed:
+		velocity.y = wall_slide_speed
+		
+
+func update_dash() -> void: # Detects for dash
+	if can_dash and is_dashing:
+		print(can_dash)
+		print(is_dashing)
+		dash()
+		can_dash = false
 
 
-func set_movement(delta: float) -> void:
-	var velocity: Vector2 = Vector2()
+func dash() -> void:
+	velocity = dash_direction * dash_force
+	can_dash = false
+	get_tree().create_timer(0.3)
+	is_dashing = false
+
+
+func set_movement(delta: float) -> void: # Updates movement
+	velocity = Vector2()
 	
 	if is_network_master():
-		velocity = accelerate(velocity, delta)
-	
-		if jump_persistance_time_left > 0 and on_ground_persistance_time_left > 0:
-			velocity = jump(velocity)
-			air_jumps_left = air_jumps
-			print("normal_jump")
-			print(str(velocity))
-		elif jump_persistance_time_left > 0 and is_on_wall():
-			velocity = jump(velocity)
-			print("wall_jump")
-			print(str(velocity))
-		elif jump_persistance_time_left > 0 and air_jumps_left > 0:
-			velocity = jump(velocity)
-			air_jumps_left -= 1
-			print("air_jumps_left: " + str(air_jumps_left))
-			print(str(velocity))
-		elif is_on_floor():
-			velocity.y = 0
-			on_ground_persistance_time_left = on_ground_persistance_time_frame
-			air_jumps_left = air_jumps
-		elif is_on_wall() and velocity.y > wall_slide_speed:
-			velocity.y = wall_slide_speed
-		elif !is_on_floor():
-			if half_jump and velocity.y < 0:
-				velocity.y *= 0.5
-			else:
-				velocity.y += gravity * delta
-			on_ground_persistance_time_left -= delta
-			on_ground_persistance_time_left = clamp(on_ground_persistance_time_left, 0, on_ground_persistance_time_frame)
-		
-		if can_dash and is_dashing:
-			print(can_dash)
-			print(is_dashing)
-			velocity = dash(velocity)
-			can_dash = false
-			
+		update_gravity(delta)
+		update_movement(delta)
+		update_jumping()
+		update_wall_slide()
+		update_dash()
+
 		rset("player_velocity", velocity)
 		player_velocity = velocity # so i can save the data of this velocity to use elsewhere
 		rset_unreliable("player_position", position)
@@ -295,17 +314,3 @@ func _to_string() -> String:
 	player_string += "Shoot Direction" + str(shoot_direction) + "\n"
 
 	return player_string
-
-
-func dash(velocity: Vector2) -> Vector2:
-	velocity = dash_direction * dash_force
-	can_dash = false
-	get_tree().create_timer(0.3)
-	is_dashing = false
-	return velocity
-
-
-func wall_slide(velocity: Vector2) -> Vector2:
-	if is_on_wall() and velocity.y > 50:
-		velocity.y = 50
-	return velocity
