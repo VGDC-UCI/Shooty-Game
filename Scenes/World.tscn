@@ -39,11 +39,11 @@ texture = ExtResource( 5 )
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Platforms/Platform"]
 shape = SubResource( 1 )
 
-[node name="WorldBoundry" type="Area2D" parent="."]
+[node name="WorldBoundary" type="Area2D" parent="."]
 position = Vector2( 0, 1400 )
 script = ExtResource( 2 )
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="WorldBoundry"]
+[node name="CollisionShape2D" type="CollisionShape2D" parent="WorldBoundary"]
 shape = SubResource( 2 )
 
 [node name="SpawnPoints" type="Node2D" parent="."]
@@ -55,4 +55,4 @@ position = Vector2( 200, 0 )
 
 [node name="Camera2D" type="Camera2D" parent="."]
 zoom = Vector2( 4, 4 )
-[connection signal="body_entered" from="WorldBoundry" to="WorldBoundry" method="_on_deadline_entered"]
+[connection signal="body_entered" from="WorldBoundary" to="WorldBoundary" method="_on_deadline_entered"]
