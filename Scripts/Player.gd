@@ -2,68 +2,69 @@ extends KinematicBody2D
 
 class_name Player
 
-var player_name := ""
+# Constants
+const GRAVITY := 1200
 
-var x_input := 0.0
-var y_input := 0.0
-# export var player_speed := 400.0
+# Player Properties
+var player_name := ""
+export var score_worth := 1
+var spawn_point := Vector2()
+export var default_health = 10
+# Player States
+export (int) onready var player_health = default_health
+puppet var score := 0
+
+# Shield Properties
+export var default_shield := 10
+# Shield States
+var shield_pressed := false
+export (int) onready var shield_health := default_shield
+
+# Movement Properties
 export var player_acceleration := 1800.0
 export var player_damp := 0.7
-#export var dash_multiplier := 2.0
-puppet var is_dashing := false
-puppet var can_dash := false
-puppet var dash_direction := Vector2()
-puppet var vel := Vector2()
-#networked variables
-puppet var player_velocity := Vector2()
+# Movement States
+var x_input := 0.0
+var y_input := 0.0
 var velocity := Vector2()
+puppet var player_velocity := Vector2()
 puppet var player_position := Vector2()
 puppet var facing_left := false
 
-puppet var wall_sliding = false
-
-var gravity := 1200
-var jump_force := 600
-export var dash_force := 5000
-export var wall_slide_speed := 150
-var air_jumps := 2 #number of air jumps
+# Jumping Properties
+export var jump_force := 600
+export var air_jumps := 2 # Number of air jumps
+# Jumping States
 var air_jumps_left = air_jumps
-
 var	jump_persistance_time_frame := 0.2 # The time frame after the last jump press will still activate
 var jump_persistance_time_left := 0.0 # The current time frame left for jump to be called
 var on_ground_persistance_time_frame := 0.2 # The time frame since last ground touch that will still count as on ground
 var on_ground_persistance_time_left := 0.0 # The current time frame left for on ground to be true
 var half_jump := false
 
-#enum Direction{UP, DOWN, LEFT, RIGHT, UP_LEFT, UP_RIGHT, DOWN_LEFT, DOWN_RIGHT}
-#var current_direction = Direction.UP
+# Dash Properties
+export var dash_force := 5000
+# Dash States
+puppet var is_dashing := false
+puppet var can_dash := false
+puppet var dash_direction := Vector2()
 
-#var player_angle := 0
+# Wall Slide Properties
+export var wall_slide_speed := 150
+# Wall Slide States
+puppet var wall_sliding = false
 
-var spawn_point := Vector2()
-
-export var default_health = 10
-export(int) onready var player_health = default_health
-
-export var default_shield := 10
-export(int) onready var shield_health := default_shield
-var shield_pressed := false
-
-puppet var is_shooting := false
-puppet var shoot_direction := Vector2()
-#var special_pressed := false
-puppet var who_is_attacking
-puppet var score := 0
-
-var score_worth := 1
-
-#var melee_pressed := false
-var bullet_template = preload("res://Scenes/Bullet.tscn")
+# Combat Properties
 var bullet_exit_radius := 54.0
 export var bullet_speed := 500.0
 export var bullet_damage := 1.0
 export var bullet_scale := 1.0
 export var fire_rate := 0.2
+# Combat States
+puppet var who_is_attacking
+puppet var is_shooting := false
+puppet var shoot_direction := Vector2()
+var bullet_template = preload("res://Scenes/Bullet.tscn")
 var time_left_till_next_bullet = fire_rate
 
 
@@ -185,7 +186,7 @@ func apply_gravity(delta: float) -> void:
 		on_ground_persistance_time_left = on_ground_persistance_time_frame
 		air_jumps_left = air_jumps
 	else:
-		velocity.y += gravity * delta
+		velocity.y += GRAVITY * delta
 		on_ground_persistance_time_left -= delta
 		on_ground_persistance_time_left = clamp(on_ground_persistance_time_left, 0, on_ground_persistance_time_frame)
 		
