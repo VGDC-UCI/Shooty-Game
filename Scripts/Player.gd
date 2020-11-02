@@ -67,7 +67,7 @@ var time_left_till_next_bullet = fire_rate
 
 
 # Called when the node enters the scene tree for the first time.
-func _ready():
+func _ready() -> void:
 	set_player_name(player_name)
 	player_position = position
 	self.add_to_group("Collision")
@@ -76,7 +76,7 @@ func _ready():
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
-func _physics_process(delta):
+func _physics_process(delta: float) -> void:
 	get_input(delta)
 	set_movement(delta)
 	set_camera()
@@ -85,17 +85,16 @@ func _physics_process(delta):
 	# send information to ui, make this a function later
 	get_node("DebugLabel").text = to_string()
 	get_node("NameLabel").set_text(player_name + ", " + str(score))
-	pass
 
 
-func get_input(delta):
+func get_input(delta: float) -> void:
 	if is_network_master():
 		x_input = Input.get_action_strength("move_right") - Input.get_action_strength("move_left")
 		#y_input = Input.get_action_strength("move_down") - Input.get_action_strength("move_up")
 		can_dash = is_on_floor() or !is_on_floor()
 		#wall_sliding = is_on_wall()
 		#check for facing direction
-		if(x_input >= 0):
+		if x_input >= 0:
 			facing_left = false
 		else:
 			facing_left = true
@@ -132,46 +131,46 @@ func get_input(delta):
 		rset("shoot_direction", shoot_direction) #make sure that the other instances can see this
 
 
-func jump(velocity):
+func jump(velocity: Vector2) -> Vector2:
 	velocity.y = -jump_force
 	jump_persistance_time_left = 0
 	return velocity
 	
 
-func accelerate(velocity: Vector2, delta: float): # Calculates velocity, accelerating, decelerating based on input
+func accelerate(velocity: Vector2, delta: float) -> Vector2: # Calculates velocity, accelerating, decelerating based on input
 	velocity.x = player_velocity.x + x_input * player_acceleration * delta
 	velocity.x *= pow(player_damp, delta * 10.0)
 	velocity.y = player_velocity.y
 	return velocity
 
 
-func set_movement(delta):
+func set_movement(delta: float) -> void:
 	var velocity: Vector2 = Vector2()
 	
 	if is_network_master():
 		velocity = accelerate(velocity, delta)
 	
-		if(jump_persistance_time_left > 0 and on_ground_persistance_time_left > 0):
+		if jump_persistance_time_left > 0 and on_ground_persistance_time_left > 0:
 			velocity = jump(velocity)
 			air_jumps_left = air_jumps
 			print("normal_jump")
 			print(str(velocity))
-		elif(jump_persistance_time_left > 0 and is_on_wall()):
+		elif jump_persistance_time_left > 0 and is_on_wall():
 			velocity = jump(velocity)
 			print("wall_jump")
 			print(str(velocity))
-		elif(jump_persistance_time_left > 0 and air_jumps_left > 0):
+		elif jump_persistance_time_left > 0 and air_jumps_left > 0:
 			velocity = jump(velocity)
 			air_jumps_left -= 1
 			print("air_jumps_left: " + str(air_jumps_left))
 			print(str(velocity))
-		elif(is_on_floor()):
+		elif is_on_floor():
 			velocity.y = 0
 			on_ground_persistance_time_left = on_ground_persistance_time_frame
 			air_jumps_left = air_jumps
-		elif(is_on_wall() and velocity.y > wall_slide_speed):
+		elif is_on_wall() and velocity.y > wall_slide_speed:
 			velocity.y = wall_slide_speed
-		elif(!is_on_floor()):
+		elif !is_on_floor():
 			if half_jump and velocity.y < 0:
 				velocity.y *= 0.5
 			else:
@@ -179,7 +178,7 @@ func set_movement(delta):
 			on_ground_persistance_time_left -= delta
 			on_ground_persistance_time_left = clamp(on_ground_persistance_time_left, 0, on_ground_persistance_time_frame)
 		
-		if (can_dash and is_dashing):
+		if can_dash and is_dashing:
 			print(can_dash)
 			print(is_dashing)
 			velocity = dash(velocity)
@@ -192,16 +191,13 @@ func set_movement(delta):
 		position = player_position
 		velocity = player_velocity
 	
-	#print("velocity: ", velocity)
-	#print("player_velocity: ", player_velocity)
-	
 	move_and_slide(velocity, Vector2(0, -1)) #added a floor 
 	
 	if not is_network_master():
 		player_position = position # To avoid jitter
 
 #this is inefficent
-func set_camera():
+func set_camera() -> void:
 	if is_network_master():
 		for player in get_parent().get_children():
 			if(player == self):
@@ -211,44 +207,41 @@ func set_camera():
 			pass
 
 
-func set_shoot_position():
+func set_shoot_position() -> void:
 	get_node("BulletExit").position = shoot_direction * bullet_exit_radius + self.position
 
 
-func set_attacking(player_responsible):
+func set_attacking(player_responsible: Player) -> void:
 	# this is so that the last person who hits the player gets the kill
 	who_is_attacking = player_responsible
 	rset("who_is_attacking", who_is_attacking)
 
 
-func do_attack(delta):
+func do_attack(delta: float) -> void:
 	time_left_till_next_bullet -= delta
-	if(is_shooting and time_left_till_next_bullet <= 0):
+	if is_shooting and time_left_till_next_bullet <= 0:
 		var bullet = bullet_template.instance()
 		bullet.set_direction(shoot_direction)
 		bullet.bullet_speed = bullet_speed
 		bullet.bullet_damage = bullet_damage
 		bullet.position = get_node("BulletExit").position
 		bullet.scale *= bullet_scale
-		#print(bullet.position)
 		bullet.parent_node = self
 		get_tree().get_root().add_child(bullet)
 		time_left_till_next_bullet = fire_rate
 
 
-func on_hit(damage):
-	#print("PLAYER HIT")
-	
-	if(shield_health > 0):
+func on_hit(damage: float) -> void:
+	if shield_health > 0:
 		shield_health -= damage
-	elif (player_health > 0):
+	elif player_health > 0:
 		player_health -= damage
 	else:
 		who_is_attacking.add_to_score(score_worth)
 		death()
 
 
-func death():
+func death() -> void:
 	#RESPAWN
 	shield_health = default_shield
 	player_health = default_health
@@ -258,16 +251,16 @@ func death():
 	rset("score", score)
 
 
-func add_to_score(points):
+func add_to_score(points: int) -> void:
 	score += points
 	rset("score", score)
 
 
-func set_player_name(new_name):
+func set_player_name(new_name: String) -> void:
 	player_name = new_name
 
 
-func _to_string():
+func _to_string() -> String:
 	var player_string := ""
 	player_string += "Current State: "
 	
@@ -284,7 +277,7 @@ func _to_string():
 	return player_string
 
 
-func dash(velocity):
+func dash(velocity: Vector2) -> Vector2:
 	velocity = dash_direction * dash_force
 	can_dash = false
 	get_tree().create_timer(0.3)
@@ -292,7 +285,7 @@ func dash(velocity):
 	return velocity
 
 
-func wall_slide(velocity):
+func wall_slide(velocity: Vector2) -> Vector2:
 	if is_on_wall() and velocity.y > 50:
 		velocity.y = 50
-		return velocity
+	return velocity
