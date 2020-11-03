@@ -85,6 +85,8 @@ func _physics_process(delta: float) -> void:
 	get_input(delta)
 	update_state()
 	apply_state(delta)
+	set_shoot_position()
+	do_attack(delta)
 	set_camera()
 	# send information to ui, make this a function later
 	get_node("DebugLabel").text = to_string()
@@ -198,20 +200,17 @@ func apply_state(delta: float) -> void: # Apply the functions of the current sta
 				apply_movement(delta)
 				apply_jump()
 				apply_dash()
-				apply_shooting(delta)
 			States.AIR:
 				apply_gravity(delta)
 				apply_movement(delta)
 				apply_jump()
 				apply_dash()
-				apply_shooting(delta)
 				apply_wall_slide()
 			States.WALL:
 				apply_gravity(delta)
 				apply_movement(delta)
 				apply_jump()
 				apply_dash()
-				apply_shooting(delta)
 				apply_wall_slide()
 
 		rset("player_velocity", velocity)
@@ -285,11 +284,6 @@ func dash() -> void:
 	can_dash = false
 	get_tree().create_timer(0.3)
 	is_dashing = false
-	
-
-func apply_shooting(delta) -> void:
-	set_shoot_position()
-	do_attack(delta)
 
 
 func set_shoot_position() -> void:
