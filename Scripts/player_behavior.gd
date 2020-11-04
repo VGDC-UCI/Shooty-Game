@@ -82,7 +82,6 @@ func _ready() -> void:
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
 func _physics_process(delta: float) -> void:
-	get_input(delta)
 	update_state()
 	apply_state(delta)
 	set_shoot_position()
@@ -92,84 +91,6 @@ func _physics_process(delta: float) -> void:
 	get_node("DebugLabel").text = to_string()
 	get_node("NameLabel").set_text(player_name + ", K: " + str(numb_of_kills) + " / D: " + str(numb_of_deaths))
 	
-
-func get_movement_input() -> void:
-	x_input = Input.get_action_strength("move_right") - Input.get_action_strength("move_left")
-	#y_input = Input.get_action_strength("move_down") - Input.get_action_strength("move_up")
-
-	# Check for facing direction
-	if x_input >= 0:
-		facing_left = false
-	else:
-		facing_left = true
-		
-
-func get_jumping_input(delta: float) -> void:
-	if Input.is_action_just_pressed("jump_pressed"):
-		jump_persistance_time_left = jump_persistance_time_frame
-	elif jump_persistance_time_left > 0:
-		jump_persistance_time_left -= delta
-		jump_persistance_time_left = clamp(jump_persistance_time_left, 0, jump_persistance_time_frame)
-	half_jump = Input.is_action_just_released("jump_pressed")
-	
-
-func get_dashing_input() -> void:
-	is_dashing = Input.is_action_just_pressed("dash")
-	can_dash = is_on_floor() or !is_on_floor()
-
-	if Input.is_action_pressed("move_right"):
-		dash_direction = Vector2(1,0)
-		#print(dash_direction)
-	if Input.is_action_pressed("move_left"):
-		dash_direction = Vector2(-1,0)
-
-	rset("dash_direction", dash_direction)
-	rset("is_dashing", is_dashing)
-	rset("can_dash", can_dash)
-	
-
-func get_shooting_input() -> void:
-	is_shooting = Input.is_action_pressed("shoot")
-
-	var mouse_direction := get_position().direction_to(get_global_mouse_position()) # getting direction to mouse
-	var bullet_angle := atan2(mouse_direction.y, mouse_direction.x)
-	shoot_direction = Vector2(cos(bullet_angle), sin(bullet_angle))
-
-	rset("is_shooting", is_shooting)
-	rset("shoot_direction", shoot_direction) # Make sure that the other instances can see this
-	
-
-func get_shield_input() -> void:
-	shield_pressed = Input.is_action_pressed("shield")
-
-	
-func get_wall_sliding_input() -> void:
-	rset("wall_sliding", wall_sliding)
-
-
-func get_input(delta: float) -> void:
-	if is_network_master():
-		match current_state:
-			States.GROUND:
-				get_movement_input()
-				get_jumping_input(delta)
-				get_dashing_input()
-				get_shooting_input()
-				get_shield_input()
-			States.AIR:
-				get_movement_input()
-				get_jumping_input(delta)
-				get_dashing_input()
-				get_shooting_input()
-				get_shield_input()
-			States.WALL:
-				get_movement_input()
-				get_jumping_input(delta)
-				get_dashing_input()
-				get_shooting_input()
-				get_shield_input()
-				get_wall_sliding_input()
-			
 
 func update_state() -> void: # Detects for state transitions
 	if is_network_master():
