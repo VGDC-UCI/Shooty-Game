@@ -62,6 +62,6 @@ margin_top = 60.0
 margin_right = 121.0
 margin_bottom = 80.0
 text = "Training Mode"
-[connection signal="pressed" from="PanelContainer/MarginContainer/VBoxContainer/VBoxContainer/LocalMultiButton" to="." method="switch_to_localmutli"]
+[connection signal="pressed" from="PanelContainer/MarginContainer/VBoxContainer/VBoxContainer/LocalMultiButton" to="." method="switch_to_localmulti"]
 [connection signal="pressed" from="PanelContainer/MarginContainer/VBoxContainer/VBoxContainer/MultiButton" to="." method="switch_to_multi"]
 [connection signal="pressed" from="PanelContainer/MarginContainer/VBoxContainer/VBoxContainer/TrainingButton" to="." method="switch_to_training"]

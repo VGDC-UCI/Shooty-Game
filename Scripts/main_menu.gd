@@ -3,10 +3,11 @@ extends Control
 
 # References
 const SERVER_MENU_PATH: String = 'res://Scenes/ServerMenu.tscn'
+const LOCAL_MULTI_PATH: String = 'res://Scenes/LocalMultiplayerScreen.tscn'
 
 
 func switch_to_localmulti() -> void:
-	pass
+	get_tree().change_scene(LOCAL_MULTI_PATH)
 	
 
 func switch_to_multi() -> void:

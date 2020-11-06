@@ -1,0 +1,60 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://Scripts/local_multiplayer_screen.gd" type="Script" id=1]
+[ext_resource path="res://Scenes/PlayerOptions.tscn" type="PackedScene" id=2]
+
+[node name="LocalMutliplayerScene" type="CenterContainer"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}
+
+[node name="HBoxContainer" type="HBoxContainer" parent="."]
+margin_left = 284.0
+margin_top = 199.0
+margin_right = 739.0
+margin_bottom = 401.0
+
+[node name="Players" type="PanelContainer" parent="HBoxContainer"]
+margin_right = 203.0
+margin_bottom = 202.0
+
+[node name="MarginContainer" type="MarginContainer" parent="HBoxContainer/Players"]
+margin_left = 7.0
+margin_top = 7.0
+margin_right = 196.0
+margin_bottom = 195.0
+custom_constants/margin_right = 40
+custom_constants/margin_top = 40
+custom_constants/margin_left = 40
+custom_constants/margin_bottom = 40
+
+[node name="VBoxContainer" type="VBoxContainer" parent="HBoxContainer/Players/MarginContainer"]
+margin_left = 40.0
+margin_top = 40.0
+margin_right = 149.0
+margin_bottom = 148.0
+custom_constants/separation = 20
+
+[node name="Label" type="Label" parent="HBoxContainer/Players/MarginContainer/VBoxContainer"]
+margin_right = 109.0
+margin_bottom = 14.0
+text = "Local Multiplayer"
+
+[node name="PlayerList" type="ItemList" parent="HBoxContainer/Players/MarginContainer/VBoxContainer"]
+margin_top = 34.0
+margin_right = 109.0
+margin_bottom = 43.0
+auto_height = true
+
+[node name="AddPlayerButton" type="Button" parent="HBoxContainer/Players/MarginContainer/VBoxContainer"]
+margin_top = 63.0
+margin_right = 109.0
+margin_bottom = 83.0
+text = "Add Player"
+
+[node name="PlayerOptions" parent="HBoxContainer" instance=ExtResource( 2 )]
+[connection signal="item_selected" from="HBoxContainer/Players/MarginContainer/VBoxContainer/PlayerList" to="." method="display_player_options_for"]
+[connection signal="pressed" from="HBoxContainer/Players/MarginContainer/VBoxContainer/AddPlayerButton" to="." method="add_player"]
