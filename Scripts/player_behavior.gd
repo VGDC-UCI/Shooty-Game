@@ -46,7 +46,11 @@ var on_ground_persistance_time_left := 0.0 # The current time frame left for on 
 var half_jump := false
 
 # Dash Properties
-export var dash_force := 5000
+export var dash_force := 2000
+onready var dash_timer = $dash_timer
+onready var dash_particles = $dash_particles
+export(PackedScene) var dash_object
+export var dash_length := 0.2
 # Dash States
 puppet var is_dashing := false
 puppet var can_dash := false
@@ -77,6 +81,7 @@ func _ready() -> void:
 	player_position = position
 	self.add_to_group("Collision")
 	self.add_to_group("Hittable")
+	dash_timer.connect("timeout",self,"dash_timer_timeout")
 	pass # Replace with function body.
 
 
@@ -203,9 +208,15 @@ func apply_dash() -> void:
 func dash() -> void:
 	velocity = dash_direction * dash_force
 	can_dash = false
-	get_tree().create_timer(0.3)
+	var dash_node = dash_object.instance()
+	dash_timer.start(dash_length)
+	dash_particles.emitting = true
+	if(is_on_wall()):
+		is_dashing = false
 	is_dashing = false
 
+func dash_timer_timeout():
+	is_dashing = false
 
 func set_shoot_position() -> void:
 	get_node("BulletExit").position = shoot_direction * bullet_exit_radius + self.position
