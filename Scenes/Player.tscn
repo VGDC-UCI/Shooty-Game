@@ -1,8 +1,10 @@
-[gd_scene load_steps=8 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://icon.png" type="Texture" id=1]
 [ext_resource path="res://Scripts/player_behavior.gd" type="Script" id=2]
 [ext_resource path="res://Scenes/PlayerController.tscn" type="PackedScene" id=3]
+[ext_resource path="res://Assets/Personal_Assets/dash_particle.png" type="Texture" id=4]
+[ext_resource path="res://Scenes/dash_sprite.tscn" type="PackedScene" id=5]
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 32, 32 )
@@ -31,6 +33,7 @@ script = ExtResource( 2 )
 __meta__ = {
 "_edit_group_": true
 }
+dash_object = ExtResource( 5 )
 
 [node name="icon" type="Sprite" parent="."]
 texture = ExtResource( 1 )
@@ -63,11 +66,14 @@ __meta__ = {
 }
 
 [node name="dash_timer" type="Timer" parent="."]
+one_shot = true
 
 [node name="dash_particles" type="Particles2D" parent="."]
 emitting = false
-amount = 80
+amount = 100
+one_shot = true
 local_coords = false
 process_material = SubResource( 4 )
+texture = ExtResource( 4 )
 
 [node name="PlayerController" parent="." instance=ExtResource( 3 )]
