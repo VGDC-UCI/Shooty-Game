@@ -1,5 +1,9 @@
-# Handles the functionality of the ServerMenu.
+"""
+Handles the functionality of the ServerMenu. 
+Also controls a lot of the networking functionality.
 
+Author: Srayan Jana
+"""
 
 extends Control
 

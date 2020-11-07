@@ -1,3 +1,9 @@
+"""
+Takes in inputs and inputs them into player behavior
+
+Author: Srayan Jana
+"""
+
 extends Node2D
 
 onready var player: Player = get_parent()

@@ -1,3 +1,10 @@
+"""
+Controls the current Game State of the game. Is a Singleton. 
+Always has to be in sync with the rest of the players
+
+Author: Srayan Jana
+"""
+
 extends Node
 
 # Default game port. Can be any number between 1024 and 49151.

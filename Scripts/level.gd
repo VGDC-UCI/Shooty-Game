@@ -1,3 +1,9 @@
+"""
+Empty Script for Level stuff. May be useful later
+
+Author: Srayan
+"""
+
 extends Node2D
 
 
