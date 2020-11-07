@@ -96,3 +96,6 @@ $RECYCLE.BIN/
 
 Build/*
 !Build/.keep
+
+/import/
+default_env.tres
