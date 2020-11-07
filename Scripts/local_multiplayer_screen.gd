@@ -1,5 +1,8 @@
-extends Control
+"""
+The main script for the local multiplayer screen. Will control switching scenes out
+of this menu. (Empty for now)
 
-# References
-onready var player_list: ItemList = $HBoxContainer/PlayerList
-onready var player_options: Control = $HBoxContainer/PlayerOptions
+Author: Kang Rui Yu
+"""
+
+extends Control
