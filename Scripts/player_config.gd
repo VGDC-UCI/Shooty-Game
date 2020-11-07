@@ -1,5 +1,5 @@
+# A collection of settings for a player
 extends Resource
-
 
 # Properties
 var name: String
