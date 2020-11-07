@@ -14,7 +14,7 @@ __meta__ = {
 margin_left = 7.0
 margin_top = 7.0
 margin_right = 196.0
-margin_bottom = 195.0
+margin_bottom = 210.0
 custom_constants/margin_right = 40
 custom_constants/margin_top = 40
 custom_constants/margin_left = 40
@@ -24,7 +24,7 @@ custom_constants/margin_bottom = 40
 margin_left = 40.0
 margin_top = 40.0
 margin_right = 149.0
-margin_bottom = 148.0
+margin_bottom = 163.0
 custom_constants/separation = 20
 
 [node name="Label" type="Label" parent="MarginContainer/VBoxContainer"]
@@ -43,5 +43,12 @@ margin_top = 63.0
 margin_right = 109.0
 margin_bottom = 83.0
 text = "Add Player"
+
+[node name="RemovePlayerButton" type="Button" parent="MarginContainer/VBoxContainer"]
+margin_top = 103.0
+margin_right = 109.0
+margin_bottom = 123.0
+text = "Remove Player"
 [connection signal="item_selected" from="MarginContainer/VBoxContainer/List" to="." method="selected_player"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/AddPlayerButton" to="." method="add_player"]
+[connection signal="pressed" from="MarginContainer/VBoxContainer/RemovePlayerButton" to="." method="remove_player"]
