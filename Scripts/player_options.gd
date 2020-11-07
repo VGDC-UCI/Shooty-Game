@@ -11,7 +11,12 @@ var current_config: Resource = null # The current config being modified
 signal changed
 
 
+func _ready() -> void:
+	hide()
+
+
 func display_for(config: Resource) -> void: # Displays the information of the given player config
+	show()
 	name_field.text = config.name
 	class_option.selected = config.class_id
 	input_option.selected = config.input_id
