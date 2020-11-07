@@ -1,3 +1,9 @@
+"""
+Handles inputs from client and inputs them into the player state machine.
+
+Author: Srayan Jana
+"""
+
 extends KinematicBody2D
 
 class_name Player

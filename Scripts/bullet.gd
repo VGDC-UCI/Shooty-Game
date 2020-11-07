@@ -1,5 +1,8 @@
-# Handles interactions with a bullet after it is fired.
+"""
+Handles interactions with a bullet after it is fired.
 
+Author: Srayan Jana
+"""
 
 extends KinematicBody2D
 

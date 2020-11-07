@@ -1,5 +1,8 @@
-# Respawns the player on top of the level if they fall off the world.
+"""
+Respawns the player on top of the level if they fall off the world.
 
+Author: Srayan Jana
+"""
 
 extends Area2D
 

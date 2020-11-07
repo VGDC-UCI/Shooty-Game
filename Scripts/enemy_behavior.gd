@@ -1,3 +1,10 @@
+"""
+Controls the behavior of enemies/targets. They share a lot of commonalities with players, such as death and health.
+Consider making another class that both Enemy and Player inherits from
+
+Author: Srayan Jana
+"""
+
 extends StaticBody2D
 
 class_name Enemy
