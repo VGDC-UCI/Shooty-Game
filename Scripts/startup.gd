@@ -1,3 +1,11 @@
+"""
+Script for the first scene that is loaded. It redirects to the client or
+headless server scene depending on the startup arguments.
+
+Author: Jacob Singleton
+"""
+
+
 extends Node2D
 
 
