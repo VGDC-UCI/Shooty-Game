@@ -46,11 +46,13 @@ var on_ground_persistance_time_left := 0.0 # The current time frame left for on 
 var half_jump := false
 
 # Dash Properties
-export var dash_force := 2000
+export var dash_force := 1300
 onready var dash_timer = $dash_timer
 onready var dash_particles = $dash_particles
 export(PackedScene) var dash_object
-export var dash_length := 0.2
+export var dash_length := 0.25
+export var dash_times := 1
+var dash_left = dash_times
 # Dash States
 puppet var is_dashing := false
 puppet var can_dash := false
@@ -186,6 +188,7 @@ func apply_gravity(delta: float) -> void:
 		velocity.y = GRAVITY * delta
 		on_ground_persistance_time_left = on_ground_persistance_time_frame
 		air_jumps_left = air_jumps
+		dash_left = dash_times
 	else:
 		velocity.y += GRAVITY * delta
 		on_ground_persistance_time_left -= delta
@@ -198,7 +201,7 @@ func apply_wall_slide() -> void:
 		
 
 func apply_dash() -> void:
-	if can_dash and is_dashing:
+	if can_dash and is_dashing and dash_left > 0:
 		print(can_dash)
 		print(is_dashing)
 		dash()
@@ -207,6 +210,7 @@ func apply_dash() -> void:
 
 func dash() -> void:
 	velocity = dash_direction * dash_force
+	dash_left -= 1
 	can_dash = false
 	var dash_node = dash_object.instance()
 	dash_timer.start(dash_length)
