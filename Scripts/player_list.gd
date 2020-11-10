@@ -1,3 +1,10 @@
+"""
+A UI that displays a list a players and stores a corresponding list of
+player configurations. Also provides the ability to add or remove players.
+
+Author: Kang Rui Yu
+"""
+
 extends Control
 
 # References

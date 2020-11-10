@@ -1,3 +1,9 @@
+"""
+A UI menu that takes a player configuration and modifies its values.
+
+Author: Kang Rui Yu
+"""
+
 extends Control
 
 # References

@@ -1,4 +1,10 @@
-# A collection of settings for a player
+"""
+Class that stores the player configuration and settings such
+as the name of the player, the class, and the control scheme.
+
+Author: Kang Rui Yu
+"""
+
 extends Resource
 
 # Properties

@@ -1,3 +1,8 @@
+"""
+The main menu UI. Manages switching scenes to other menus.
+
+Author: Kang Rui Yu
+"""
 extends Control
 
 
