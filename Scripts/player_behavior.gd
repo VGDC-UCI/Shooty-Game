@@ -63,6 +63,11 @@ var dash_left = dash_times
 puppet var is_dashing := false
 puppet var can_dash := false
 puppet var dash_direction := Vector2()
+#gun stuff
+onready var gun := $Position2D/gun
+onready var gun_hold :=$Position2D
+var deg_gun : float
+
 
 # Wall Slide Properties
 export var wall_slide_speed := 150
@@ -100,10 +105,11 @@ func _physics_process(delta: float) -> void:
 	set_shoot_position()
 	do_attack(delta)
 	set_camera()
+	gun_move()
 	# send information to ui, make this a function later
 	get_node("DebugLabel").text = to_string()
 	get_node("NameLabel").set_text(player_name + ", K: " + str(numb_of_kills) + " / D: " + str(numb_of_deaths))
-	
+	#get_node("gun").look_at(get_global_mouse_position())
 
 func update_state() -> void: # Detects for state transitions
 	if is_network_master():
@@ -213,6 +219,14 @@ func apply_dash() -> void:
 		dash()
 		can_dash = false
 
+func gun_move() -> void:
+	var mouse_pos : Vector2 = get_global_mouse_position()
+	deg_gun = mouse_pos.angle_to_point(gun.global_position)
+	gun_hold.look_at(mouse_pos)
+	if global_position.x > mouse_pos.x:
+		gun.scale.y = -1
+	else:
+		gun.scale.y = 1
 
 func dash() -> void:
 	velocity = dash_direction * dash_force
