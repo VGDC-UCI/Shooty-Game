@@ -114,15 +114,16 @@ func _physics_process(delta: float) -> void:
 	set_shoot_position()
 	do_attack(delta)
 	set_camera()
-	gun_move()
 	# send information to ui, make this a function later
 	get_node("DebugLabel").text = to_string()
 	get_node("NameLabel").set_text(player_name + ", K: " + str(numb_of_kills) + " / D: " + str(numb_of_deaths))
 	#get_node("gun").look_at(get_global_mouse_position())
 
+
 func update_animations() -> void:
 	if is_network_master():
 		animated_sprite.flip_h = shoot_direction.x > 0
+		gun_move()
 		match current_state:
 			States.GROUND:
 				if x_input != 0:
@@ -250,6 +251,7 @@ func apply_dash() -> void:
 		dash()
 		can_dash = false
 
+
 func gun_move() -> void:
 	var mouse_pos : Vector2 = get_global_mouse_position()
 	deg_gun = mouse_pos.angle_to_point(gun.global_position)
@@ -258,6 +260,7 @@ func gun_move() -> void:
 		gun.scale.y = -1
 	else:
 		gun.scale.y = 1
+
 
 func dash() -> void:
 	velocity = dash_direction * dash_force
@@ -270,8 +273,10 @@ func dash() -> void:
 		is_dashing = false
 	is_dashing = false
 
-func dash_timer_timeout():
+
+func dash_timer_timeout() -> void:
 	is_dashing = false
+
 
 func set_shoot_position() -> void:
 	get_node("BulletExit").position = shoot_direction * bullet_exit_radius + self.position
