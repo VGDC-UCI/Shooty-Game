@@ -50,6 +50,7 @@ var jump_persistance_time_left := 0.0 # The current time frame left for jump to 
 var on_ground_persistance_time_frame := 0.2 # The time frame since last ground touch that will still count as on ground
 var on_ground_persistance_time_left := 0.0 # The current time frame left for on ground to be true
 var half_jump := false
+var jumped: bool = false
 
 # Dash Properties
 export var dash_force := 1300
@@ -87,6 +88,10 @@ puppet var shoot_direction := Vector2()
 var bullet_template = preload("res://Scenes/Bullet.tscn")
 var time_left_till_next_bullet = fire_rate
 
+# Animations
+onready var animated_sprite: AnimatedSprite = $AnimatedSprite
+var air_animation1: bool = false # Whether to play the first air animation or second
+
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
@@ -96,6 +101,10 @@ func _ready() -> void:
 	self.add_to_group("Hittable")
 	dash_timer.connect("timeout",self,"dash_timer_timeout")
 	pass # Replace with function body.
+	
+
+func _process(_delta: float) -> void:
+	update_animations()
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -110,6 +119,26 @@ func _physics_process(delta: float) -> void:
 	get_node("DebugLabel").text = to_string()
 	get_node("NameLabel").set_text(player_name + ", K: " + str(numb_of_kills) + " / D: " + str(numb_of_deaths))
 	#get_node("gun").look_at(get_global_mouse_position())
+
+func update_animations() -> void:
+	if is_network_master():
+		animated_sprite.flip_h = shoot_direction.x > 0
+		match current_state:
+			States.GROUND:
+				if x_input != 0:
+					animated_sprite.play('run')
+				else:
+					animated_sprite.play('idle')
+			States.AIR:
+				if jumped:
+					air_animation1 = not air_animation1
+				if air_animation1:
+					animated_sprite.play('air')
+				else:
+					animated_sprite.play('air2')
+			States.WALL:
+				pass
+	
 
 func update_state() -> void: # Detects for state transitions
 	if is_network_master():
@@ -172,6 +201,7 @@ func apply_movement(delta: float) -> void:
 	
 
 func apply_jump() -> void:
+	jumped = false
 	if jump_persistance_time_left > 0 and on_ground_persistance_time_left > 0: # Jumping off ground
 		jump()
 		air_jumps_left = air_jumps
@@ -193,6 +223,7 @@ func apply_jump() -> void:
 func jump() -> void:
 	velocity.y = -jump_force
 	jump_persistance_time_left = 0
+	jumped = true
 		
 
 func apply_gravity(delta: float) -> void:

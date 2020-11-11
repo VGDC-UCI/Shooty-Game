@@ -42,9 +42,9 @@ func get_movement_input() -> void:
 	#y_input = Input.get_action_strength("move_down") - Input.get_action_strength("move_up")
 
 	# Check for facing direction
-	if player.x_input >= 0:
+	if player.x_input > 0:
 		player.facing_left = false
-	else:
+	elif player.x_input < 0:
 		player.facing_left = true
 		
 
