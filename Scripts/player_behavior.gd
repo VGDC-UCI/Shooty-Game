@@ -262,8 +262,8 @@ func apply_dash() -> void:
 func gun_move() -> void:
 	var mouse_pos : Vector2 = get_global_mouse_position()
 	deg_gun = mouse_pos.angle_to_point(gun.global_position)
-	gun_hold.look_at(mouse_pos)
-	if global_position.x > mouse_pos.x:
+	gun_hold.look_at(global_position + shoot_direction)
+	if shoot_direction.x < 0:
 		gun.scale.y = -1
 	else:
 		gun.scale.y = 1
