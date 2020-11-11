@@ -33,7 +33,7 @@ export (int) onready var shield_health := default_shield
 export var player_acceleration := 1800.0
 export var player_damp := 0.7
 # Movement States
-var x_input := 0.0
+puppet var x_input := 0.0
 var y_input := 0.0
 var velocity := Vector2()
 puppet var player_velocity := Vector2()
@@ -121,32 +121,31 @@ func _physics_process(delta: float) -> void:
 
 
 func update_animations() -> void:
-	if is_network_master():
-		animated_sprite.flip_h = shoot_direction.x > 0
+	animated_sprite.flip_h = shoot_direction.x > 0
 
-		gun_move()
+	gun_move()
 
-		# Scale Sprite based on velocity
-		animated_sprite.scale.x = 0.12 * (1 + 0.05 * (abs(velocity.x) / 500))
-		animated_sprite.scale.x = clamp(animated_sprite.scale.x, 0.12, 0.14)
-		animated_sprite.scale.y = 0.12 * (1 + 0.1 * (abs(velocity.y) / 500))
-		animated_sprite.scale.y = clamp(animated_sprite.scale.y, 0.12, 0.13)
+	# Scale Sprite based on velocity
+	animated_sprite.scale.x = 0.12 * (1 + 0.05 * (abs(velocity.x) / 500))
+	animated_sprite.scale.x = clamp(animated_sprite.scale.x, 0.12, 0.14)
+	animated_sprite.scale.y = 0.12 * (1 + 0.1 * (abs(velocity.y) / 500))
+	animated_sprite.scale.y = clamp(animated_sprite.scale.y, 0.12, 0.13)
 
-		match current_state:
-			States.GROUND:
-				if x_input != 0:
-					animated_sprite.play('run')
-				else:
-					animated_sprite.play('idle')
-			States.AIR:
-				if jumped:
-					air_animation1 = not air_animation1
-				if air_animation1:
-					animated_sprite.play('air')
-				else:
-					animated_sprite.play('air2')
-			States.WALL:
-				pass
+	match current_state:
+		States.GROUND:
+			if x_input != 0:
+				animated_sprite.play('run')
+			else:
+				animated_sprite.play('idle')
+		States.AIR:
+			if jumped:
+				air_animation1 = not air_animation1
+			if air_animation1:
+				animated_sprite.play('air')
+			else:
+				animated_sprite.play('air2')
+		States.WALL:
+			pass
 	
 
 func update_state() -> void: # Detects for state transitions

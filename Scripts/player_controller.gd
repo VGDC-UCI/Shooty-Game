@@ -46,6 +46,7 @@ func get_movement_input() -> void:
 		player.facing_left = false
 	elif player.x_input < 0:
 		player.facing_left = true
+	player.rset('x_input', player.x_input)
 		
 
 func get_jumping_input(delta: float) -> void:
