@@ -8,6 +8,8 @@ extends KinematicBody2D
 
 class_name Player
 
+var local_camera: bool = true # Dummy variable until camera system is decided
+
 # Constants
 const GRAVITY := 1200
 enum States {GROUND, AIR, WALL}
@@ -113,7 +115,8 @@ func _physics_process(delta: float) -> void:
 	apply_state(delta)
 	set_shoot_position()
 	do_attack(delta)
-	set_camera()
+	if local_camera:
+		set_camera()
 	# send information to ui, make this a function later
 	get_node("DebugLabel").text = to_string()
 	get_node("NameLabel").set_text(player_name + ", K: " + str(numb_of_kills) + " / D: " + str(numb_of_deaths))

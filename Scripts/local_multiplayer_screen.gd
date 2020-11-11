@@ -18,6 +18,7 @@ const MAX_PEERS = 12
 
 func start_game() -> void:
 	var level: Node2D = level_scene.instance()
+	level.get_node("Camera2D").current = true
 
 	var spawn_points: Array = level.get_node("SpawnPoints").get_children()
 	var current_spawn_point: int = 0
@@ -31,6 +32,9 @@ func start_game() -> void:
 		level.get_node('Players').add_child(player)
 
 		player.set_player_name(config.name)
+		
+		player.get_node("Camera2D").current = false
+		player.local_camera = false
 
 		player.position = spawn_points[current_spawn_point].position
 		player.spawn_point = player.position
