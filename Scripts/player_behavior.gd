@@ -123,7 +123,15 @@ func _physics_process(delta: float) -> void:
 func update_animations() -> void:
 	if is_network_master():
 		animated_sprite.flip_h = shoot_direction.x > 0
+
 		gun_move()
+
+		# Scale Sprite based on velocity
+		animated_sprite.scale.x = 0.12 * (1 + 0.05 * (abs(velocity.x) / 500))
+		animated_sprite.scale.x = clamp(animated_sprite.scale.x, 0.12, 0.14)
+		animated_sprite.scale.y = 0.12 * (1 + 0.1 * (abs(velocity.y) / 500))
+		animated_sprite.scale.y = clamp(animated_sprite.scale.y, 0.12, 0.13)
+
 		match current_state:
 			States.GROUND:
 				if x_input != 0:
