@@ -6,11 +6,28 @@ Author: Srayan Jana, Kang Rui Yu
 
 extends Node2D
 
+# References
 onready var player: Player = get_parent()
+# States
+enum control_schemes {KEYBOARD, CONTROLLER}
+var current_control_scheme: int = control_schemes.KEYBOARD
+var control_scheme: Dictionary
+
+
+func _ready() -> void:
+	load_control_scheme(current_control_scheme)
 
 
 func _physics_process(delta: float) -> void:
 	get_input(delta)
+	
+
+func load_control_scheme(id: int) -> void: # Loads the control scheme with the given id
+	var control_schemes_data: Dictionary = load("res://control_schemes.gd").new().data
+	
+	match id:
+		control_schemes.KEYBOARD:
+			control_scheme = control_schemes_data["keyboard"]
 
 
 func get_input(delta: float) -> void:
@@ -38,7 +55,7 @@ func get_input(delta: float) -> void:
 	
 
 func get_movement_input() -> void:
-	player.x_input = Input.get_action_strength("move_right") - Input.get_action_strength("move_left")
+	player.x_input = Input.get_action_strength(control_scheme["right"]) - Input.get_action_strength(control_scheme["left"])
 	#y_input = Input.get_action_strength("move_down") - Input.get_action_strength("move_up")
 
 	# Check for facing direction
@@ -50,22 +67,22 @@ func get_movement_input() -> void:
 		
 
 func get_jumping_input(delta: float) -> void:
-	if Input.is_action_just_pressed("jump_pressed"):
+	if Input.is_action_just_pressed(control_scheme["jump"]):
 		player.jump_persistance_time_left = player.jump_persistance_time_frame
 	elif player.jump_persistance_time_left > 0:
 		player.jump_persistance_time_left -= delta
 		player.jump_persistance_time_left = clamp(player.jump_persistance_time_left, 0, player.jump_persistance_time_frame)
-	player.half_jump = Input.is_action_just_released("jump_pressed")
+	player.half_jump = Input.is_action_just_released(control_scheme["jump"])
 	
 
 func get_dashing_input() -> void:
-	player.is_dashing = Input.is_action_just_pressed("dash")
+	player.is_dashing = Input.is_action_just_pressed(control_scheme["dash"])
 	player.can_dash = player.is_on_floor() or !player.is_on_floor()
 
-	if Input.is_action_pressed("move_right"):
+	if Input.is_action_pressed(control_scheme["right"]):
 		player.dash_direction = Vector2(1,0)
 		#print(dash_direction)
-	if Input.is_action_pressed("move_left"):
+	if Input.is_action_pressed(control_scheme["left"]):
 		player.dash_direction = Vector2(-1,0)
 
 	player.rset("dash_direction", player.dash_direction)
@@ -74,7 +91,7 @@ func get_dashing_input() -> void:
 	
 
 func get_shooting_input() -> void:
-	player.is_shooting = Input.is_action_pressed("shoot")
+	player.is_shooting = Input.is_action_pressed(control_scheme["shoot"])
 
 	var mouse_direction := player.get_position().direction_to(get_global_mouse_position()) # getting direction to mouse
 	var bullet_angle := atan2(mouse_direction.y, mouse_direction.x)
@@ -85,7 +102,7 @@ func get_shooting_input() -> void:
 	
 
 func get_shield_input() -> void:
-	player.shield_pressed = Input.is_action_pressed("shield")
+	player.shield_pressed = Input.is_action_pressed(control_scheme["shield"])
 
 	
 func get_wall_sliding_input() -> void:
