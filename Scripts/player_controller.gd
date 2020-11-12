@@ -9,7 +9,7 @@ extends Node2D
 # References
 onready var player: Player = get_parent()
 # States
-enum control_schemes {KEYBOARD, CONTROLLER}
+enum control_schemes {KEYBOARD, CONTROLLER, DUMMY}
 var current_control_scheme: int = control_schemes.KEYBOARD
 var control_scheme: Dictionary
 
@@ -29,7 +29,9 @@ func load_control_scheme(id: int) -> void: # Loads the control scheme with the g
 		control_schemes.KEYBOARD:
 			control_scheme = control_schemes_data["keyboard"]
 		control_schemes.CONTROLLER:
-			control_scheme = control_schemes_data['controller']
+			control_scheme = control_schemes_data["controller"]
+		control_schemes.DUMMY:
+			control_scheme = control_schemes_data["training dummy"]
 
 
 func get_input(delta: float) -> void:
