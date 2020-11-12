@@ -88,10 +88,8 @@ text = "Input"
 
 [node name="OptionButton" type="OptionButton" parent="MarginContainer/VBoxContainer/Input"]
 margin_left = 54.0
-margin_right = 154.0
+margin_right = 83.0
 margin_bottom = 20.0
-text = "Keyboard 1"
-items = [ "Keyboard 1", null, false, 0, null, "Keyboard 2", null, false, 1, null, "Controller", null, false, 2, null ]
 selected = 0
 [connection signal="text_changed" from="MarginContainer/VBoxContainer/Name/LineEdit" to="." method="update_name"]
 [connection signal="item_selected" from="MarginContainer/VBoxContainer/Class/OptionButton" to="." method="update_class"]

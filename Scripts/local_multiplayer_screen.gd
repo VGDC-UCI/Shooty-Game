@@ -32,6 +32,7 @@ func start_game() -> void:
 		level.get_node('Players').add_child(player)
 
 		player.set_player_name(config.name)
+		player.get_node("PlayerController").current_control_scheme = config.input_id
 		
 		player.get_node("Camera2D").current = false
 		player.local_camera = false

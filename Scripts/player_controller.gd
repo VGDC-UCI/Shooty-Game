@@ -28,6 +28,8 @@ func load_control_scheme(id: int) -> void: # Loads the control scheme with the g
 	match id:
 		control_schemes.KEYBOARD:
 			control_scheme = control_schemes_data["keyboard"]
+		control_schemes.CONTROLLER:
+			control_scheme = control_schemes_data['controller']
 
 
 func get_input(delta: float) -> void:
@@ -93,8 +95,12 @@ func get_dashing_input() -> void:
 func get_shooting_input() -> void:
 	player.is_shooting = Input.is_action_pressed(control_scheme["shoot"])
 
-	var mouse_direction := player.get_position().direction_to(get_global_mouse_position()) # getting direction to mouse
-	var bullet_angle := atan2(mouse_direction.y, mouse_direction.x)
+	var direction: Vector2
+	if current_control_scheme == control_schemes.KEYBOARD:
+		direction = player.get_position().direction_to(get_global_mouse_position()) # getting direction to mouse
+	else:
+		direction = Vector2(Input.get_joy_axis(0, JOY_AXIS_2), Input.get_joy_axis(0, JOY_AXIS_3)).normalized()
+	var bullet_angle := atan2(direction.y, direction.x)
 	player.shoot_direction = Vector2(cos(bullet_angle), sin(bullet_angle))
 
 	player.rset("is_shooting", player.is_shooting)

@@ -19,6 +19,14 @@ signal changed
 
 func _ready() -> void:
 	hide()
+	get_available_control_schemes()
+	
+
+func get_available_control_schemes() -> void:
+	input_option.clear()
+	var control_schemes_data: Dictionary = load("res://control_schemes.gd").new().data
+	for control_scheme_name in control_schemes_data.keys():
+		input_option.add_item(control_scheme_name.capitalize())
 
 
 func display_for(config: Resource) -> void: # Displays the information of the given player config
