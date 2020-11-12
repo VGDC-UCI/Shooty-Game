@@ -1,7 +1,7 @@
 """
 Handles inputs from client and inputs them into the player state machine.
 
-Author: Srayan Jana
+Author: Srayan Jana, Kang Rui Yu, Daniel Lu
 """
 
 extends KinematicBody2D

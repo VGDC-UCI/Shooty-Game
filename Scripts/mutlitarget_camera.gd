@@ -1,3 +1,9 @@
+"""
+A camera that zooms and moves to fit all its targets
+
+Author: Kang Rui Yu
+"""
+
 extends Camera2D
 
 # Properties

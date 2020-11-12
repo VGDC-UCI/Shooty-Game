@@ -1,7 +1,7 @@
 """
 Takes in inputs and inputs them into player behavior
 
-Author: Srayan Jana
+Author: Srayan Jana, Kang Rui Yu
 """
 
 extends Node2D
