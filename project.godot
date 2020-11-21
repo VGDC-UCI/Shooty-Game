@@ -12,12 +12,12 @@ _global_script_classes=[ {
 "base": "StaticBody2D",
 "class": "Enemy",
 "language": "GDScript",
-"path": "res://Scripts/enemy_behavior.gd"
+"path": "res://src/main/game/enemy/enemy_behavior.gd"
 }, {
 "base": "KinematicBody2D",
 "class": "Player",
 "language": "GDScript",
-"path": "res://Scripts/player_behavior.gd"
+"path": "res://src/main/game/player/player_behavior.gd"
 } ]
 _global_script_class_icons={
 "Enemy": "",
@@ -27,12 +27,12 @@ _global_script_class_icons={
 [application]
 
 config/name="ShootsMcGee"
-run/main_scene="res://Scenes/Startup.tscn"
+run/main_scene="res://src/main/server/Startup.tscn"
 config/icon="res://icon.png"
 
 [autoload]
 
-gamestate="*res://Scripts/gamestate.gd"
+gamestate="*res://src/main/server/gamestate.gd"
 
 [input]
 
