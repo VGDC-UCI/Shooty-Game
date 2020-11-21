@@ -167,7 +167,7 @@ func update_state() -> void: # Detects for state transitions
 					current_state = States.AIR
 				elif is_on_floor():
 					current_state = States.GROUND
-		rset("current_state", current_state)
+		#rset("current_state", current_state)
 
 
 func apply_state(delta: float) -> void: # Apply the functions of the current state
@@ -320,7 +320,7 @@ func set_camera() -> void:
 func set_attacking(player_responsible: Player) -> void:
 	# this is so that the last person who hits the player gets the kill
 	who_is_attacking = player_responsible
-	rset("who_is_attacking", who_is_attacking)
+	#rset("who_is_attacking", who_is_attacking)
 
 
 func on_hit(damage: float) -> void:
@@ -339,13 +339,13 @@ func death() -> void:
 	player_health = default_health
 	numb_of_deaths += 1
 	position = spawn_point
-	rset("player_position", position)
-	rset("numb_of_deaths", numb_of_deaths)
+	#rset("player_position", position)
+	#rset("numb_of_deaths", numb_of_deaths)
 
 
 func add_to_numb_of_kills(points: int) -> void:
 	numb_of_kills += points
-	rset("numb_of_kills", numb_of_kills)
+	#rset("numb_of_kills", numb_of_kills)
 
 
 func set_player_name(new_name: String) -> void:
