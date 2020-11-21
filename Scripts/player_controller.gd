@@ -10,7 +10,7 @@ extends Node2D
 onready var player: Player = get_parent()
 # States
 enum control_schemes {KEYBOARD, CONTROLLER, DUMMY}
-var current_control_scheme: int = control_schemes.KEYBOARD
+var current_control_scheme: int = control_schemes.CONTROLLER
 var control_scheme: Dictionary
 
 
@@ -20,11 +20,11 @@ func _ready() -> void:
 
 func _physics_process(delta: float) -> void:
 	get_input(delta)
-	
+
 
 func load_control_scheme(id: int) -> void: # Loads the control scheme with the given id
 	var control_schemes_data: Dictionary = load("res://control_schemes.gd").new().data
-	
+
 	match id:
 		control_schemes.KEYBOARD:
 			control_scheme = control_schemes_data["keyboard"]
