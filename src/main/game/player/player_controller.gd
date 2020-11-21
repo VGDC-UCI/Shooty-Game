@@ -10,7 +10,7 @@ extends Node2D
 onready var player: Player = get_parent()
 # States
 enum control_schemes {KEYBOARD, CONTROLLER, DUMMY}
-var current_control_scheme: int = control_schemes.CONTROLLER
+var current_control_scheme: int = control_schemes.KEYBOARD
 var control_scheme: Dictionary
 
 
