@@ -1,6 +1,5 @@
 """
-The main script for the local multiplayer screen. Controls starting the game
-and creating a local server.
+The local multiplayer screen. Handles starting a local game.
 
 Author: Kang Rui Yu
 """
@@ -8,12 +7,16 @@ Author: Kang Rui Yu
 extends Control
 
 # References
-onready var player_list: Control = $HBoxContainer/PlayerList
 var player_scene: PackedScene = load("res://src/main/game/player/Player.tscn")
 var level_scene: PackedScene = load("res://src/main/world/World.tscn")
+onready var lobby: Control = $Lobby
 # Constants
 const DEFAULT_PORT = 10567
 const MAX_PEERS = 12
+
+
+func _ready() -> void:
+	lobby.add_player()
 
 
 func start_game() -> void:
@@ -27,7 +30,7 @@ func start_game() -> void:
 	host.create_server(DEFAULT_PORT, MAX_PEERS)
 	get_tree().set_network_peer(host)
 
-	for config in player_list.player_configs:
+	for config in lobby.get_player_configs():
 		var player: Player = player_scene.instance()
 		level.get_node('Players').add_child(player)
 
