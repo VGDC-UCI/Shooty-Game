@@ -9,29 +9,12 @@ extends Node2D
 # References
 onready var player: Player = get_parent()
 # States
-enum control_schemes {KEYBOARD, CONTROLLER, DUMMY}
-var current_control_scheme: int = control_schemes.KEYBOARD
 var control_scheme: Dictionary
-
-
-func _ready() -> void:
-	load_control_scheme(current_control_scheme)
+var using_controller: bool = false
 
 
 func _physics_process(delta: float) -> void:
 	get_input(delta)
-
-
-func load_control_scheme(id: int) -> void: # Loads the control scheme with the given id
-	var control_schemes_data: Dictionary = load("res://src/resources/control_schemes.gd").new().data
-
-	match id:
-		control_schemes.KEYBOARD:
-			control_scheme = control_schemes_data["keyboard"]
-		control_schemes.CONTROLLER:
-			control_scheme = control_schemes_data["controller"]
-		control_schemes.DUMMY:
-			control_scheme = control_schemes_data["training dummy"]
 
 
 func get_input(delta: float) -> void:
@@ -98,7 +81,7 @@ func get_shooting_input() -> void:
 	player.is_shooting = Input.is_action_pressed(control_scheme["shoot"])
 
 	var direction: Vector2
-	if current_control_scheme == control_schemes.KEYBOARD:
+	if not using_controller:
 		direction = player.get_position().direction_to(get_global_mouse_position()) # getting direction to mouse
 	else:
 		direction = Vector2(Input.get_joy_axis(0, JOY_AXIS_2), Input.get_joy_axis(0, JOY_AXIS_3)).normalized()

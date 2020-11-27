@@ -25,6 +25,10 @@ puppet var numb_of_kills := 0
 puppet var numb_of_deaths := 0
 export (States) puppet var current_state := States.AIR
 
+# Class Properties
+export var class_title := 'Base Class'
+export (Texture) var player_portrait: Texture = null
+
 # Shield Properties
 export var default_shield := 10
 # Shield States

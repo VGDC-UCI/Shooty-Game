@@ -57,14 +57,12 @@ align = 1
 margin_top = 34.0
 margin_right = 300.0
 margin_bottom = 54.0
-text = "Base Class"
 align = 1
 
 [node name="InputOptions" type="OptionButton" parent="MarginContainer/VBoxContainer/Options"]
 margin_top = 64.0
 margin_right = 300.0
 margin_bottom = 84.0
-text = "Keyboard 1"
 align = 1
 
 [node name="RemoveButton" type="Button" parent="MarginContainer/VBoxContainer/Options"]

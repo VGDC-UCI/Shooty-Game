@@ -1,0 +1,8 @@
+[gd_scene load_steps=3 format=2]
+
+[ext_resource path="res://src/main/game/player/Player.tscn" type="PackedScene" id=1]
+[ext_resource path="res://src/main/game/player/textures/molly_portrait.png" type="Texture" id=2]
+
+[node name="Molly" instance=ExtResource( 1 )]
+class_title = "Molly Rosenthal"
+player_portrait = ExtResource( 2 )

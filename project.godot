@@ -33,6 +33,8 @@ config/icon="res://icon.png"
 [autoload]
 
 gamestate="*res://src/main/server/gamestate.gd"
+Classes="*res://src/resources/classes.gd"
+ControlSchemes="*res://src/resources/control_schemes.gd"
 
 [input]
 
