@@ -20,6 +20,9 @@ func _ready() -> void:
 
 
 func start_game() -> void:
+	if lobby.get_player_configs().size() == 0: # Don't start the game if there are no players in the lobby
+		return
+
 	var level: Node2D = level_scene.instance()
 	level.get_node("Camera2D").current = true
 
