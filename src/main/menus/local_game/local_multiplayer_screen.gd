@@ -7,6 +7,7 @@ Author: Kang Rui Yu
 extends Control
 
 # References
+var main_menu_scene: PackedScene = load("res://src/main/menus/title/MainMenu.tscn")
 var level_scene: PackedScene = load("res://src/main/world/World.tscn")
 onready var lobby: Control = $Lobby
 # Constants
@@ -49,3 +50,7 @@ func start_game() -> void:
 
 	get_tree().get_root().add_child(level)
 	queue_free()
+
+
+func return_to_main_menu() -> void:
+	get_tree().change_scene_to(main_menu_scene)

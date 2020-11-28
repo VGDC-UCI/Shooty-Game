@@ -70,3 +70,4 @@ size_flags_vertical = 4
 text = "Exit"
 [connection signal="pressed" from="Options/MarginContainer/HBoxContainer/AddPlayerButton" to="Lobby" method="add_player"]
 [connection signal="pressed" from="Options/MarginContainer/HBoxContainer/StartButton" to="." method="start_game"]
+[connection signal="pressed" from="Options/MarginContainer/HBoxContainer/ExitButton" to="." method="return_to_main_menu"]
