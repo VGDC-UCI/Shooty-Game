@@ -9,7 +9,7 @@ extends Node2D
 # References
 onready var player: Player = get_parent()
 # States
-var control_scheme: Dictionary
+var control_scheme: Dictionary = ControlSchemes.get_scheme_data(0)
 var using_controller: bool = false
 
 
