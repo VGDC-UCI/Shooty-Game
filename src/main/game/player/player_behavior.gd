@@ -98,10 +98,17 @@ var time_left_till_next_bullet = fire_rate
 onready var animated_sprite: AnimatedSprite = $AnimatedSprite
 var air_animation1: bool = false # Whether to play the first air animation or second
 
+# UI
+onready var name_label: Label = $NameLabel
+onready var healthbar: ProgressBar = $HealthBar
+onready var shieldbar: ProgressBar = $ShieldBar
+var show_status_bars: bool = false
+
 
 # Called when the node enters the scene tree for the first time.
 func _ready() -> void:
 	set_player_name(player_name)
+	initialize_ui()
 	player_position = position
 	self.add_to_group("Collision")
 	self.add_to_group("Hittable")
@@ -111,6 +118,7 @@ func _ready() -> void:
 
 func _process(_delta: float) -> void:
 	update_animations()
+	update_ui()
 
 
 # Called every frame. 'delta' is the elapsed time since the previous frame.
@@ -123,7 +131,7 @@ func _physics_process(delta: float) -> void:
 		set_camera()
 	# send information to ui, make this a function later
 	get_node("DebugLabel").text = to_string()
-	get_node("NameLabel").set_text(player_name + ", K: " + str(numb_of_kills) + " / D: " + str(numb_of_deaths))
+	# get_node("NameLabel").set_text(player_name + ", K: " + str(numb_of_kills) + " / D: " + str(numb_of_deaths))
 	#get_node("gun").look_at(get_global_mouse_position())
 
 
@@ -310,6 +318,33 @@ func do_attack(delta: float) -> void:
 		time_left_till_next_bullet = fire_rate
 
 
+func initialize_ui() -> void:
+	name_label.text = player_name + ", K: " + str(numb_of_kills) + " / D: " + str(numb_of_deaths)
+
+	healthbar.max_value = default_health
+	shieldbar.max_value = default_shield
+
+	if show_status_bars:
+		name_label.rect_position.y = -120
+		healthbar.show()
+		shieldbar.show()
+	else:
+		name_label.rect_position.y = -80
+		healthbar.hide()
+		shieldbar.hide()
+
+
+func update_ui() -> void:
+	if show_status_bars:
+		healthbar.value = player_health
+		shieldbar.value = shield_health
+
+
+func toggle_status_bars() -> void:
+	show_status_bars = not show_status_bars
+	initialize_ui()
+
+
 #this is inefficent
 func set_camera() -> void:
 	if is_network_master():
@@ -328,6 +363,9 @@ func set_attacking(player_responsible: Player) -> void:
 
 
 func on_hit(damage: float) -> void:
+	if not show_status_bars:
+		toggle_status_bars()
+
 	if shield_health > 0:
 		shield_health -= damage
 	elif player_health > 0:
@@ -345,6 +383,8 @@ func death() -> void:
 	position = spawn_point
 	#rset("player_position", position)
 	#rset("numb_of_deaths", numb_of_deaths)
+	if show_status_bars:
+		toggle_status_bars()
 
 
 func add_to_numb_of_kills(points: int) -> void:
