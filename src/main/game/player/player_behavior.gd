@@ -41,8 +41,8 @@ export var player_damp := 0.7
 # Movement States
 puppet var x_input := 0.0
 var y_input := 0.0
-var velocity := Vector2()
-puppet var player_velocity := Vector2()
+puppet var velocity := Vector2()
+# puppet var player_velocity := Vector2()
 puppet var player_position := Vector2()
 puppet var facing_left := false
 
@@ -164,58 +164,56 @@ func update_animations() -> void:
 
 
 func update_state() -> void: # Detects for state transitions
-	if is_network_master():
-		match current_state:
-			States.GROUND:
-				if not is_on_floor():
-					current_state = States.AIR
-			States.AIR:
-				if is_on_floor():
-					current_state = States.GROUND
-				elif is_on_wall():
-					current_state = States.WALL
-			States.WALL:
-				if not is_on_wall():
-					current_state = States.AIR
-				elif is_on_floor():
-					current_state = States.GROUND
+	match current_state:
+		States.GROUND:
+			if not is_on_floor():
+				current_state = States.AIR
+		States.AIR:
+			if is_on_floor():
+				current_state = States.GROUND
+			elif is_on_wall():
+				current_state = States.WALL
+		States.WALL:
+			if not is_on_wall():
+				current_state = States.AIR
+			elif is_on_floor():
+				current_state = States.GROUND
 		#rset("current_state", current_state)
 
 
 func apply_state(delta: float) -> void: # Apply the functions of the current state
-	velocity = player_velocity
+	# velocity = player_velocity
 
-	if is_network_master():
-		match current_state:
-			States.GROUND:
-				apply_gravity(delta) # Gravity must be applied on every state or is_on_ground() won't work correctly. (Apply before everything else)
-				apply_movement(delta)
-				apply_jump()
-				apply_dash()
-			States.AIR:
-				apply_gravity(delta)
-				apply_movement(delta)
-				apply_jump()
-				apply_dash()
-				apply_wall_slide()
-			States.WALL:
-				apply_gravity(delta)
-				apply_movement(delta)
-				apply_jump()
-				apply_dash()
-				apply_wall_slide()
+	match current_state:
+		States.GROUND:
+			apply_gravity(delta) # Gravity must be applied on every state or is_on_ground() won't work correctly. (Apply before everything else)
+			apply_movement(delta)
+			apply_jump()
+			apply_dash()
+		States.AIR:
+			apply_gravity(delta)
+			apply_movement(delta)
+			apply_jump()
+			apply_dash()
+			apply_wall_slide()
+		States.WALL:
+			apply_gravity(delta)
+			apply_movement(delta)
+			apply_jump()
+			apply_dash()
+			apply_wall_slide()
 
-		rset("player_velocity", velocity)
-		player_velocity = velocity # so i can save the data of this velocity to use elsewhere
-		rset_unreliable("player_position", position)
-	else:
-		position = player_position
-		velocity = player_velocity
+	# rset("player_velocity", velocity)
+	# player_velocity = velocity # so i can save the data of this velocity to use elsewhere
 
 	move_and_slide(velocity, Vector2(0, -1)) #added a floor
 
-	if not is_network_master():
-		player_position = position # To avoid jitter
+	if is_network_master():
+		# player_position = position # To avoid jitter
+		rset_unreliable("player_position", position)
+		rset('velocity', velocity)
+	else:
+		position = player_position
 
 
 func apply_movement(delta: float) -> void:
