@@ -11,6 +11,7 @@ onready var player: Player = get_parent()
 # States
 var control_scheme: Dictionary = ControlSchemes.get_scheme_data(0)
 var using_controller: bool = false
+var training_mode: bool = false
 
 
 func _physics_process(delta: float) -> void:
@@ -81,7 +82,9 @@ func get_shooting_input() -> void:
 	player.is_shooting = Input.is_action_pressed(control_scheme["shoot"])
 
 	var direction: Vector2
-	if not using_controller:
+	if training_mode:
+		direction = Vector2()
+	elif not using_controller:
 		direction = player.get_position().direction_to(get_global_mouse_position()) # getting direction to mouse
 	else:
 		direction = Vector2(Input.get_joy_axis(0, JOY_AXIS_2), Input.get_joy_axis(0, JOY_AXIS_3)).normalized()

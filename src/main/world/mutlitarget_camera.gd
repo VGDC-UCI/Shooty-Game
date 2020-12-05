@@ -21,7 +21,7 @@ func _process(delta: float) -> void:
 	if targets.empty():
 		set_process(false)
 		return
-		
+
 	center(delta)
 	zoom(delta)
 
@@ -32,14 +32,14 @@ func center(delta: float) -> void: # Centers the camera among the targets
 		center += target.global_position
 	center /= targets.size()
 	global_position = lerp(global_position, center, clamp(move_speed * delta, 0, 1))
-	
+
 
 func zoom(delta: float) -> void: # Zooms the camera to fit all targets
 	var bounds: Rect2 = Rect2(position, Vector2.ONE)
 	for target in targets:
 		bounds = bounds.expand(target.global_position)
 	bounds = bounds.grow_individual(buffer.x, buffer.y, buffer.x, buffer.y)
-	
+
 	var new_zoom: float
 	if bounds.size.x > bounds.size.y * screen_size.aspect():
 		new_zoom = bounds.size.x / screen_size.x

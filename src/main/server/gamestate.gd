@@ -14,7 +14,12 @@ const DEFAULT_PORT = 10567
 const MAX_PEERS = 12
 
 # Name for my player.
-var player_name = "The Warrior"
+# var player_name = "The Warrior"
+var player_config = {
+	"name" : "The Warrior",
+	"class_id" : 0,
+	"input_id" : 0
+}
 
 # Names for remote players in id:name format.
 var players = {}
@@ -30,7 +35,7 @@ signal game_error(what)
 # Callback from SceneTree.
 func _player_connected(id):
 	# Registration of a client beings here, tell the connected player that we are here.
-	rpc_id(id, "register_player", player_name)
+	rpc_id(id, "register_player", player_config["name"])
 
 
 # Callback from SceneTree.
@@ -67,7 +72,11 @@ func _connected_fail():
 remote func register_player(new_player_name):
 	var id = get_tree().get_rpc_sender_id()
 	print(id)
-	players[id] = new_player_name
+	players[id] = {
+		"name" : new_player_name,
+		"class_id" : 0,
+		"input_id" : 0
+	}
 	emit_signal("player_list_changed")
 
 
@@ -76,18 +85,33 @@ func unregister_player(id):
 	emit_signal("player_list_changed")
 
 
+func sync_player_config_for_others(updated_config: Dictionary) -> void: # Syncs the config with the gamestate and others as well
+	player_config = updated_config
+	for id in players.keys():
+		rpc_id(id, "update_player_configs", get_tree().get_network_unique_id(), player_config)
+
+
+remote func update_player_configs(id: int, updated_config: Dictionary):
+	players[id] = updated_config
+	emit_signal("player_list_changed")
+
+
 remote func pre_start_game(spawn_points):
 	# Change scene.
 	var world = load("res://src/main/world/World.tscn").instance()
-	get_tree().get_root().add_child(world)
 
 	get_tree().get_root().get_node("ServerMenu").hide()
 
-	var player_scene = load("res://src/main/game/player/Player.tscn")
+	# var player_scene = load("res://src/main/game/player/Player.tscn")
 
 	for p_id in spawn_points:
 		var spawn_pos = world.get_node("SpawnPoints/" + str(spawn_points[p_id])).position
-		var player = player_scene.instance()
+
+		var player: Player
+		if p_id in players:
+			player = Classes.get_class_scene(players[p_id]["class_id"]).instance()
+		else:
+			player = Classes.get_class_scene(player_config["class_id"]).instance()
 
 		player.set_name(str(p_id)) # Use unique ID as node name.
 		player.position = spawn_pos
@@ -96,14 +120,27 @@ remote func pre_start_game(spawn_points):
 
 		if p_id == get_tree().get_network_unique_id():
 			# If node for this peer id, set name.
-			player.set_player_name(player_name)
+			player.set_player_name(player_config["name"])
+			player.get_node("PlayerController").control_scheme = ControlSchemes.get_scheme_data(player_config["input_id"])
+			player.get_node("PlayerController").using_controller = ControlSchemes.get_scheme_type(player_config["input_id"]) == ControlSchemes.types.CONTROLLER
+			player.get_node("PlayerController").training_mode = ControlSchemes.get_scheme_type(player_config["input_id"]) == ControlSchemes.types.DUMMY
+			player.get_node("Camera2D").current = false
+			player.local_camera = false
 			#player.get_node("Camera2D").visible = true
 		else:
 			# Otherwise set name from peer.
-			player.set_player_name(players[p_id])
+			player.set_player_name(players[p_id]["name"])
+			player.get_node("PlayerController").control_scheme = ControlSchemes.get_scheme_data(2)
+			player.get_node("PlayerController").using_controller = false
+			player.get_node("PlayerController").training_mode = true
+			player.get_node("Camera2D").current = false
+			player.local_camera = false
 			#player.get_node("Camera2D").visible = false
 
 		world.get_node("Players").add_child(player)
+
+	get_tree().get_root().add_child(world)
+	world.get_node("Camera2D").current = true
 
 	# Set up score.
 	#world.get_node("Score").add_player(get_tree().get_network_unique_id(), player_name)
@@ -134,14 +171,14 @@ remote func ready_to_start(id):
 
 
 func host_game(new_player_name):
-	player_name = new_player_name
+	player_config["name"] = new_player_name
 	var host = NetworkedMultiplayerENet.new()
 	host.create_server(DEFAULT_PORT, MAX_PEERS)
 	get_tree().set_network_peer(host)
 
 
 func join_game(ip, new_player_name):
-	player_name = new_player_name
+	player_config["name"] = new_player_name
 	var client = NetworkedMultiplayerENet.new()
 	client.create_client(ip, DEFAULT_PORT)
 	get_tree().set_network_peer(client)
@@ -151,8 +188,8 @@ func get_player_list():
 	return players.values()
 
 
-func get_player_name():
-	return player_name
+func get_player_config() -> Dictionary:
+	return player_config
 
 
 func begin_game():

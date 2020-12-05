@@ -16,7 +16,7 @@ const MAX_PEERS = 12
 
 
 func _ready() -> void:
-	lobby.add_player()
+	lobby.add_new_player()
 
 
 func start_game() -> void:
@@ -34,12 +34,13 @@ func start_game() -> void:
 	get_tree().set_network_peer(host)
 
 	for config in lobby.get_player_configs():
-		var player: Player = Classes.get_class_scene(config.class_id).instance()
+		var player: Player = Classes.get_class_scene(config["class_id"]).instance()
 		level.get_node('Players').add_child(player)
 
-		player.set_player_name(config.name)
-		player.get_node("PlayerController").control_scheme = ControlSchemes.get_scheme_data(config.input_id)
-		player.get_node("PlayerController").using_controller = ControlSchemes.get_scheme_type(config.input_id) == ControlSchemes.types.CONTROLLER
+		player.set_player_name(config["name"])
+		player.get_node("PlayerController").control_scheme = ControlSchemes.get_scheme_data(config["input_id"])
+		player.get_node("PlayerController").using_controller = ControlSchemes.get_scheme_type(config["input_id"]) == ControlSchemes.types.CONTROLLER
+		player.get_node("PlayerController").training_mode = ControlSchemes.get_scheme_type(config["input_id"]) == ControlSchemes.types.DUMMY
 
 		player.get_node("Camera2D").current = false
 		player.local_camera = false

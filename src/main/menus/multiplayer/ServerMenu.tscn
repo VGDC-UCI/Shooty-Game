@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=2]
+[gd_scene load_steps=3 format=2]
 
 [ext_resource path="res://src/main/menus/multiplayer/server_menu.gd" type="Script" id=1]
+[ext_resource path="res://src/main/menus/lobby/Lobby.tscn" type="PackedScene" id=2]
 
 [node name="ServerMenu" type="Control"]
 margin_right = 1020.0
@@ -10,35 +11,21 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="PregameScreen" type="Panel" parent="."]
-visible = false
-margin_left = 379.67
-margin_top = 105.663
-margin_right = 672.67
-margin_bottom = 515.663
-__meta__ = {
-"_edit_use_anchors_": false
-}
+[node name="PregameScreen" type="VBoxContainer" parent="."]
+anchor_right = 1.0
+anchor_bottom = 1.0
 
-[node name="PlayerList" type="ItemList" parent="PregameScreen"]
-margin_left = 38.0
-margin_top = 43.0
-margin_right = 266.0
-margin_bottom = 358.0
-
-[node name="Title" type="Label" parent="PregameScreen"]
-margin_left = 39.0
-margin_top = 13.0
-margin_right = 145.0
-margin_bottom = 37.0
-text = "Game Lobby"
+[node name="Lobby" parent="PregameScreen" instance=ExtResource( 2 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_right = 1020.0
+margin_bottom = 600.0
 
 [node name="StartButton" type="Button" parent="PregameScreen"]
 visible = false
-margin_left = 105.0
-margin_top = 372.0
-margin_right = 191.0
-margin_bottom = 395.0
+margin_top = 580.0
+margin_right = 1020.0
+margin_bottom = 600.0
 text = "START!"
 
 [node name="WaitingText" type="Label" parent="PregameScreen"]
@@ -122,6 +109,7 @@ margin_left = 487.148
 margin_top = 289.595
 margin_right = 570.148
 margin_bottom = 347.595
+[connection signal="configs_changed" from="PregameScreen/Lobby" to="." method="config_changed"]
 [connection signal="pressed" from="PregameScreen/StartButton" to="." method="_on_start_button_pressed"]
 [connection signal="pressed" from="LoginScreen/HostButton" to="." method="_on_host_button_pressed"]
 [connection signal="pressed" from="LoginScreen/JoinButton" to="." method="_on_join_button_pressed"]
