@@ -97,7 +97,7 @@ var time_left_till_next_bullet = fire_rate
 
 # Animations
 onready var animated_sprite: AnimatedSprite = $AnimatedSprite
-var air_animation1: bool = false # Whether to play the first air animation or second
+onready var original_sprite_scale: float = animated_sprite.scale.x
 
 # UI
 onready var name_label: Label = $NameLabel
@@ -142,10 +142,10 @@ func update_animations() -> void:
 	gun_move()
 
 	# Scale Sprite based on velocity
-	animated_sprite.scale.x = 0.12 * (1 + 0.05 * (abs(velocity.x) / 500))
-	animated_sprite.scale.x = clamp(animated_sprite.scale.x, 0.12, 0.14)
-	animated_sprite.scale.y = 0.12 * (1 + 0.1 * (abs(velocity.y) / 500))
-	animated_sprite.scale.y = clamp(animated_sprite.scale.y, 0.12, 0.13)
+	animated_sprite.scale.x = original_sprite_scale * (1 + 0.05 * (abs(velocity.x) / 500))
+	animated_sprite.scale.x = clamp(animated_sprite.scale.x, original_sprite_scale, original_sprite_scale * 1.2)
+	animated_sprite.scale.y = original_sprite_scale * (1 + 0.1 * (abs(velocity.y) / 500))
+	animated_sprite.scale.y = clamp(animated_sprite.scale.y, original_sprite_scale, original_sprite_scale * 1.2)
 
 	match current_state:
 		States.GROUND:
@@ -154,12 +154,7 @@ func update_animations() -> void:
 			else:
 				animated_sprite.play('idle')
 		States.AIR:
-			if jumped:
-				air_animation1 = not air_animation1
-			if air_animation1:
-				animated_sprite.play('air')
-			else:
-				animated_sprite.play('air2')
+			animated_sprite.play('air')
 		States.WALL:
 			pass
 
