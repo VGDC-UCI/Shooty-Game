@@ -65,6 +65,8 @@ func _on_hit( hit_object: Node ) -> void:
 		hit_object.set_attacking( parent_node )
 		destroy()
 
+	destroy()
+
 
 func destroy() -> void:
 	"""
