@@ -53,18 +53,20 @@ export var air_jumps := 2 # Number of air jumps
 # Jumping States
 var air_jumps_left = air_jumps
 var	jump_persistance_time_frame := 0.2 # The time frame after the last jump press will still activate
-var jump_persistance_time_left := 0.0 # The current time frame left for jump to be called
+puppet var jump_persistance_time_left := 0.0 # The current time frame left for jump to be called
 var on_ground_persistance_time_frame := 0.2 # The time frame since last ground touch that will still count as on ground
 var on_ground_persistance_time_left := 0.0 # The current time frame left for on ground to be true
-var half_jump := false
+puppet var half_jump := false
 var jumped: bool = false
 # Jumping References
 onready var jump_particles_scene: PackedScene = load("res://src/main/game/player/particles/JumpParticles.tscn")
+onready var jump_sfx: AudioStreamPlayer2D = $JumpSFX
 
 # Dash Properties
 export var dash_force := 1300
 onready var dash_timer = $DashTimer
 onready var dash_particles = $DashParticles
+onready var dash_sfx: AudioStreamPlayer2D = $DashSFX
 export(PackedScene) var dash_object
 export var dash_length := 1 # Dash cooldown
 export var dash_times := 1
@@ -98,6 +100,8 @@ var bullet_template = preload("res://src/main/game/bullet/Bullet.tscn")
 var time_left_till_next_bullet = fire_rate
 # Combat References
 onready var gun_particles_scene: PackedScene = load("res://src/main/game/player/particles/GunParticles.tscn")
+onready var shoot_sfx: AudioStreamPlayer2D = $ShootSFX
+onready var hit_sfx: AudioStreamPlayer2D = $HitSFX
 
 # Animations
 onready var animated_sprite: AnimatedSprite = $AnimatedSprite
@@ -246,6 +250,7 @@ func jump() -> void:
 	jump_persistance_time_left = 0
 	jumped = true
 	spawn_jump_particles()
+	jump_sfx.play()
 
 
 func spawn_jump_particles() -> void:
@@ -295,6 +300,7 @@ func dash() -> void:
 	var dash_node = dash_object.instance()
 	dash_timer.start(dash_length)
 	dash_particles.emitting = true
+	dash_sfx.play()
 	if(is_on_wall()):
 		is_dashing = false
 	is_dashing = false
@@ -317,6 +323,7 @@ func do_attack(delta: float) -> void:
 		get_tree().get_root().add_child(bullet)
 		time_left_till_next_bullet = fire_rate
 		spawn_gun_particles()
+		shoot_sfx.play()
 
 
 func spawn_gun_particles() -> void:
@@ -377,6 +384,8 @@ func set_attacking(player_responsible: Player) -> void:
 
 
 func on_hit(damage: float) -> void:
+	hit_sfx.play()
+
 	if not show_status_bars:
 		toggle_status_bars()
 

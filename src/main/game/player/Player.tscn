@@ -1,4 +1,4 @@
-[gd_scene load_steps=71 format=2]
+[gd_scene load_steps=75 format=2]
 
 [ext_resource path="res://src/main/game/player/PlayerController.tscn" type="PackedScene" id=1]
 [ext_resource path="res://src/main/game/player/dash_sprite.tscn" type="PackedScene" id=2]
@@ -10,6 +10,10 @@
 [ext_resource path="res://src/main/game/player/shield_bar.tres" type="StyleBox" id=8]
 [ext_resource path="res://src/main/game/player/health_bar.tres" type="StyleBox" id=9]
 [ext_resource path="res://src/main/game/player/progress_bar_back.tres" type="StyleBox" id=10]
+[ext_resource path="res://src/main/game/player/audio/shoot.wav" type="AudioStream" id=11]
+[ext_resource path="res://src/main/game/player/audio/jump..wav" type="AudioStream" id=12]
+[ext_resource path="res://src/main/game/player/audio/dash.wav" type="AudioStream" id=13]
+[ext_resource path="res://src/main/game/player/audio/hit.wav" type="AudioStream" id=14]
 
 [sub_resource type="AtlasTexture" id=1]
 flags = 4
@@ -424,3 +428,15 @@ position = Vector2( 0.374603, 7.62939e-06 )
 [node name="gun" type="Sprite" parent="Position2D"]
 position = Vector2( 53.5645, 0.374603 )
 texture = ExtResource( 7 )
+
+[node name="ShootSFX" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource( 11 )
+
+[node name="JumpSFX" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource( 12 )
+
+[node name="DashSFX" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource( 13 )
+
+[node name="HitSFX" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource( 14 )

@@ -20,7 +20,7 @@ func track_player(target: Player) -> void:
 	player = target
 	portrait.texture = player.player_portrait
 	name_label.text = player.player_name
-	team_label.text = str(player.team)
+	team_label.text = "Team: " + str(player.team)
 
 	health_bar.max_value = player.default_health
 	shield_bar.max_value = player.default_shield

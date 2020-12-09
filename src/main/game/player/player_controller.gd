@@ -61,6 +61,8 @@ func get_jumping_input(delta: float) -> void:
 		player.jump_persistance_time_left -= delta
 		player.jump_persistance_time_left = clamp(player.jump_persistance_time_left, 0, player.jump_persistance_time_frame)
 	player.half_jump = Input.is_action_just_released(control_scheme["jump"])
+	player.rset("jump_persistance_time_left", player.jump_persistance_time_left)
+	player.rset("half_jump", player.half_jump)
 
 
 func get_dashing_input() -> void:
