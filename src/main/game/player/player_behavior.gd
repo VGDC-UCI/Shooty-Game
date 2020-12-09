@@ -63,7 +63,7 @@ export var dash_force := 1300
 onready var dash_timer = $dash_timer
 onready var dash_particles = $dash_particles
 export(PackedScene) var dash_object
-export var dash_length := 0.25
+export var dash_length := 1 # Dash cooldown
 export var dash_times := 1
 var dash_left = dash_times
 # Dash States
@@ -266,7 +266,7 @@ func apply_wall_slide() -> void:
 
 
 func apply_dash() -> void:
-	if can_dash and is_dashing and dash_left > 0:
+	if can_dash and is_dashing and dash_left > 0 and dash_timer.is_stopped():
 		print(can_dash)
 		print(is_dashing)
 		dash()
@@ -292,10 +292,6 @@ func dash() -> void:
 	dash_particles.emitting = true
 	if(is_on_wall()):
 		is_dashing = false
-	is_dashing = false
-
-
-func dash_timer_timeout() -> void:
 	is_dashing = false
 
 
