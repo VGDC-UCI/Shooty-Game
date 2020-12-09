@@ -1,0 +1,46 @@
+[gd_scene load_steps=6 format=2]
+
+[ext_resource path="res://src/main/game/player/textures/portal_yellowParticle.png" type="Texture" id=1]
+[ext_resource path="res://src/main/game/player/textures/portal_orangeParticle.png" type="Texture" id=2]
+[ext_resource path="res://src/main/game/player/textures/particle_darkGrey.png" type="Texture" id=3]
+[ext_resource path="res://src/main/game/player/particles/one_time_particles.gd" type="Script" id=4]
+
+[sub_resource type="ParticlesMaterial" id=1]
+flag_disable_z = true
+direction = Vector3( -1, 0, 0 )
+spread = 30.0
+gravity = Vector3( 0, -20, 0 )
+initial_velocity = 300.0
+initial_velocity_random = 0.4
+orbit_velocity = 0.0
+orbit_velocity_random = 0.0
+scale = 0.4
+scale_random = 0.2
+
+[node name="GunParticles" type="Particles2D"]
+emitting = false
+amount = 7
+lifetime = 0.4
+one_shot = true
+explosiveness = 0.7
+process_material = SubResource( 1 )
+texture = ExtResource( 1 )
+script = ExtResource( 4 )
+
+[node name="SubParticle2" type="Particles2D" parent="."]
+emitting = false
+amount = 7
+lifetime = 0.4
+one_shot = true
+explosiveness = 0.7
+process_material = SubResource( 1 )
+texture = ExtResource( 2 )
+
+[node name="SubParticle1" type="Particles2D" parent="."]
+emitting = false
+amount = 7
+lifetime = 0.4
+one_shot = true
+explosiveness = 0.7
+process_material = SubResource( 1 )
+texture = ExtResource( 3 )
