@@ -1,10 +1,6 @@
-# Created by https://www.toptal.com/developers/gitignore/api/windows,linux,macos,vscode,godot
-# Edit at https://www.toptal.com/developers/gitignore?templates=windows,linux,macos,vscode,godot
-
-### Godot ###
-
 # Godot-specific ignores
-.import/
+/.import/
+/build/
 export.cfg
 export_presets.cfg
 
@@ -91,11 +87,3 @@ $RECYCLE.BIN/
 
 # Windows shortcuts
 *.lnk
-
-# End of https://www.toptal.com/developers/gitignore/api/windows,linux,macos,vscode,godot
-
-Build/*
-!Build/.keep
-
-/import/
-default_env.tres
