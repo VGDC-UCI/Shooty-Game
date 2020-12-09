@@ -6,4 +6,10 @@
 [node name="Sally" instance=ExtResource( 1 )]
 class_title = "Sally"
 player_portrait = ExtResource( 2 )
-player_acceleration = 10000.0
+player_acceleration = 1000.0
+wall_slide_speed = 700
+jump_force = 1000
+dash_force = 1700
+wall_slide_speed = 700
+bullet_speed = 850.0
+fire_rate = 0.4
