@@ -315,7 +315,7 @@ curve = SubResource( 59 )
 
 [sub_resource type="ParticlesMaterial" id=61]
 emission_shape = 1
-emission_sphere_radius = 1.0
+emission_sphere_radius = 30.0
 flag_disable_z = true
 spread = 180.0
 gravity = Vector3( 0, 0, 0 )
@@ -405,12 +405,12 @@ __meta__ = {
 "_edit_use_anchors_": false
 }
 
-[node name="dash_timer" type="Timer" parent="."]
+[node name="DashTimer" type="Timer" parent="."]
 one_shot = true
 
-[node name="dash_particles" type="Particles2D" parent="."]
+[node name="DashParticles" type="Particles2D" parent="."]
 emitting = false
-amount = 100
+amount = 200
 one_shot = true
 local_coords = false
 process_material = SubResource( 61 )

@@ -58,11 +58,13 @@ var on_ground_persistance_time_frame := 0.2 # The time frame since last ground t
 var on_ground_persistance_time_left := 0.0 # The current time frame left for on ground to be true
 var half_jump := false
 var jumped: bool = false
+# Jumping References
+onready var jump_particles_scene: PackedScene = load("res://src/main/game/player/particles/JumpParticles.tscn")
 
 # Dash Properties
 export var dash_force := 1300
-onready var dash_timer = $dash_timer
-onready var dash_particles = $dash_particles
+onready var dash_timer = $DashTimer
+onready var dash_particles = $DashParticles
 export(PackedScene) var dash_object
 export var dash_length := 1 # Dash cooldown
 export var dash_times := 1
@@ -83,7 +85,7 @@ export var wall_slide_speed := 150
 puppet var wall_sliding = false
 
 # Combat Properties
-var bullet_exit_radius := 54.0
+var bullet_exit_radius := 60.0
 export var bullet_speed := 500.0
 export var bullet_damage := 1.0
 export var bullet_scale := 1.0
@@ -94,6 +96,8 @@ puppet var is_shooting := false
 puppet var shoot_direction := Vector2()
 var bullet_template = preload("res://src/main/game/bullet/Bullet.tscn")
 var time_left_till_next_bullet = fire_rate
+# Combat References
+onready var gun_particles_scene: PackedScene = load("res://src/main/game/player/particles/GunParticles.tscn")
 
 # Animations
 onready var animated_sprite: AnimatedSprite = $AnimatedSprite
@@ -241,6 +245,12 @@ func jump() -> void:
 	velocity.y = -jump_force
 	jump_persistance_time_left = 0
 	jumped = true
+	spawn_jump_particles()
+
+
+func spawn_jump_particles() -> void:
+	var jump_particles: Particles2D = jump_particles_scene.instance()
+	add_child(jump_particles)
 
 
 func apply_gravity(delta: float) -> void:
@@ -291,7 +301,7 @@ func dash() -> void:
 
 
 func set_shoot_position() -> void:
-	get_node("BulletExit").position = shoot_direction * bullet_exit_radius + self.position
+	get_node("BulletExit").global_position = shoot_direction * bullet_exit_radius + self.global_position
 
 
 func do_attack(delta: float) -> void:
@@ -301,11 +311,22 @@ func do_attack(delta: float) -> void:
 		bullet.set_direction(shoot_direction)
 		bullet.bullet_speed = bullet_speed
 		bullet.bullet_damage = bullet_damage
-		bullet.position = get_node("BulletExit").position
+		bullet.global_position = get_node("BulletExit").global_position
 		bullet.scale *= bullet_scale
 		bullet.parent_node = self
 		get_tree().get_root().add_child(bullet)
 		time_left_till_next_bullet = fire_rate
+		spawn_gun_particles()
+
+
+func spawn_gun_particles() -> void:
+	var gun_particles: Particles2D = gun_particles_scene.instance()
+	gun_particles.emitting = true
+	get_tree().get_root().add_child(gun_particles)
+	gun_particles.get_node("SubParticle1").emitting = true
+	gun_particles.get_node("SubParticle2").emitting = true
+	gun_particles.global_position = get_node("BulletExit").global_position
+	gun_particles.rotation = shoot_direction.angle() + PI
 
 
 func initialize_ui() -> void:
