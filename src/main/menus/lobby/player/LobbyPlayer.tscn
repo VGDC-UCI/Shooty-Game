@@ -1,0 +1,22 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://src/main/menus/lobby/player/lobby_player.gd" type="Script" id=1]
+
+[sub_resource type="DynamicFontData" id=1]
+font_path = "res://src/resources/fonts/montserrat.ttf"
+
+[sub_resource type="DynamicFont" id=2]
+size = 14
+font_data = SubResource( 1 )
+
+[node name="LobbyPlayer" type="Label"]
+margin_right = 40.0
+margin_bottom = 40.0
+custom_fonts/font = SubResource( 2 )
+custom_colors/font_color_shadow = Color( 0.45098, 0.807843, 0.305882, 1 )
+custom_constants/shadow_offset_x = 0
+custom_constants/shadow_offset_y = 2
+script = ExtResource( 1 )
+__meta__ = {
+"_edit_use_anchors_": false
+}

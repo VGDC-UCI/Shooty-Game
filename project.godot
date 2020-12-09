@@ -27,14 +27,16 @@ _global_script_class_icons={
 [application]
 
 config/name="ShootsMcGee"
-run/main_scene="res://src/main/server/Startup.tscn"
-config/icon="res://icon.png"
+run/main_scene="res://src/main/menus/title/Title.tscn"
+boot_splash/bg_color=Color( 0.141176, 0.141176, 0.141176, 1 )
+config/icon="res://src/resources/icon.png"
 
 [autoload]
 
 gamestate="*res://src/main/server/gamestate.gd"
 Classes="*res://src/resources/classes.gd"
 ControlSchemes="*res://src/resources/control_schemes.gd"
+server="*res://src/main/server/server.gd"
 
 [display]
 
@@ -116,4 +118,5 @@ controller_dash={
 
 [rendering]
 
-environment/default_environment="res://default_env.tres"
+environment/default_clear_color=Color( 0.113725, 0.188235, 0.266667, 1 )
+environment/default_environment="res://src/resources/default_env.tres"

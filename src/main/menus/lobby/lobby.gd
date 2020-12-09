@@ -1,66 +1,50 @@
 """
-The main script for the lobby screen. Controls starting the game
-and creating a local server.
+Changes the default username of the player to their OS
+username.
 
-Author: Kang Rui Yu
+Author: Jacob Singleton
 """
+
 
 extends Control
 
-# References
-onready var player_list: Control = $MarginContainer/HBoxContainer
-var player_card_scene: PackedScene = load("res://src/main/menus/lobby/PlayerCard.tscn")
-# Signal
-signal configs_changed # Emitted when one of the configs changed
+
+func _ready() -> void:
+	"""
+	Called when the scene is loaded. 
+	Grabs focus of the first button to allow keyboard support.
+	Also loads in all players into the lobby.
+	"""
+	
+	$Content/Buttons/StartButton.grab_focus()
+	
+	for player in server.get_players():
+		$Content/CenterBackground/Center/Players/PlayerList.add_child(player)
+	
+	if server._root_player.is_host():
+		$Content/Buttons/StartButton.set_visible(true)
 
 
-func add_new_player(name: String = "@Player", deletable: bool = true, editable: bool = true) -> void:
-	var config = {"name" : name, "class_id" : 0, "input_id" : 0, "team" : player_list.get_child_count() + 1}
-
-	if name == "@Player":
-		config["name"] = "Player " + str(player_list.get_child_count() + 1)
-
-	add_existing_player(config, deletable, editable)
-
-
-func add_existing_player(config: Dictionary, deletable: bool = true, editable: bool = true) -> void:
-	var player_card: Control = player_card_scene.instance()
-	player_list.add_child(player_card)
-
-	player_card.connect("changed", self, "emit_configs_changed")
-
-	player_card.set_config(config)
-
-	if not deletable:
-		player_card.hide_remove_button()
-
-	player_card.toggle_editing(editable)
+func _on_leave_button_pressed() -> void:
+	"""
+	Called when the leave button is pressed.
+	Leaves the lobby.
+	"""
+	
+	server.disconnect_reason = "You have left the server."
+	
+	server.disconnect_from_server()
 
 
-func remove_player(player_card: Control) -> void:
-	player_list.remove_child(player_card)
-	player_card.queue_free()
-
-
-func clear() -> void:
-	for player_card in player_list.get_children():
-		player_card.queue_free()
-
-
-func get_player_configs() -> Array:
-	var configs: Array = []
-	for player_card in player_list.get_children():
-		configs.append(player_card.get_config())
-	return configs
-
-
-func set_player_configs(configs: Dictionary, deletable: bool = true) -> void: # Syncs configs
-	configs.clear()
-	clear()
-
-	for config in configs:
-		add_existing_player(config, deletable)
-
-
-func emit_configs_changed() -> void:
-	emit_signal("configs_changed")
+func _on_message_box_text_entered(new_text: String):
+	"""
+	Called when entering text into the message box for chat.
+	Sends the chat message.
+	"""
+	
+	if len(new_text.strip_edges()) > 0:
+		var message_box = $Content/CenterBackground/Center/ChatContainer/MessageBox
+		
+		message_box.set_text("")
+		
+		server.rpc_id(1, "send_chat_message", get_tree().get_network_unique_id(), new_text.to_lower())
