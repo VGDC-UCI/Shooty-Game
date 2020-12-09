@@ -42,6 +42,8 @@ func start_game() -> void:
 		player.get_node("PlayerController").using_controller = ControlSchemes.get_scheme_type(config["input_id"]) == ControlSchemes.types.CONTROLLER
 		player.get_node("PlayerController").training_mode = ControlSchemes.get_scheme_type(config["input_id"]) == ControlSchemes.types.DUMMY
 
+		player.team = config["team"]
+
 		player.get_node("Camera2D").current = false
 		player.local_camera = false
 

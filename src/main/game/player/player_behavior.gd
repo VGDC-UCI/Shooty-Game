@@ -16,6 +16,7 @@ enum States {GROUND, AIR, WALL}
 
 # Player Properties
 var player_name := ""
+export var team := 1
 export var score_worth := 1
 var spawn_point := Vector2()
 export var default_health = 10

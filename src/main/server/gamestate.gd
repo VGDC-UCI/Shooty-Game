@@ -18,7 +18,8 @@ const MAX_PEERS = 12
 var player_config = {
 	"name" : "The Warrior",
 	"class_id" : 0,
-	"input_id" : 0
+	"input_id" : 0,
+	"team" : 1
 }
 
 # Names for remote players in id:name format.
@@ -75,7 +76,8 @@ remote func register_player(new_player_name):
 	players[id] = {
 		"name" : new_player_name,
 		"class_id" : 0,
-		"input_id" : 0
+		"input_id" : 0,
+		"team" : 1
 	}
 	emit_signal("player_list_changed")
 
@@ -121,6 +123,7 @@ remote func pre_start_game(spawn_points):
 		if p_id == get_tree().get_network_unique_id():
 			# If node for this peer id, set name.
 			player.set_player_name(player_config["name"])
+			player.team = player_config["team"]
 			player.get_node("PlayerController").control_scheme = ControlSchemes.get_scheme_data(player_config["input_id"])
 			player.get_node("PlayerController").using_controller = ControlSchemes.get_scheme_type(player_config["input_id"]) == ControlSchemes.types.CONTROLLER
 			player.get_node("PlayerController").training_mode = ControlSchemes.get_scheme_type(player_config["input_id"]) == ControlSchemes.types.DUMMY
@@ -130,6 +133,7 @@ remote func pre_start_game(spawn_points):
 		else:
 			# Otherwise set name from peer.
 			player.set_player_name(players[p_id]["name"])
+			player.team = players[p_id]["team"]
 			player.get_node("PlayerController").control_scheme = ControlSchemes.get_scheme_data(2)
 			player.get_node("PlayerController").using_controller = false
 			player.get_node("PlayerController").training_mode = true

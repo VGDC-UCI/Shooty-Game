@@ -15,7 +15,7 @@ signal configs_changed # Emitted when one of the configs changed
 
 
 func add_new_player(name: String = "@Player", deletable: bool = true, editable: bool = true) -> void:
-	var config = {"name" : name, "class_id" : 0, "input_id" : 0}
+	var config = {"name" : name, "class_id" : 0, "input_id" : 0, "team" : player_list.get_child_count() + 1}
 
 	if name == "@Player":
 		config["name"] = "Player " + str(player_list.get_child_count() + 1)

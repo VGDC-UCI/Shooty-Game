@@ -17,7 +17,7 @@ __meta__ = {
 margin_left = 7.0
 margin_top = 7.0
 margin_right = 327.0
-margin_bottom = 461.0
+margin_bottom = 495.0
 custom_constants/margin_right = 10
 custom_constants/margin_top = 10
 custom_constants/margin_left = 10
@@ -27,7 +27,7 @@ custom_constants/margin_bottom = 10
 margin_left = 10.0
 margin_top = 10.0
 margin_right = 310.0
-margin_bottom = 444.0
+margin_bottom = 478.0
 custom_constants/separation = 20
 alignment = 1
 
@@ -44,7 +44,7 @@ stretch_mode = 6
 [node name="Options" type="VBoxContainer" parent="MarginContainer/VBoxContainer"]
 margin_top = 320.0
 margin_right = 300.0
-margin_bottom = 434.0
+margin_bottom = 468.0
 custom_constants/separation = 10
 
 [node name="NameField" type="LineEdit" parent="MarginContainer/VBoxContainer/Options"]
@@ -65,12 +65,23 @@ margin_right = 300.0
 margin_bottom = 84.0
 align = 1
 
-[node name="RemoveButton" type="Button" parent="MarginContainer/VBoxContainer/Options"]
+[node name="TeamOptions" type="SpinBox" parent="MarginContainer/VBoxContainer/Options"]
 margin_top = 94.0
 margin_right = 300.0
-margin_bottom = 114.0
+margin_bottom = 118.0
+min_value = 1.0
+max_value = 99.0
+value = 1.0
+align = 1
+prefix = "Team"
+
+[node name="RemoveButton" type="Button" parent="MarginContainer/VBoxContainer/Options"]
+margin_top = 128.0
+margin_right = 300.0
+margin_bottom = 148.0
 text = "Remove"
 [connection signal="text_changed" from="MarginContainer/VBoxContainer/Options/NameField" to="." method="name_changed"]
 [connection signal="item_selected" from="MarginContainer/VBoxContainer/Options/ClassOptions" to="." method="class_changed"]
 [connection signal="item_selected" from="MarginContainer/VBoxContainer/Options/InputOptions" to="." method="input_changed"]
+[connection signal="value_changed" from="MarginContainer/VBoxContainer/Options/TeamOptions" to="." method="team_changed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/Options/RemoveButton" to="." method="delete"]
