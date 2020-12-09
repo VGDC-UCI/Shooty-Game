@@ -1,9 +1,9 @@
 [gd_scene load_steps=7 format=2]
 
-[ext_resource path="res://src/main/game/lobby/TitleText.tscn" type="PackedScene" id=1]
-[ext_resource path="res://src/main/game/lobby/buttons/StartButton.tscn" type="PackedScene" id=2]
-[ext_resource path="res://src/main/game/lobby/buttons/LeaveButton.tscn" type="PackedScene" id=3]
-[ext_resource path="res://src/main/game/lobby/lobby.gd" type="Script" id=4]
+[ext_resource path="res://src/main/menus/lobby/TitleText.tscn" type="PackedScene" id=1]
+[ext_resource path="res://src/main/menus/lobby/buttons/StartButton.tscn" type="PackedScene" id=2]
+[ext_resource path="res://src/main/menus/lobby/buttons/LeaveButton.tscn" type="PackedScene" id=3]
+[ext_resource path="res://src/main/menus/lobby/lobby.gd" type="Script" id=4]
 [ext_resource path="res://src/resources/fonts/montserrat_32.tres" type="DynamicFont" id=5]
 [ext_resource path="res://src/resources/fonts/montserrat_20.tres" type="DynamicFont" id=6]
 
@@ -181,4 +181,5 @@ margin_bottom = 90.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 [connection signal="text_entered" from="Content/CenterBackground/Center/ChatContainer/MessageBox" to="." method="_on_message_box_text_entered"]
+[connection signal="button_down" from="Content/Buttons/StartButton" to="." method="_on_start_button_pressed"]
 [connection signal="button_down" from="Content/Buttons/LeaveButton" to="." method="_on_leave_button_pressed"]

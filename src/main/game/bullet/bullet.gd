@@ -4,7 +4,9 @@ Handles interactions with a bullet after it is fired.
 Author: Srayan Jana
 """
 
+
 extends KinematicBody2D
+
 
 export var bullet_speed: float = 100
 export var bullet_damage: float = 1
@@ -12,13 +14,6 @@ export var life_span: float = 60 # In seconds.
 var bullet_direction: Vector2 = Vector2(1, 0)
 
 var parent_node := KinematicBody2D.new()
-
-func _ready() -> void:
-	"""
-	Called when the bullet is created.
-	"""
-
-	pass
 
 
 func _physics_process( delta: float ) -> void:

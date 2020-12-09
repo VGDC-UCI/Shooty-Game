@@ -9,18 +9,12 @@
 config_version=4
 
 _global_script_classes=[ {
-"base": "StaticBody2D",
-"class": "Enemy",
-"language": "GDScript",
-"path": "res://src/main/game/enemy/enemy_behavior.gd"
-}, {
 "base": "KinematicBody2D",
 "class": "Player",
 "language": "GDScript",
-"path": "res://src/main/game/player/player_behavior.gd"
+"path": "res://src/main/game/player/player.gd"
 } ]
 _global_script_class_icons={
-"Enemy": "",
 "Player": ""
 }
 
@@ -33,10 +27,9 @@ config/icon="res://src/resources/icon.png"
 
 [autoload]
 
-gamestate="*res://src/main/server/gamestate.gd"
-Classes="*res://src/resources/classes.gd"
-ControlSchemes="*res://src/resources/control_schemes.gd"
 server="*res://src/main/server/server.gd"
+Classes="*res://src/main/util/characters.gd"
+ControlSchemes="*res://src/main/util/controls.gd"
 
 [display]
 

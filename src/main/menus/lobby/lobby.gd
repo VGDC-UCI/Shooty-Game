@@ -21,8 +21,17 @@ func _ready() -> void:
 	for player in server.get_players():
 		$Content/CenterBackground/Center/Players/PlayerList.add_child(player)
 	
-	if server._root_player.is_host():
+	if server.get_root_player().is_host():
 		$Content/Buttons/StartButton.set_visible(true)
+
+
+func _on_start_button_pressed() -> void:
+	"""
+	Called when the start button is pressed.
+	"""
+	
+	if server.get_root_player().is_host():
+		server.request_to_start_game()
 
 
 func _on_leave_button_pressed() -> void:
