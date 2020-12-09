@@ -114,7 +114,6 @@ func _ready() -> void:
 	player_position = position
 	self.add_to_group("Collision")
 	self.add_to_group("Hittable")
-	dash_timer.connect("timeout",self,"dash_timer_timeout")
 	pass # Replace with function body.
 
 
