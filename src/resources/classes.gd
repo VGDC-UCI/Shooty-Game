@@ -14,7 +14,7 @@ var data: Dictionary = {
 	},
 	1 : {
 		"name" : "Sally",
-		"portrait" : "res://icon.png",
+		"portrait" : "res://src/main/game/player/textures/sally_portrait.png",
 		"scene_path" : "res://src/main/game/player/classes/Sally.tscn"
 	}
 }
