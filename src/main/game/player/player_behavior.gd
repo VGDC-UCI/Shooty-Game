@@ -103,6 +103,7 @@ onready var name_label: Label = $NameLabel
 onready var healthbar: ProgressBar = $HealthBar
 onready var shieldbar: ProgressBar = $ShieldBar
 var show_status_bars: bool = false
+export (bool) var debug_mode: bool = false
 
 
 # Called when the node enters the scene tree for the first time.
@@ -317,7 +318,7 @@ func do_attack(delta: float) -> void:
 
 
 func initialize_ui() -> void:
-	name_label.text = player_name + ", K: " + str(numb_of_kills) + " / D: " + str(numb_of_deaths)
+	name_label.text = player_name
 
 	healthbar.max_value = default_health
 	shieldbar.max_value = default_shield
@@ -330,6 +331,9 @@ func initialize_ui() -> void:
 		name_label.rect_position.y = -80
 		healthbar.hide()
 		shieldbar.hide()
+
+	if not debug_mode:
+		$DebugLabel.hide()
 
 
 func update_ui() -> void:

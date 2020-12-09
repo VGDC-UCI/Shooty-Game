@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=2]
+[gd_scene load_steps=10 format=2]
 
 [ext_resource path="res://src/main/world/level.gd" type="Script" id=1]
 [ext_resource path="res://src/main/world/world_boundary.gd" type="Script" id=2]
@@ -6,6 +6,7 @@
 [ext_resource path="res://src/main/world/mutlitarget_camera.gd" type="Script" id=4]
 [ext_resource path="res://icon.png" type="Texture" id=5]
 [ext_resource path="res://src/main/world/textures/background.png" type="Texture" id=6]
+[ext_resource path="res://src/main/world/ScoreBoard.tscn" type="PackedScene" id=7]
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 642.85, 361.715 )
@@ -71,4 +72,12 @@ __meta__ = {
 
 [node name="Sprite" type="Sprite" parent="ParallaxBackground/ParallaxLayer"]
 texture = ExtResource( 6 )
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="ScoreBoard" parent="CanvasLayer" instance=ExtResource( 7 )]
+anchor_right = 0.0
+anchor_bottom = 0.0
+margin_right = 212.0
+margin_bottom = 263.0
 [connection signal="body_entered" from="WorldBoundary" to="WorldBoundary" method="_on_deadline_entered"]
