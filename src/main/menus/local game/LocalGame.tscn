@@ -1,0 +1,60 @@
+[gd_scene load_steps=4 format=2]
+
+[ext_resource path="res://src/main/menus/lobby/Lobby.tscn" type="PackedScene" id=1]
+[ext_resource path="res://src/main/menus/local game/local_lobby.gd" type="Script" id=2]
+[ext_resource path="res://src/main/menus/local game/buttons/AddPlayerButton.tscn" type="PackedScene" id=3]
+
+[node name="LocalGame" instance=ExtResource( 1 )]
+script = ExtResource( 2 )
+
+[node name="CenterBackground" parent="Content" index="1"]
+margin_bottom = 406.0
+
+[node name="Players" parent="Content/CenterBackground/Center" index="0"]
+margin_bottom = 302.0
+
+[node name="PlayerList" parent="Content/CenterBackground/Center/Players" index="1"]
+margin_bottom = 302.0
+
+[node name="ChatContainer" parent="Content/CenterBackground/Center" index="1"]
+margin_bottom = 302.0
+
+[node name="ChatBox" parent="Content/CenterBackground/Center/ChatContainer" index="1"]
+margin_bottom = 274.0
+
+[node name="MessageBox" parent="Content/CenterBackground/Center/ChatContainer" index="2"]
+margin_top = 278.0
+margin_bottom = 302.0
+
+[node name="GameSettings" parent="Content/CenterBackground/Center" index="2"]
+margin_bottom = 302.0
+
+[node name="MapSettings" parent="Content/CenterBackground/Center/GameSettings" index="1"]
+margin_bottom = 171.0
+
+[node name="MapPreview" parent="Content/CenterBackground/Center/GameSettings/MapSettings" index="1"]
+margin_bottom = 127.0
+
+[node name="CharacterSettings" parent="Content/CenterBackground/Center/GameSettings" index="2"]
+margin_top = 175.0
+margin_bottom = 302.0
+
+[node name="Buttons" parent="Content" index="2"]
+margin_top = 410.0
+rect_min_size = Vector2( 250, 130 )
+
+[node name="StartButton" parent="Content/Buttons" index="0"]
+visible = true
+margin_bottom = 40.0
+
+[node name="AddPlayerButton" parent="Content/Buttons" index="1" instance=ExtResource( 3 )]
+margin_top = 44.0
+margin_right = 250.0
+margin_bottom = 85.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
+
+[node name="LeaveButton" parent="Content/Buttons" index="2"]
+margin_top = 89.0
+margin_bottom = 130.0
+[connection signal="button_down" from="Content/Buttons/AddPlayerButton" to="." method="_on_add_player_button_pressed"]

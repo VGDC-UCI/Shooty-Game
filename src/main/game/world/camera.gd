@@ -16,7 +16,7 @@ export var _max_zoom: float = 5
 export var _buffer = Vector2(400, 200)
 
 "Camera State"
-var _targets: Array = []
+export var _targets: Array = []
 onready var _screen_size: Vector2 = get_viewport().size
 
 
@@ -24,10 +24,7 @@ func _process(delta: float) -> void:
 	"""
 	Called every frame. Moves the camera to the correct position.
 	"""
-	
-	if _targets.empty():
-		set_process(false)
-	else:
+	if not _targets.empty():
 		center(delta)
 		zoom(delta)
 
