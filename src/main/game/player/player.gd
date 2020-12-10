@@ -341,7 +341,9 @@ func _do_dashing(controls_mappings: Dictionary, delta: float) -> void:
 				_velocity = _dash_direction * _dash_force
 				
 				$DashParticles.emitting = true
-				server.send_dash_particles()
+
+				if not _local:
+					server.send_dash_particles()
 
 
 func _do_wall_slide() -> void:
@@ -389,7 +391,8 @@ func _do_shooting(controls_mappings: Dictionary, delta: float) -> void:
 		if _time_left_till_next_bullet <= 0:
 			shoot_bullet(_shoot_direction)
 			
-			server.send_bullet_shot(_shoot_direction.x, _shoot_direction.y)
+			if not _local:
+				server.send_bullet_shot(_shoot_direction.x, _shoot_direction.y)
 
 
 func shoot_bullet(shoot_direction: Vector2) -> void:
@@ -424,10 +427,12 @@ func on_hit(damage: float, from: Node) -> void:
 	
 	if _shield > 0:
 		_shield -= damage
-		server.send_change_health(_network_id, _health, _shield)
+		if not _local:
+			server.send_change_health(_network_id, _health, _shield)
 	elif _health > 0:
 		_health -= damage
-		server.send_change_health(_network_id, _health, _shield)
+		if not _local:
+			server.send_change_health(_network_id, _health, _shield)
 	else:
 		death()
 		from.add_kill()
