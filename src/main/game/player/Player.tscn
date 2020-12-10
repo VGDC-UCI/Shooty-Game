@@ -450,6 +450,7 @@ __meta__ = {
 [node name="Camera" type="Camera2D" parent="."]
 position = Vector2( 0, -1.52269 )
 current = true
+zoom = Vector2( 1.5, 1.5 )
 
 [node name="DashParticles" type="Particles2D" parent="."]
 emitting = false
