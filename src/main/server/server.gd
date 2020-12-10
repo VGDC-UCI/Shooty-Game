@@ -244,3 +244,47 @@ remote func change_x_input(x_input: float) -> void:
 		player.set_x_input(x_input)
 		
 		rpc_unreliable("change_x_input", player_id, x_input)
+
+
+remote func bullet_shot(x_dir: float, y_dir: float) -> void:
+	"""
+	Shoots a bullet from the given player.
+	"""
+	
+	var player_id: int = get_tree().get_rpc_sender_id()
+	
+	rpc_unreliable("bullet_shot", player_id, x_dir, y_dir)
+
+
+remote func change_health(player_id: int, health: float, shield: float) -> void:
+	"""
+	Changes the health and shield of the given peer.
+	"""
+	
+	rpc_unreliable("change_health", player_id, health, shield)
+
+
+remote func change_kills(player_id: int, kills: int) -> void:
+	"""
+	Changes the kills of the given peer.
+	"""
+	
+	rpc_unreliable("change_kills", player_id, kills)
+
+
+remote func change_deaths(player_id: int, deaths: int) -> void:
+	"""
+	Changes the deaths of the given peer.
+	"""
+	
+	rpc_unreliable("change_deaths", player_id, deaths)
+
+
+remote func dash_particles() -> void:
+	"""
+	Sends dash particles for the given player.
+	"""
+	
+	var player_id: int = get_tree().get_rpc_sender_id()
+	
+	rpc_unreliable("dash_particles", player_id)
