@@ -503,14 +503,9 @@ func set_root_player(root_player: bool) -> void:
 
 func set_local(local: bool) -> void:
 	"""
-<<<<<<< HEAD
 	Sets whether or not this player is a local player.
 	"""
 	
-=======
-	Sets whether or not this player is a local player
-	"""
->>>>>>> 00215637276727389b0d9dee295595c75003cfd4
 	_local = local
 
 
