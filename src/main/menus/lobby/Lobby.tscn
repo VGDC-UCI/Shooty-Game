@@ -1,11 +1,10 @@
-[gd_scene load_steps=7 format=2]
+[gd_scene load_steps=6 format=2]
 
 [ext_resource path="res://src/main/menus/lobby/TitleText.tscn" type="PackedScene" id=1]
 [ext_resource path="res://src/main/menus/lobby/buttons/StartButton.tscn" type="PackedScene" id=2]
 [ext_resource path="res://src/main/menus/lobby/buttons/LeaveButton.tscn" type="PackedScene" id=3]
 [ext_resource path="res://src/main/menus/lobby/lobby.gd" type="Script" id=4]
 [ext_resource path="res://src/resources/fonts/montserrat_32.tres" type="DynamicFont" id=5]
-[ext_resource path="res://src/resources/fonts/montserrat_20.tres" type="DynamicFont" id=6]
 
 [node name="Lobby" type="Control"]
 script = ExtResource( 4 )
@@ -46,13 +45,13 @@ __meta__ = {
 }
 
 [node name="Players" type="VBoxContainer" parent="Content/CenterBackground/Center"]
-margin_right = 310.0
+margin_right = 468.0
 margin_bottom = 342.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="PlayerText" type="Label" parent="Content/CenterBackground/Center/Players"]
-margin_right = 310.0
+margin_right = 468.0
 margin_bottom = 40.0
 custom_fonts/font = ExtResource( 5 )
 custom_colors/font_color_shadow = Color( 1, 0.592157, 0, 1 )
@@ -62,20 +61,20 @@ text = "Players"
 
 [node name="PlayerList" type="VBoxContainer" parent="Content/CenterBackground/Center/Players"]
 margin_top = 44.0
-margin_right = 310.0
+margin_right = 468.0
 margin_bottom = 342.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="ChatContainer" type="VBoxContainer" parent="Content/CenterBackground/Center"]
-margin_left = 314.0
-margin_right = 625.0
+margin_left = 472.0
+margin_right = 940.0
 margin_bottom = 342.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
 
 [node name="ChatText" type="Label" parent="Content/CenterBackground/Center/ChatContainer"]
-margin_right = 311.0
+margin_right = 468.0
 margin_bottom = 40.0
 custom_fonts/font = ExtResource( 5 )
 custom_colors/font_color_shadow = Color( 1, 0.592157, 0, 1 )
@@ -85,7 +84,7 @@ text = "Chat"
 
 [node name="ChatBox" type="VBoxContainer" parent="Content/CenterBackground/Center/ChatContainer"]
 margin_top = 44.0
-margin_right = 311.0
+margin_right = 468.0
 margin_bottom = 314.0
 size_flags_horizontal = 3
 size_flags_vertical = 3
@@ -93,72 +92,9 @@ alignment = 2
 
 [node name="MessageBox" type="LineEdit" parent="Content/CenterBackground/Center/ChatContainer"]
 margin_top = 318.0
-margin_right = 311.0
+margin_right = 468.0
 margin_bottom = 342.0
 max_length = 25
-
-[node name="GameSettings" type="VBoxContainer" parent="Content/CenterBackground/Center"]
-margin_left = 629.0
-margin_right = 940.0
-margin_bottom = 342.0
-size_flags_horizontal = 3
-
-[node name="SettingsText" type="Label" parent="Content/CenterBackground/Center/GameSettings"]
-margin_right = 311.0
-margin_bottom = 40.0
-custom_fonts/font = ExtResource( 5 )
-custom_colors/font_color_shadow = Color( 1, 0.592157, 0, 1 )
-custom_constants/shadow_offset_x = 0
-custom_constants/shadow_offset_y = 3
-text = "Settings"
-
-[node name="MapSettings" type="VBoxContainer" parent="Content/CenterBackground/Center/GameSettings"]
-margin_top = 44.0
-margin_right = 311.0
-margin_bottom = 191.0
-size_flags_horizontal = 3
-size_flags_vertical = 3
-
-[node name="MapSelectionContainer" type="HBoxContainer" parent="Content/CenterBackground/Center/GameSettings/MapSettings"]
-margin_right = 311.0
-margin_bottom = 23.0
-
-[node name="MapText" type="Label" parent="Content/CenterBackground/Center/GameSettings/MapSettings/MapSelectionContainer"]
-margin_right = 51.0
-margin_bottom = 23.0
-custom_fonts/font = ExtResource( 6 )
-custom_colors/font_color_shadow = Color( 0.45098, 0.807843, 0.305882, 1 )
-custom_constants/shadow_offset_x = 0
-custom_constants/shadow_offset_y = 2
-text = "Map: "
-
-[node name="MapOption" type="OptionButton" parent="Content/CenterBackground/Center/GameSettings/MapSettings/MapSelectionContainer"]
-margin_left = 55.0
-margin_right = 84.0
-margin_bottom = 23.0
-
-[node name="MapPreview" type="TextureRect" parent="Content/CenterBackground/Center/GameSettings/MapSettings"]
-margin_top = 27.0
-margin_right = 311.0
-margin_bottom = 147.0
-size_flags_horizontal = 3
-size_flags_vertical = 3
-
-[node name="CharacterSettings" type="VBoxContainer" parent="Content/CenterBackground/Center/GameSettings"]
-margin_top = 195.0
-margin_right = 311.0
-margin_bottom = 342.0
-size_flags_horizontal = 3
-size_flags_vertical = 3
-
-[node name="CharacterText" type="Label" parent="Content/CenterBackground/Center/GameSettings/CharacterSettings"]
-margin_right = 311.0
-margin_bottom = 23.0
-custom_fonts/font = ExtResource( 6 )
-custom_colors/font_color_shadow = Color( 0.45098, 0.807843, 0.305882, 1 )
-custom_constants/shadow_offset_x = 0
-custom_constants/shadow_offset_y = 2
-text = "Character: "
 
 [node name="Buttons" type="VBoxContainer" parent="Content"]
 margin_top = 450.0

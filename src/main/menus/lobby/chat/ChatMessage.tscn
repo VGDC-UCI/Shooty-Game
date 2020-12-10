@@ -3,12 +3,12 @@
 [sub_resource type="DynamicFontData" id=1]
 font_path = "res://src/resources/fonts/montserrat.ttf"
 
-[sub_resource type="DynamicFont" id=3]
-size = 10
+[sub_resource type="DynamicFont" id=2]
+size = 12
 font_data = SubResource( 1 )
 
-[sub_resource type="DynamicFont" id=4]
-size = 10
+[sub_resource type="DynamicFont" id=3]
+size = 12
 font_data = SubResource( 1 )
 
 [node name="MessageContainer" type="HBoxContainer"]
@@ -21,7 +21,7 @@ __meta__ = {
 [node name="Player" type="Label" parent="."]
 margin_bottom = 40.0
 size_flags_vertical = 3
-custom_fonts/font = SubResource( 3 )
+custom_fonts/font = SubResource( 2 )
 custom_colors/font_color_shadow = Color( 0.45098, 0.807843, 0.305882, 1 )
 custom_constants/shadow_offset_x = 0
 custom_constants/shadow_offset_y = 1
@@ -33,6 +33,6 @@ margin_left = 4.0
 margin_right = 4.0
 margin_bottom = 40.0
 size_flags_vertical = 3
-custom_fonts/font = SubResource( 4 )
+custom_fonts/font = SubResource( 3 )
 align = 1
 valign = 1

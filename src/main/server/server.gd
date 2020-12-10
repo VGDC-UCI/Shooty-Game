@@ -233,7 +233,15 @@ func _player_id_in_player_list(player_id: int, player_list: Node) -> bool:
 	return false
 
 
-remote func send_chat_message(player_id: int, message: String) -> void:
+func send_chat_message(message: String) -> void:
+	"""
+	Requests sending a chat message to the server.
+	"""
+	
+	rpc_id(1, "chat_message", message)
+
+
+remote func chat_message(player_id: int, message: String) -> void:
 	"""
 	Sends a message from the given player id in the pre-game lobby.
 	"""

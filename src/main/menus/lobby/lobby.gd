@@ -58,4 +58,4 @@ func _on_message_box_text_entered(new_text: String):
 		
 		message_box.set_text("")
 		
-		server.rpc_id(1, "send_chat_message", get_tree().get_network_unique_id(), new_text.to_lower())
+		server.send_chat_message(new_text.to_lower())
