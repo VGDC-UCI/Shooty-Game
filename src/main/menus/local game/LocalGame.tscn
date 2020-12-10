@@ -1,66 +1,60 @@
 [gd_scene load_steps=4 format=2]
 
 [ext_resource path="res://src/main/menus/lobby/Lobby.tscn" type="PackedScene" id=1]
-[ext_resource path="res://src/main/menus/local game/local_game.gd" type="Script" id=2]
-[ext_resource path="res://src/main/menus/lobby/local_lobby.gd" type="Script" id=3]
+[ext_resource path="res://src/main/menus/local game/local_lobby.gd" type="Script" id=2]
+[ext_resource path="res://src/main/menus/local game/buttons/AddPlayerButton.tscn" type="PackedScene" id=3]
 
-[node name="LocalGame" type="Control"]
-anchor_right = 1.0
-anchor_bottom = 1.0
+[node name="LocalGame" instance=ExtResource( 1 )]
 script = ExtResource( 2 )
 
-[node name="Lobby" parent="." instance=ExtResource( 1 )]
-script = ExtResource( 3 )
+[node name="CenterBackground" parent="Content" index="1"]
+margin_bottom = 406.0
 
-[node name="Options" type="PanelContainer" parent="."]
-visible = false
-margin_top = 20.0
-margin_right = 1024.0
-margin_bottom = 94.0
-size_flags_vertical = 4
+[node name="Players" parent="Content/CenterBackground/Center" index="0"]
+margin_bottom = 302.0
 
-[node name="MarginContainer" type="MarginContainer" parent="Options"]
-margin_left = 7.0
-margin_top = 7.0
-margin_right = 1017.0
-margin_bottom = 67.0
-custom_constants/margin_right = 20
-custom_constants/margin_top = 20
-custom_constants/margin_left = 20
-custom_constants/margin_bottom = 20
+[node name="PlayerList" parent="Content/CenterBackground/Center/Players" index="1"]
+margin_bottom = 302.0
 
-[node name="HBoxContainer" type="HBoxContainer" parent="Options/MarginContainer"]
-margin_left = 20.0
-margin_top = 20.0
-margin_right = 990.0
+[node name="ChatContainer" parent="Content/CenterBackground/Center" index="1"]
+margin_bottom = 302.0
+
+[node name="ChatBox" parent="Content/CenterBackground/Center/ChatContainer" index="1"]
+margin_bottom = 274.0
+
+[node name="MessageBox" parent="Content/CenterBackground/Center/ChatContainer" index="2"]
+margin_top = 278.0
+margin_bottom = 302.0
+
+[node name="GameSettings" parent="Content/CenterBackground/Center" index="2"]
+margin_bottom = 302.0
+
+[node name="MapSettings" parent="Content/CenterBackground/Center/GameSettings" index="1"]
+margin_bottom = 171.0
+
+[node name="MapPreview" parent="Content/CenterBackground/Center/GameSettings/MapSettings" index="1"]
+margin_bottom = 127.0
+
+[node name="CharacterSettings" parent="Content/CenterBackground/Center/GameSettings" index="2"]
+margin_top = 175.0
+margin_bottom = 302.0
+
+[node name="Buttons" parent="Content" index="2"]
+margin_top = 410.0
+rect_min_size = Vector2( 250, 130 )
+
+[node name="StartButton" parent="Content/Buttons" index="0"]
+visible = true
 margin_bottom = 40.0
-custom_constants/separation = 10
-alignment = 1
 
-[node name="AddPlayerButton" type="Button" parent="Options/MarginContainer/HBoxContainer"]
-margin_left = 376.0
-margin_right = 456.0
-margin_bottom = 20.0
-size_flags_horizontal = 4
-size_flags_vertical = 4
-text = "Add Player"
-__meta__ = {
-"_edit_use_anchors_": false
-}
+[node name="AddPlayerButton" parent="Content/Buttons" index="1" instance=ExtResource( 3 )]
+margin_top = 44.0
+margin_right = 250.0
+margin_bottom = 85.0
+size_flags_horizontal = 3
+size_flags_vertical = 3
 
-[node name="StartButton" type="Button" parent="Options/MarginContainer/HBoxContainer"]
-margin_left = 466.0
-margin_right = 549.0
-margin_bottom = 20.0
-size_flags_horizontal = 4
-size_flags_vertical = 4
-text = "Start Game"
-
-[node name="ExitButton" type="Button" parent="Options/MarginContainer/HBoxContainer"]
-margin_left = 559.0
-margin_right = 594.0
-margin_bottom = 20.0
-size_flags_horizontal = 4
-size_flags_vertical = 4
-text = "Exit"
-[connection signal="pressed" from="Options/MarginContainer/HBoxContainer/AddPlayerButton" to="Lobby" method="add_new_player"]
+[node name="LeaveButton" parent="Content/Buttons" index="2"]
+margin_top = 89.0
+margin_bottom = 130.0
+[connection signal="button_down" from="Content/Buttons/AddPlayerButton" to="." method="_on_add_player_button_pressed"]

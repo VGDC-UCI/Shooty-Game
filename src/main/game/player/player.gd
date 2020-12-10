@@ -26,6 +26,7 @@ enum FacingDirection {
 "Player Variables"
 var _username: String
 var _host: bool = false
+var _local: bool = false
 var _root_player: bool = false
 var _team: int = 1
 var _character_id: int = 0
@@ -161,7 +162,7 @@ func _move_gun_facing_position() -> void:
 		$Gun.scale.x = -1
 		$Gun.position.x = -40
 	
-	if old_gun_scale_x != $Gun.scale.x:
+	if old_gun_scale_x != $Gun.scale.x and not _local:
 		server.send_change_gun_position($Gun.scale.x)
 
 
@@ -233,7 +234,7 @@ func _update_player_state() -> void:
 			elif is_on_floor():
 				_player_state = PlayerState.GROUND
 	
-	if old_player_state != _player_state:
+	if old_player_state != _player_state and not _local:
 		server.send_change_player_state(_player_state)
 
 
@@ -281,10 +282,10 @@ func _do_horizontal_movement(controls_mappings: Dictionary, delta) -> void:
 	elif _x_input < 0:
 		_facing_direction = FacingDirection.LEFT
 	
-	if old_x_input != _x_input:
+	if old_x_input != _x_input and not _local:
 		server.send_change_x_input(_x_input)
 	
-	if _old_facing_direction != _facing_direction:
+	if _old_facing_direction != _facing_direction and not _local:
 		server.send_change_facing_direction(_facing_direction)
 	
 	_velocity.x += _x_input * _PLAYER_ACCELERATION * delta
@@ -357,7 +358,8 @@ func _move_player() -> void:
 	
 	move_and_slide(_velocity, Vector2(0, -1))
 	
-	server.send_player_movement(position.x, position.y)
+	if not _local:
+		server.send_player_movement(position.x, position.y)
 
 
 func _do_shooting(controls_mappings: Dictionary, delta: float) -> void:
@@ -399,7 +401,7 @@ func _do_shooting(controls_mappings: Dictionary, delta: float) -> void:
 
 
 func _move_camera() -> void:
-	if _root_player:
+	if _root_player and not _local:
 		for player in get_parent().get_children():
 			$Camera.current = player == self
 
@@ -469,6 +471,13 @@ func set_root_player(root_player: bool) -> void:
 	"""
 	
 	_root_player = root_player
+
+
+func set_local(local: bool) -> void:
+	"""
+	Sets whether or not this player is a local player
+	"""
+	_local = local
 
 
 func get_team() -> int:

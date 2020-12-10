@@ -35,18 +35,28 @@ func _on_start_button_pressed() -> void:
 	"""
 	Called when the start button is pressed.
 	"""
-	for player_id in _players:
+	for player_id in _players.size():
 		var lobby_player: Node = _players[player_id]
 		var game_player: Node = preload("res://src/main/game/player/Player.tscn").instance()
 
 		game_player.set_name(lobby_player.get_name())
 		game_player.set_username(lobby_player.get_username())
 		game_player.set_root_player(true)
+		game_player.set_local(true)
 
 		_players[player_id] = game_player
 
-	get_tree().change_scene(server._GAME_SCENE_PATH)
+		server._players[player_id] = _players[player_id] # Accessing private is not preferred, but don't have much time
 
+
+	var world: Node2D = load(server._GAME_SCENE_PATH).instance()
+	world.get_node('Camera').current = true
+	world.get_node('Camera')._targets = _players
+	world.get_node('Camera').set_process(true)
+	var packed_world: PackedScene = PackedScene.new()
+	packed_world.pack(world)
+
+	get_tree().change_scene_to(packed_world)
 
 
 func _on_leave_button_pressed() -> void:
@@ -60,12 +70,23 @@ func _on_leave_button_pressed() -> void:
 	# server.disconnect_from_server()
 
 
+func _on_add_player_button_pressed() -> void:
+	"""
+	Called when the add player button is pressed.
+	"""
+	_add_new_player()
+
+
 func _add_new_player():
 	"""
 	Adds a player to the lobby
 	"""
-	var lobby_player = lobby_player_scene.instance()
-	lobby_player.set_username('Player')
-	lobby_player.set_host(true)
+	var lobby_player: Node = lobby_player_scene.instance()
+	var player_list: Control = $Content/CenterBackground/Center/Players/PlayerList
+	var username: String = 'Player ' + str(player_list.get_child_count() + 1)
+
+	lobby_player.set_username(username)
+	lobby_player.text = username
+
 	_players.append(lobby_player)
-	$Content/CenterBackground/Center/Players/PlayerList.add_child(lobby_player)
+	player_list.add_child(lobby_player)
