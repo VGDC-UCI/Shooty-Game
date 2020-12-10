@@ -18,7 +18,7 @@ onready var score_label := $Center/PlayerInformation/Score
 
 
 func _process(_delta: float) -> void:
-	score_label.text = "K: " + str(player.get_kills()) + " / D: " + str(player.get_deaths())
+	score_label.text = "K: " + str(player._kills) + " / D: " + str(player._deaths)
 
 
 func track_player(target: Player) -> void:

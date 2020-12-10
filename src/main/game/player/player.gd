@@ -25,7 +25,9 @@ enum FacingDirection {
 
 "Player Variables"
 var _username: String
+var _network_id: int
 var _host: bool = false
+var _local: bool = false
 var _root_player: bool = false
 var _team: int = 1
 var _character_id: int = 0
@@ -104,10 +106,10 @@ func _process(_delta: float) -> void:
 	
 	_move_player_facing_position()
 	_update_player_animations()
+	_update_health_bar()
 	
 	if _root_player:
 		_move_gun_facing_position()
-		_update_health_bar()
 
 
 func _move_player_facing_position() -> void:
@@ -161,7 +163,7 @@ func _move_gun_facing_position() -> void:
 		$Gun.scale.x = -1
 		$Gun.position.x = -40
 	
-	if old_gun_scale_x != $Gun.scale.x:
+	if old_gun_scale_x != $Gun.scale.x and not _local:
 		server.send_change_gun_position($Gun.scale.x)
 
 
@@ -233,7 +235,7 @@ func _update_player_state() -> void:
 			elif is_on_floor():
 				_player_state = PlayerState.GROUND
 	
-	if old_player_state != _player_state:
+	if old_player_state != _player_state and not _local:
 		server.send_change_player_state(_player_state)
 
 
@@ -281,10 +283,10 @@ func _do_horizontal_movement(controls_mappings: Dictionary, delta) -> void:
 	elif _x_input < 0:
 		_facing_direction = FacingDirection.LEFT
 	
-	if old_x_input != _x_input:
+	if old_x_input != _x_input and not _local:
 		server.send_change_x_input(_x_input)
 	
-	if _old_facing_direction != _facing_direction:
+	if _old_facing_direction != _facing_direction and not _local:
 		server.send_change_facing_direction(_facing_direction)
 	
 	_velocity.x += _x_input * _PLAYER_ACCELERATION * delta
@@ -339,6 +341,7 @@ func _do_dashing(controls_mappings: Dictionary, delta: float) -> void:
 				_velocity = _dash_direction * _dash_force
 				
 				$DashParticles.emitting = true
+				server.send_dash_particles()
 
 
 func _do_wall_slide() -> void:
@@ -357,7 +360,8 @@ func _move_player() -> void:
 	
 	move_and_slide(_velocity, Vector2(0, -1))
 	
-	server.send_player_movement(position.x, position.y)
+	if not _local:
+		server.send_player_movement(position.x, position.y)
 
 
 func _do_shooting(controls_mappings: Dictionary, delta: float) -> void:
@@ -379,46 +383,72 @@ func _do_shooting(controls_mappings: Dictionary, delta: float) -> void:
 		var bullet_angle := atan2(direction.y, direction.x)
 		
 		_shoot_direction = Vector2(cos(bullet_angle), sin(bullet_angle))
-		$Gun/BulletExit.position = _shoot_direction * _bullet_exit_radius + self.position
 		
 		_time_left_till_next_bullet -= delta
 		
 		if _time_left_till_next_bullet <= 0:
-			var bullet = _bullet_template.instance()
+			shoot_bullet(_shoot_direction)
 			
-			bullet.set_direction(_shoot_direction)
-			bullet.position = $Gun/BulletExit.position
-			bullet.scale *= _bullet_scale
-			bullet._player_owner = self
+			server.send_bullet_shot(_shoot_direction.x, _shoot_direction.y)
+
+
+func shoot_bullet(shoot_direction: Vector2) -> void:
+	"""
+	Shoots a bullet from this player.
+	"""
+	
+	$Gun/BulletExit.position = shoot_direction * _bullet_exit_radius + self.position
+	
+	var bullet = _bullet_template.instance()
 			
-			get_tree().get_root().get_node("Bullets").add_child(bullet)
-			
-			_time_left_till_next_bullet = _fire_rate
-			
-			#server.send_bullet_shot()
+	bullet.bullet_direction = shoot_direction
+	bullet.position = $Gun/BulletExit.position
+	bullet.scale *= _bullet_scale
+	bullet._player_owner = self
+	
+	get_tree().current_scene.get_node("Bullets").add_child(bullet)
+	
+	_time_left_till_next_bullet = _fire_rate
 
 
 func _move_camera() -> void:
-	if _root_player:
+	if _root_player and not _local:
 		for player in get_parent().get_children():
 			$Camera.current = player == self
 
 
-func on_hit(damage: float) -> void:
+func on_hit(damage: float, from: Node) -> void:
+	"""
+	Called when a bullet hits the player.
+	"""
+	
 	if _shield > 0:
 		_shield -= damage
+		server.send_change_health(_network_id, _health, _shield)
 	elif _health > 0:
 		_health -= damage
+		server.send_change_health(_network_id, _health, _shield)
 	else:
 		death()
+		from.add_kill()
 
 
 func death() -> void:
-	#RESPAWN
+	_respawn()
+	
 	_shield = _MAX_SHIELD
 	_health = _MAX_HEALTH
 	
 	add_death()
+
+
+func _respawn() -> void:
+	"""
+	Respawns the player at a random spawn point.
+	"""
+	
+	position = get_tree().current_scene._get_random_spawn_point()
+	server.send_player_movement(position.x, position.y)
 
 
 func get_username() -> String:
@@ -469,6 +499,14 @@ func set_root_player(root_player: bool) -> void:
 	"""
 	
 	_root_player = root_player
+
+
+func set_local(local: bool) -> void:
+	"""
+	Sets whether or not this player is a local player.
+	"""
+	
+	_local = local
 
 
 func get_team() -> int:
@@ -567,6 +605,8 @@ func add_kill() -> void:
 	"""
 	
 	_kills += 1
+	
+	server.send_change_kills(_network_id, _kills)
 
 
 func get_deaths() -> int:
@@ -583,3 +623,5 @@ func add_death() -> void:
 	"""
 	
 	_deaths += 1
+	
+	server.send_change_deaths(_network_id, _deaths)

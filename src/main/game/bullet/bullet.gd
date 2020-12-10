@@ -32,24 +32,14 @@ func _physics_process(delta: float) -> void:
 		queue_free()
 
 
-func set_direction(direction: Vector2) -> void:
-	"""
-	Sets the direction of the bullet.
-
-	direction: The new direction of the bullet.
-	"""
-
-	bullet_direction = direction
-
-
 func _on_hit(hit_object: Node) -> void:
 	"""
 	Called when the bullet hits an object. Destroys the bullet and
 	damages a player if one was hit.
 	"""
-	
-	queue_free()
 
 	if hit_object != _player_owner:
+		queue_free()
+		
 		if hit_object.is_in_group("Hittable"):
-			hit_object.on_hit(bullet_damage)
+			hit_object.on_hit(bullet_damage, _player_owner)

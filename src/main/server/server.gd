@@ -19,7 +19,7 @@ const _MULTIPLAYER_SCENE_PATH: String = "res://src/main/menus/multiplayer/Multip
 const _LOBBY_SCENE_PATH: String = "res://src/main/menus/lobby/Lobby.tscn"
 const _GAME_SCENE_PATH: String = "res://src/main/game/world/World.tscn"
 
-const MAIN_HOST: String = "127.0.0.1"
+const MAIN_HOST: String = "18.208.252.217"
 const MAIN_PORT: int    = 10567
 
 
@@ -277,6 +277,7 @@ remote func start_game() -> void:
 		game_player.set_name(lobby_player.get_name())
 		game_player.set_username(lobby_player.get_username())
 		game_player.set_host(lobby_player.is_host())
+		game_player._network_id = player_id
 		
 		if player_id == root_id:
 			game_player.set_root_player(true)
@@ -403,3 +404,105 @@ remote func change_x_input(peer_id: int, x_input: float) -> void:
 			var player: Node = _players[peer_id]
 			
 			player.set_x_input(x_input)
+
+
+func send_bullet_shot(x_dir: float, y_dir: float) -> void:
+	"""
+	Sends a request to the server to shoot a bullet.
+	"""
+	
+	rpc_unreliable_id(1, "bullet_shot", x_dir, y_dir)
+
+
+remote func bullet_shot(peer_id: int, x_dir: float, y_dir: float) -> void:
+	"""
+	Shoots a bullet from the peer.
+	"""
+	
+	var root_id: int = get_tree().get_network_unique_id()
+	
+	if root_id != peer_id:
+		if peer_id in _players:
+			var player: Node = _players[peer_id]
+			
+			player.shoot_bullet(Vector2(x_dir, y_dir))
+
+
+func send_change_health(player_id: int, health: float, shield: float) -> void:
+	"""
+	Sends a request to the server to change the shield and health.
+	"""
+	
+	rpc_unreliable_id(1, "change_health", player_id, health, shield)
+
+
+remote func change_health(peer_id: int, health: float, shield: float) -> void:
+	"""
+	Changes the health and shield of the given peer.
+	"""
+	
+	if peer_id in _players:
+			var player: Node = _players[peer_id]
+			
+			player._health = health
+			player._shield = shield
+
+
+func send_change_kills(player_id: int, kills: int) -> void:
+	"""
+	Sends a request to the server to change the kills of the player.
+	"""
+	
+	rpc_unreliable_id(1, "change_kills", player_id, kills)
+
+
+remote func change_kills(peer_id: int, kills: int) -> void:
+	"""
+	Changes the kills of the given peer.
+	"""
+	
+	if peer_id in _players:
+		var player: Node = _players[peer_id]
+		
+		player._kills = kills
+
+
+func send_change_deaths(player_id: int, deaths: int) -> void:
+	"""
+	Sends a request to the server to change the deaths of the player.
+	"""
+	
+	rpc_unreliable_id(1, "change_deaths", player_id, deaths)
+
+
+remote func change_deaths(peer_id: int, deaths: int) -> void:
+	"""
+	Changes the kills of the given peer.
+	"""
+	
+	if peer_id in _players:
+		var player: Node = _players[peer_id]
+		
+		player._deaths = deaths
+
+
+func send_dash_particles() -> void:
+	"""
+	Sends dash particles request to the server.
+	"""
+	
+	rpc_unreliable_id(1, "dash_particles")
+
+
+remote func dash_particles(peer_id: int) -> void:
+	"""
+	Activates dash particles for the given peer.
+	"""
+	
+	var root_id: int = get_tree().get_network_unique_id()
+	
+	if root_id != peer_id:
+		if peer_id in _players:
+			var player: Node = _players[peer_id]
+			
+			player.get_node("DashParticles").emitting = true
