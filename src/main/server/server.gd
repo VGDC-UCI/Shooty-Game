@@ -214,3 +214,33 @@ remote func change_gun_position(gun_position: int) -> void:
 		player.set_gun_position(gun_position)
 		
 		rpc_unreliable("change_gun_position", player_id, gun_position)
+
+
+remote func change_player_state(player_state: int) -> void:
+	"""
+	Changes the player state of the given player.
+	"""
+	
+	var player_id: int = get_tree().get_rpc_sender_id()
+	
+	if player_id in _players:
+		var player: Node = _players[player_id]
+		
+		player.set_player_state(player_state)
+		
+		rpc_unreliable("change_player_state", player_id, player_state)
+
+
+remote func change_x_input(x_input: float) -> void:
+	"""
+	Changes the x input of the given player.
+	"""
+	
+	var player_id: int = get_tree().get_rpc_sender_id()
+	
+	if player_id in _players:
+		var player: Node = _players[player_id]
+		
+		player.set_x_input(x_input)
+		
+		rpc_unreliable("change_x_input", player_id, x_input)

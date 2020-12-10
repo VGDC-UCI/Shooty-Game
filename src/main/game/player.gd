@@ -16,6 +16,8 @@ var _y: float = 0
 
 var _facing_direction: int = 0
 var _gun_position: int = 0
+var _player_state: int = 0
+var _x_input: float = 0
 
 
 func get_username() -> String:
@@ -112,3 +114,35 @@ func set_gun_position(gun_position: int) -> void:
 	"""
 	
 	_gun_position = gun_position
+
+
+func get_player_state() -> int:
+	"""
+	Returns the player state of the player.
+	"""
+	
+	return _player_state
+
+
+func set_player_state(player_state: int) -> void:
+	"""
+	Sets the player state of this player.
+	"""
+	
+	_player_state = player_state
+
+
+func get_x_input() -> float:
+	"""
+	Returns the x input of the player.
+	"""
+	
+	return _x_input
+
+
+func set_x_input(x_input: float) -> void:
+	"""
+	Sets the x input of the player.
+	"""
+	
+	_x_input = x_input
