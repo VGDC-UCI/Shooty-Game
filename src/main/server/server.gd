@@ -92,6 +92,9 @@ func _on_player_disconnected(player_id: int) -> void:
 			rpc("set_host", _get_host_id())
 	
 	rpc("disconnect_peer", player_id)
+	
+	if len(_players) == 0:
+		_gamestate = gamestate.PRE_GAME
 
 
 func _get_host_id() -> int:
@@ -154,6 +157,26 @@ remote func chat_message(message: String) -> void:
 	
 	if _gamestate == gamestate.PRE_GAME:
 		rpc("chat_message", player_id, message)
+
+
+remote func change_team(team: int) -> void:
+	"""
+	Changes the team of the given player.
+	"""
+	
+	var player_id: int = get_tree().get_rpc_sender_id()
+	
+	rpc("change_team", player_id, team)
+
+
+remote func change_class(class_id: int) -> void:
+	"""
+	Changes the team of the given player.
+	"""
+	
+	var player_id: int = get_tree().get_rpc_sender_id()
+	
+	rpc("change_class", player_id, class_id)
 
 
 remote func start_game() -> void:
