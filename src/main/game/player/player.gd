@@ -87,8 +87,6 @@ var _wall_sliding: bool = false
 
 "Combat Variables"
 var _bullet_exit_radius: float = 54.0
-var _bullet_speed: float = 500.0
-var _bullet_damage: float = 1.0
 var _bullet_scale: float = 1.0
 var _fire_rate: float = 0.2
 
@@ -197,10 +195,10 @@ func _physics_process(delta: float) -> void:
 	Called every frame, calculates physics for the player.
 	"""
 	
-	_update_player_state()
-	
 	if _root_player:
 		var controls_mappings: Dictionary = _get_controls_mappings()
+		
+		_update_player_state()
 		
 		_do_gravity(delta)
 		_do_player_movement(controls_mappings, delta)
@@ -218,6 +216,8 @@ func _update_player_state() -> void:
 	Updates the current state of the player.
 	"""
 	
+	var old_player_state: int = _player_state
+	
 	match _player_state:
 		PlayerState.GROUND:
 			if not is_on_floor():
@@ -232,6 +232,9 @@ func _update_player_state() -> void:
 				_player_state = PlayerState.AIR
 			elif is_on_floor():
 				_player_state = PlayerState.GROUND
+	
+	if old_player_state != _player_state:
+		server.send_change_player_state(_player_state)
 
 
 func _do_gravity(delta: float) -> void:
@@ -267,6 +270,7 @@ func _do_horizontal_movement(controls_mappings: Dictionary, delta) -> void:
 	
 	var right_strength: float = Input.get_action_strength(controls_mappings["right"])
 	var left_strength: float = Input.get_action_strength(controls_mappings["left"])
+	var old_x_input = _x_input
 	
 	_x_input = right_strength - left_strength
 	
@@ -276,6 +280,9 @@ func _do_horizontal_movement(controls_mappings: Dictionary, delta) -> void:
 		_facing_direction = FacingDirection.RIGHT
 	elif _x_input < 0:
 		_facing_direction = FacingDirection.LEFT
+	
+	if old_x_input != _x_input:
+		server.send_change_x_input(_x_input)
 	
 	if _old_facing_direction != _facing_direction:
 		server.send_change_facing_direction(_facing_direction)
@@ -380,15 +387,15 @@ func _do_shooting(controls_mappings: Dictionary, delta: float) -> void:
 			var bullet = _bullet_template.instance()
 			
 			bullet.set_direction(_shoot_direction)
-			bullet.bullet_speed = _bullet_speed
-			bullet.bullet_damage = _bullet_damage
 			bullet.position = $Gun/BulletExit.position
 			bullet.scale *= _bullet_scale
 			bullet._player_owner = self
 			
-			get_tree().get_root().add_child(bullet)
+			get_tree().get_root().get_node("Bullets").add_child(bullet)
 			
 			_time_left_till_next_bullet = _fire_rate
+			
+			#server.send_bullet_shot()
 
 
 func _move_camera() -> void:
@@ -512,6 +519,38 @@ func set_facing_direction(facing_direction: int) -> void:
 	_facing_direction = facing_direction
 	
 	$Hitbox/AnimatedSprite.flip_h = _facing_direction == FacingDirection.RIGHT
+
+
+func get_player_state() -> int:
+	"""
+	Gets the player state.
+	"""
+	
+	return _player_state
+
+
+func set_player_state(player_state: int) -> void:
+	"""
+	Sets the player state.
+	"""
+	
+	_player_state = player_state
+
+
+func get_x_input() -> float:
+	"""
+	Returns the x input of the player.
+	"""
+	
+	return _x_input
+
+
+func set_x_input(x_input: float) -> void:
+	"""
+	Sets the x input of the player.
+	"""
+	
+	_x_input = x_input
 
 
 func get_kills() -> int:

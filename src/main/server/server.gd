@@ -359,3 +359,47 @@ remote func change_gun_position(peer_id: int, gun_position: int) -> void:
 			else:
 				gun.scale.x = -1
 				gun.position.x = -40
+
+
+func send_change_player_state(player_state: int) -> void:
+	"""
+	Sends a request to the server to change this player's player state.
+	"""
+	
+	rpc_unreliable_id(1, "change_player_state", player_state)
+
+
+remote func change_player_state(peer_id: int, player_state: int) -> void:
+	"""
+	Changes the player state of the given peer.
+	"""
+	
+	var root_id: int = get_tree().get_network_unique_id()
+	
+	if root_id != peer_id:
+		if peer_id in _players:
+			var player: Node = _players[peer_id]
+			
+			player.set_player_state(player_state)
+
+
+func send_change_x_input(x_input: float) -> void:
+	"""
+	Sends a request to the server to change this player's x input.
+	"""
+	
+	rpc_unreliable_id(1, "change_x_input", x_input)
+
+
+remote func change_x_input(peer_id: int, x_input: float) -> void:
+	"""
+	Changes the x input of the given peer.
+	"""
+	
+	var root_id: int = get_tree().get_network_unique_id()
+	
+	if root_id != peer_id:
+		if peer_id in _players:
+			var player: Node = _players[peer_id]
+			
+			player.set_x_input(x_input)

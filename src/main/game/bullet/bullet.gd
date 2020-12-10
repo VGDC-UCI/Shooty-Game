@@ -8,7 +8,7 @@ Author: Srayan Jana
 extends KinematicBody2D
 
 
-export var bullet_speed: float = 100
+export var bullet_speed: float = 500
 export var bullet_damage: float = 1
 export var life_span: float = 60 # In seconds.
 var bullet_direction: Vector2 = Vector2(1, 0)
