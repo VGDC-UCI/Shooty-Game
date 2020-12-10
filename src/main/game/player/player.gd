@@ -1,7 +1,7 @@
 """
 Handles inputs from client and inputs them into the player state machine.
 
-Author: Srayan Jana, Kang Rui Yu, Daniel Lu
+Author: Srayan Jana, Kang Rui Yu, Daniel Lu, & Jacob Singleton
 """
 
 
@@ -11,20 +11,28 @@ class_name Player
 
 
 enum PlayerState {
-	GROUND, AIR, WALL
+	GROUND,
+	AIR,
+	WALL
+}
+
+
+enum FacingDirection {
+	RIGHT,
+	LEFT
 }
 
 
 "Player Variables"
-var _local_camera: bool = true
-
 var _username: String
 var _host: bool = false
+var _root_player: bool = false
 var _team: int = 1
-var _character: String
+var _character_id: int = 0
 
 const _MAX_SHIELD: int = 10
 var _shield:       int = _MAX_SHIELD
+var _shield_pressed: bool = false
 
 const _MAX_HEALTH: int = 10
 var _health:       int = _MAX_HEALTH
@@ -39,86 +47,371 @@ const _GRAVITY: int = 1200
 const _PLAYER_ACCELERATION: float = 1800.0
 const _PLAYER_DAMP: float = 0.7
 
-var _x_input := 0.0
+var _x_input: float = 0.0
 var _velocity := Vector2()
+var _controls_id: int
+var _facing_direction = FacingDirection.RIGHT
 
 "Jumping Variables"
 var _jump_force: int = 600
 
-var _max_air_jumps: int = 2
-var _air_jumps: int = _max_air_jumps
+var _max_jumps: int = 3
+var _jumps_left: int = _max_jumps
 
 # The time frame after the last jump press will still activate.
-var _jump_persistance_time_frame: float = 0.2
+var _jump_time_frame: float = 0.2
 # The current time frame left for jump to be called.
-var _jump_persistance_time_left: float = 0.0
+var _jump_time_left: float = 0.0
 
 # The time frame since last ground touch that will still count as on ground.
-var _on_ground_persistance_time_frame: float = 0.2
+var _on_ground_time_frame: float = 0.2
 # The current time frame left for on ground to be true.
-var _on_ground_persistance_time_left: float = 0.0
-
-var half_jump: bool = false
-var jumped: bool = false
+var _on_ground_time_left: float = 0.0
 
 "Dash Variables"
 var _dash_force: int = 1300
 
-onready var _dash_timer = $Dashing/DashTimer
-onready var _dash_particles = $Dashing/DashParticles
-
-export (PackedScene) var dash_object
-
-export var _dash_cooldown: int = 1
-export var _max_dashes: int = 1
+var _max_dashes: int = 1
 var _dashes = _max_dashes
 
-puppet var is_dashing: bool = false
-puppet var can_dash: bool = false
-puppet var dash_direction := Vector2()
+var _dash_cooldown: float = 1.5 # In seconds.
+var _dash_timer: float = 0
+var _dash_direction := Vector2()
 
 "Gun Variables"
-onready var gun := $Position2D/gun
-onready var gun_hold :=$Position2D
-var deg_gun : float
+var _gun_angle: float
 
-"Wall Slide Properties"
-export var wall_slide_speed := 150
+"Wall Sliding Variables"
+var _wall_slide_speed: int = 150
+var _wall_sliding: bool = false
 
-"Wall Slide States"
-puppet var wall_sliding = false
-
-"Combat Properties"
-var bullet_exit_radius := 54.0
-export var bullet_speed := 500.0
-export var bullet_damage := 1.0
-export var bullet_scale := 1.0
-export var fire_rate := 0.2
+"Combat Variables"
+var _bullet_exit_radius: float = 54.0
+var _bullet_speed: float = 500.0
+var _bullet_damage: float = 1.0
+var _bullet_scale: float = 1.0
+var _fire_rate: float = 0.2
 
 "Combat States"
-puppet var who_is_attacking
-puppet var is_shooting := false
-puppet var shoot_direction := Vector2()
-var bullet_template = preload("res://src/main/game/bullet/Bullet.tscn")
-var time_left_till_next_bullet = fire_rate
-
-"Animations"
-onready var animated_sprite: AnimatedSprite = $AnimatedSprite
-var air_animation1: bool = false # Whether to play the first air animation or second
-
-"UI"
-var show_status_bars: bool = false
-export (bool) var debug_mode: bool = false
+var _shoot_direction := Vector2()
+var _bullet_template = preload("res://src/main/game/bullet/Bullet.tscn")
+var _time_left_till_next_bullet = _fire_rate
 
 
-func _ready() -> void:
+func _process(_delta: float) -> void:
 	"""
-	Called when the player is spawned.
-	Makes connections for the dash timer and sets their name.
+	Called every frame, updates the animated sprite and
+	player UI.
 	"""
 	
-	$PlayerInformation/Name.text = _username
-	_dash_timer.connect("timeout", self, "dash_timer_timeout")
+	_move_player_facing_position()
+	_update_player_animations()
+	
+	if _root_player:
+		_move_gun_facing_position()
+		_update_health_bar()
+
+
+func _move_player_facing_position() -> void:
+	"""
+	Moves the player to the position they are facing.
+	"""
+	
+	$Hitbox/AnimatedSprite.flip_h = _facing_direction == FacingDirection.RIGHT
+
+
+func _update_player_animations() -> void:
+	"""
+	Updates the player's sprite animations.
+	"""
+	
+	var animated_sprite: Node = $Hitbox/AnimatedSprite
+
+	# Scale Sprite based on velocity.
+	animated_sprite.scale.x = 0.12 * (1 + 0.05 * (abs(_velocity.x) / 500))
+	animated_sprite.scale.x = clamp(animated_sprite.scale.x, 0.12, 0.14)
+	animated_sprite.scale.y = 0.12 * (1 + 0.1 * (abs(_velocity.y) / 500))
+	animated_sprite.scale.y = clamp(animated_sprite.scale.y, 0.12, 0.13)
+	
+	match _player_state:
+		PlayerState.GROUND:
+			if _x_input != 0:
+				animated_sprite.play('run')
+			else:
+				animated_sprite.play('idle')
+		PlayerState.AIR:
+			if _jump_time_left > 0:
+				animated_sprite.play('jumping')
+			else:
+				animated_sprite.play('falling')
+		PlayerState.WALL:
+			animated_sprite.play('jumping')
+
+
+func _move_gun_facing_position() -> void:
+	"""
+	Moves the gun facing position to where the mouse cursor is pointing.
+	"""
+	
+	var mouse_pos_x: float = get_global_mouse_position().x - position.x
+	var old_gun_scale_x: float = $Gun.scale.x
+	
+	if mouse_pos_x >= 0:
+		$Gun.scale.x = 1
+		$Gun.position.x = 40
+	else:
+		$Gun.scale.x = -1
+		$Gun.position.x = -40
+	
+	if old_gun_scale_x != $Gun.scale.x:
+		server.send_change_gun_position($Gun.scale.x)
+
+
+func _update_health_bar() -> void:
+	"""
+	Updates the player health and shield bar.
+	"""
+	
+	$BarInformation/HealthBar.value = _health
+	$BarInformation/ShieldBar.value = _shield
+
+
+func _get_controls_mappings() -> Dictionary:
+	"""
+	Returns the controls mappings for the player.
+	"""
+	
+	return controls.get_control_mappings(_controls_id)
+
+
+func _get_controls_type() -> int:
+	"""
+	Gets the id of the player's control scheme.
+	"""
+	
+	return controls.get_control_type(_controls_id)
+
+
+func _physics_process(delta: float) -> void:
+	"""
+	Called every frame, calculates physics for the player.
+	"""
+	
+	_update_player_state()
+	
+	if _root_player:
+		var controls_mappings: Dictionary = _get_controls_mappings()
+		
+		_do_gravity(delta)
+		_do_player_movement(controls_mappings, delta)
+		_do_dashing(controls_mappings, delta)
+		_do_wall_slide()
+		
+		_move_player()
+		_do_shooting(controls_mappings, delta)
+		
+		_move_camera()
+
+
+func _update_player_state() -> void:
+	"""
+	Updates the current state of the player.
+	"""
+	
+	match _player_state:
+		PlayerState.GROUND:
+			if not is_on_floor():
+				_player_state = PlayerState.AIR
+		PlayerState.AIR:
+			if is_on_floor():
+				_player_state = PlayerState.GROUND
+			elif is_on_wall():
+				_player_state = PlayerState.WALL
+		PlayerState.WALL:
+			if not is_on_wall():
+				_player_state = PlayerState.AIR
+			elif is_on_floor():
+				_player_state = PlayerState.GROUND
+
+
+func _do_gravity(delta: float) -> void:
+	"""
+	Applies gravity to the player.
+	"""
+	
+	if is_on_floor():
+		_velocity.y = _GRAVITY * delta
+		_on_ground_time_left = _on_ground_time_frame
+		_jumps_left = _max_jumps
+		_dashes = _max_dashes
+	else:
+		_velocity.y += _GRAVITY * delta
+		_on_ground_time_left -= delta
+		_on_ground_time_left = clamp(_on_ground_time_left, 0, _on_ground_time_frame)
+
+
+func _do_player_movement(controls_mappings: Dictionary, delta: float) -> void:
+	"""
+	Does all player movement depending on their inputs.
+	"""
+	
+	_do_horizontal_movement(controls_mappings, delta)
+	_do_jumping(controls_mappings, delta)
+
+
+func _do_horizontal_movement(controls_mappings: Dictionary, delta) -> void:
+	"""
+	Sets the horizontal movement for the player depending
+	on their inputs.
+	"""
+	
+	var right_strength: float = Input.get_action_strength(controls_mappings["right"])
+	var left_strength: float = Input.get_action_strength(controls_mappings["left"])
+	
+	_x_input = right_strength - left_strength
+	
+	var _old_facing_direction: int = _facing_direction
+	
+	if _x_input > 0:
+		_facing_direction = FacingDirection.RIGHT
+	elif _x_input < 0:
+		_facing_direction = FacingDirection.LEFT
+	
+	if _old_facing_direction != _facing_direction:
+		server.send_change_facing_direction(_facing_direction)
+	
+	_velocity.x += _x_input * _PLAYER_ACCELERATION * delta
+	_velocity.x *= pow(_PLAYER_DAMP, delta * 10.0)
+
+
+func _do_jumping(controls_mappings: Dictionary, delta: float) -> void:
+	"""
+	Sets the jumping movement for the player depending 
+	on their inputs.
+	"""
+	
+	if Input.is_action_just_pressed(controls_mappings["jump"]):
+		_jump_time_left = _jump_time_frame
+	elif _jump_time_left > 0:
+		_jump_time_left -= delta
+		_jump_time_left = clamp(_jump_time_left, 0, _jump_time_frame)
+	
+	if _jump_time_left > 0:
+		# Player is jumping off of the ground.
+		if _on_ground_time_left > 0:
+			_jumps_left = _max_jumps
+		
+		if _jumps_left > 0 or is_on_wall():
+			if not is_on_wall():
+				_jumps_left -= 1
+			
+			_velocity.y = -_jump_force
+			_jump_time_left = 0
+		
+
+
+func _do_dashing(controls_mappings: Dictionary, delta: float) -> void:
+	"""
+	Does dashing for the player depending on their inputs.
+	"""
+	
+	if _dash_timer > 0:
+		_dash_timer -= delta
+	
+	if _dash_timer <= 0 and _x_input != 0:
+		if Input.is_action_just_pressed(controls_mappings["dash"]):
+			_dash_timer = _dash_cooldown
+			
+			if _x_input > 0:
+				_dash_direction = Vector2(1, 0)
+			else:
+				_dash_direction = Vector2(-1, 0)
+			
+			if _dashes > 0:
+				_dashes -= 1
+				_velocity = _dash_direction * _dash_force
+				
+				$DashParticles.emitting = true
+
+
+func _do_wall_slide() -> void:
+	"""
+	If the player is on the wall, does a wall slide.
+	"""
+	
+	if is_on_wall() and _velocity.y > _wall_slide_speed:
+		_velocity.y = _wall_slide_speed
+
+
+func _move_player() -> void:
+	"""
+	Moves the player depending on their velocity.
+	"""
+	
+	move_and_slide(_velocity, Vector2(0, -1))
+	
+	server.send_player_movement(position.x, position.y)
+
+
+func _do_shooting(controls_mappings: Dictionary, delta: float) -> void:
+	"""
+	Makes the player shoot depending on their inputs.
+	"""
+	
+	if Input.is_action_pressed(controls_mappings["shoot"]):
+		var _control_scheme: int = _get_controls_type()
+
+		var direction: Vector2
+		
+		# Control scheme 0 is keyboard layout.
+		if _control_scheme == 0:
+			direction = get_position().direction_to(get_global_mouse_position())
+		else:
+			direction = Vector2(Input.get_joy_axis(0, JOY_AXIS_2), Input.get_joy_axis(0, JOY_AXIS_3)).normalized()
+			
+		var bullet_angle := atan2(direction.y, direction.x)
+		
+		_shoot_direction = Vector2(cos(bullet_angle), sin(bullet_angle))
+		$Gun/BulletExit.position = _shoot_direction * _bullet_exit_radius + self.position
+		
+		_time_left_till_next_bullet -= delta
+		
+		if _time_left_till_next_bullet <= 0:
+			var bullet = _bullet_template.instance()
+			
+			bullet.set_direction(_shoot_direction)
+			bullet.bullet_speed = _bullet_speed
+			bullet.bullet_damage = _bullet_damage
+			bullet.position = $Gun/BulletExit.position
+			bullet.scale *= _bullet_scale
+			bullet._player_owner = self
+			
+			get_tree().get_root().add_child(bullet)
+			
+			_time_left_till_next_bullet = _fire_rate
+
+
+func _move_camera() -> void:
+	if _root_player:
+		for player in get_parent().get_children():
+			$Camera.current = player == self
+
+
+func on_hit(damage: float) -> void:
+	if _shield > 0:
+		_shield -= damage
+	elif _health > 0:
+		_health -= damage
+	else:
+		death()
+
+
+func death() -> void:
+	#RESPAWN
+	_shield = _MAX_SHIELD
+	_health = _MAX_HEALTH
+	
+	add_death()
 
 
 func get_username() -> String:
@@ -135,6 +428,8 @@ func set_username(username: String) -> void:
 	"""
 	
 	_username = username
+	
+	$NameContainer/PlayerName.text = username
 
 
 func is_host() -> bool:
@@ -153,239 +448,99 @@ func set_host(host: bool) -> void:
 	_host = host
 
 
-func _process(_delta: float) -> void:
-	update_animations()
-	update_ui()
-
-
-func update_animations() -> void:
-	animated_sprite.flip_h = shoot_direction.x > 0
-
-	gun_move()
-
-	# Scale Sprite based on velocity
-	animated_sprite.scale.x = 0.12 * (1 + 0.05 * (abs(_velocity.x) / 500))
-	animated_sprite.scale.x = clamp(animated_sprite.scale.x, 0.12, 0.14)
-	animated_sprite.scale.y = 0.12 * (1 + 0.1 * (abs(_velocity.y) / 500))
-	animated_sprite.scale.y = clamp(animated_sprite.scale.y, 0.12, 0.13)
-
-	match _player_state:
-		PlayerState.GROUND:
-			if _x_input != 0:
-				animated_sprite.play('run')
-			else:
-				animated_sprite.play('idle')
-		PlayerState.AIR:
-			if jumped:
-				air_animation1 = not air_animation1
-			if air_animation1:
-				animated_sprite.play('air')
-			else:
-				animated_sprite.play('air2')
-		PlayerState.WALL:
-			pass
-
-
-func update_ui() -> void:
-	if show_status_bars:
-		$PlayerInformation/HealthBar.value = _health
-		$PlayerInformation/ShieldBar.value = _shield
-
-
-# Called every frame. 'delta' is the elapsed time since the previous frame.
-func _physics_process(delta: float) -> void:
-	update_state()
-	apply_state(delta)
-	set_shoot_position()
-	do_attack(delta)
+func is_root_player() -> bool:
+	"""
+	Returns true if this player is the root player.
+	"""
 	
-	if _local_camera:
-		set_camera()
+	return _root_player
 
 
-func update_state() -> void: # Detects for state transitions
-	match _player_state:
-		PlayerState.GROUND:
-			if not is_on_floor():
-				_player_state = PlayerState.AIR
-		PlayerState.AIR:
-			if is_on_floor():
-				_player_state = PlayerState.GROUND
-			elif is_on_wall():
-				_player_state = PlayerState.WALL
-		PlayerState.WALL:
-			if not is_on_wall():
-				_player_state = PlayerState.AIR
-			elif is_on_floor():
-				_player_state = PlayerState.GROUND
+func set_root_player(root_player: bool) -> void:
+	"""
+	Sets whether or not this player is the root player.
+	"""
+	
+	_root_player = root_player
 
 
-func apply_state(delta: float) -> void: # Apply the functions of the current state
-	match _player_state:
-		PlayerState.GROUND:
-			apply_gravity(delta) # Gravity must be applied on every state or is_on_ground() won't work correctly. (Apply before everything else)
-			apply_movement(delta)
-			apply_jump()
-			apply_dash()
-		PlayerState.AIR:
-			apply_gravity(delta)
-			apply_movement(delta)
-			apply_jump()
-			apply_dash()
-			apply_wall_slide()
-		PlayerState.WALL:
-			apply_gravity(delta)
-			apply_movement(delta)
-			apply_jump()
-			apply_dash()
-			apply_wall_slide()
-
-	move_and_slide(_velocity, Vector2(0, -1)) #added a floor
-
-	if is_network_master():
-		# player_position = position # To avoid jitter
-		rset_unreliable("player_position", position)
-		rset('velocity', _velocity)
+func get_team() -> int:
+	"""
+	Returns the team the player is on.
+	"""
+	
+	return _team
 
 
-func apply_movement(delta: float) -> void:
-	_velocity.x += _x_input * _PLAYER_ACCELERATION * delta
-	_velocity.x *= pow(_PLAYER_DAMP, delta * 10.0)
+func set_team(team: int) -> void:
+	"""
+	Sets the team of the player.
+	"""
+	
+	_team = team
 
 
-func apply_jump() -> void:
-	jumped = false
-	if _jump_persistance_time_left > 0 and _on_ground_persistance_time_left > 0: # Jumping off ground
-		jump()
-		_air_jumps = _max_air_jumps
-		print("normal_jump")
-		print(str(_velocity))
-	elif _jump_persistance_time_left > 0 and is_on_wall(): # Jumping off wall
-		jump()
-		print("wall_jump")
-		print(str(_velocity))
-	elif _jump_persistance_time_left > 0 and _air_jumps > 0: # Jumping in air
-		jump()
-		_air_jumps -= 1
-		print("air_jumps_left: " + str(_air_jumps))
-		print(str(_velocity))
-	elif half_jump and _velocity.y < 0: # Half jumping
-		_velocity.y *= 0.5
+func get_character_id() -> int:
+	"""
+	Returns the id of the character that the player is playing.
+	"""
+	
+	return _character_id
 
 
-func jump() -> void:
-	_velocity.y = -_jump_force
-	_jump_persistance_time_left = 0
-	jumped = true
+func set_character_id(character_id: int) -> void:
+	"""
+	Sets the character id of the player.
+	"""
+	
+	_character_id = character_id
 
 
-func apply_gravity(delta: float) -> void:
-	if is_on_floor():
-		_velocity.y = _GRAVITY * delta
-		_on_ground_persistance_time_left = _on_ground_persistance_time_frame
-		_air_jumps = _max_air_jumps
-		_dashes = _max_dashes
-	else:
-		_velocity.y += _GRAVITY * delta
-		_on_ground_persistance_time_left -= delta
-		_on_ground_persistance_time_left = clamp(_on_ground_persistance_time_left, 0, _on_ground_persistance_time_frame)
+func get_facing_direction() -> int:
+	"""
+	Returns the facing direction of the player.
+	"""
+	
+	return _facing_direction
 
 
-func apply_wall_slide() -> void:
-	if is_on_wall() and _velocity.y > wall_slide_speed:
-		_velocity.y = wall_slide_speed
+func set_facing_direction(facing_direction: int) -> void:
+	"""
+	Sets the facing direction of the player.
+	"""
+	
+	_facing_direction = facing_direction
+	
+	$Hitbox/AnimatedSprite.flip_h = _facing_direction == FacingDirection.RIGHT
 
 
-func apply_dash() -> void:
-	if can_dash and is_dashing and _dashes > 0 and _dash_timer.is_stopped():
-		print(can_dash)
-		print(is_dashing)
-		dash()
-		can_dash = false
+func get_kills() -> int:
+	"""
+	Returns the amount of kills this player has.
+	"""
+	
+	return _kills
 
 
-func gun_move() -> void:
-	var mouse_pos : Vector2 = get_global_mouse_position()
-	deg_gun = mouse_pos.angle_to_point(gun.global_position)
-	gun_hold.look_at(global_position + shoot_direction)
-	if shoot_direction.x < 0:
-		gun.scale.y = -1
-	else:
-		gun.scale.y = 1
+func add_kill() -> void:
+	"""
+	Adds a kill to the player's kill count.
+	"""
+	
+	_kills += 1
 
 
-func dash() -> void:
-	_velocity = dash_direction * _dash_force
-	_dashes -= 1
-	can_dash = false
-	var dash_node = dash_object.instance()
-	_dash_timer.start(_max_dashes)
-	_dash_particles.emitting = true
-	if(is_on_wall()):
-		is_dashing = false
-	is_dashing = false
+func get_deaths() -> int:
+	"""
+	Returns the amount of deaths this player has.
+	"""
+	
+	return _deaths
 
 
-func set_shoot_position() -> void:
-	get_node("BulletExit").position = shoot_direction * bullet_exit_radius + self.position
-
-
-func do_attack(delta: float) -> void:
-	time_left_till_next_bullet -= delta
-	if is_shooting and time_left_till_next_bullet <= 0:
-		var bullet = bullet_template.instance()
-		bullet.set_direction(shoot_direction)
-		bullet.bullet_speed = bullet_speed
-		bullet.bullet_damage = bullet_damage
-		bullet.position = get_node("BulletExit").position
-		bullet.scale *= bullet_scale
-		bullet.parent_node = self
-		get_tree().get_root().add_child(bullet)
-		time_left_till_next_bullet = fire_rate
-
-
-func toggle_status_bars() -> void:
-	show_status_bars = not show_status_bars
-
-
-#this is inefficent
-func set_camera() -> void:
-	if is_network_master():
-		for player in get_parent().get_children():
-			if(player == self):
-				player.get_node("Camera2D").current = true
-			else:
-				player.get_node("Camera2D").current = false
-			pass
-
-
-func set_attacking(player_responsible) -> void:
-	# this is so that the last person who hits the player gets the kill
-	who_is_attacking = player_responsible
-	#rset("who_is_attacking", who_is_attacking)
-
-
-func on_hit(damage: float) -> void:
-	if not show_status_bars:
-		toggle_status_bars()
-
-	if _shield > 0:
-		_shield -= damage
-	elif _health > 0:
-		_health -= damage
-	else:
-		who_is_attacking.add_to_numb_of_kills(1)
-		death()
-
-
-func death() -> void:
-	#RESPAWN
-	_shield = _MAX_SHIELD
-	_health = _MAX_HEALTH
+func add_death() -> void:
+	"""
+	Adds a death to the player's death count.
+	"""
+	
 	_deaths += 1
-	if show_status_bars:
-		toggle_status_bars()
-
-
-func add_to_numb_of_kills(points: int) -> void:
-	_kills += points

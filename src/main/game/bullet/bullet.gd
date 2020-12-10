@@ -13,10 +13,10 @@ export var bullet_damage: float = 1
 export var life_span: float = 60 # In seconds.
 var bullet_direction: Vector2 = Vector2(1, 0)
 
-var parent_node := KinematicBody2D.new()
+var _player_owner
 
 
-func _physics_process( delta: float ) -> void:
+func _physics_process(delta: float) -> void:
 	"""
 	Called every frame and moves the bullet every frame. Destroys the bullet
 	if it's been alive for too long.
@@ -27,12 +27,12 @@ func _physics_process( delta: float ) -> void:
 	life_span -= delta
 
 	if life_span > 0:
-		move_and_slide( bullet_speed * bullet_direction )
+		move_and_slide(bullet_speed * bullet_direction)
 	else:
-		destroy()
+		queue_free()
 
 
-func set_direction( direction: Vector2 ) -> void:
+func set_direction(direction: Vector2) -> void:
 	"""
 	Sets the direction of the bullet.
 
@@ -42,31 +42,14 @@ func set_direction( direction: Vector2 ) -> void:
 	bullet_direction = direction
 
 
-func _on_hit( hit_object: Node ) -> void:
+func _on_hit(hit_object: Node) -> void:
 	"""
 	Called when the bullet hits an object. Destroys the bullet and
 	damages a player if one was hit.
 	"""
-
-	if hit_object == parent_node:
-		return
-
-	if hit_object.has_method('do_attack') and hit_object.team == parent_node.team: # Can't check "is_class", causes error
-		destroy()
-		return
-
-	if hit_object.is_in_group( "Hittable" ):
-		hit_object.on_hit( bullet_damage )
-		hit_object.set_attacking( parent_node )
-		destroy()
-
-	destroy()
-
-
-func destroy() -> void:
-	"""
-	Destroys the bullet.
-	"""
-
+	
 	queue_free()
 
+	if hit_object != _player_owner:
+		if hit_object.is_in_group("Hittable"):
+			hit_object.on_hit(bullet_damage)

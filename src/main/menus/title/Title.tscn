@@ -28,14 +28,14 @@ __meta__ = {
 }
 
 [node name="TitleButton" parent="Menu" instance=ExtResource( 2 )]
-margin_top = 47.0
+margin_top = 49.0
 margin_right = 780.0
-margin_bottom = 147.0
+margin_bottom = 149.0
 
 [node name="Buttons" type="VBoxContainer" parent="Menu"]
-margin_top = 167.0
+margin_top = 169.0
 margin_right = 500.0
-margin_bottom = 373.0
+margin_bottom = 375.0
 size_flags_horizontal = 0
 alignment = 1
 
@@ -51,9 +51,9 @@ margin_top = 140.0
 margin_bottom = 206.0
 
 [node name="FooterText" type="Label" parent="Menu"]
-margin_top = 393.0
-margin_right = 118.0
-margin_bottom = 442.0
+margin_top = 395.0
+margin_right = 106.0
+margin_bottom = 440.0
 size_flags_horizontal = 0
 size_flags_vertical = 0
 custom_fonts/font = ExtResource( 1 )

@@ -8,7 +8,7 @@ Author: Kang Rui Yu & Jacob Singleton
 extends Node
 
 
-enum types {
+enum ControlScheme {
 	KEYBOARD,
 	CONTROLLER
 }
@@ -17,7 +17,7 @@ enum types {
 var _control_data: Dictionary = {
 	0 : {
 		"name" : "Keyboard",
-		"type" : types.KEYBOARD,
+		"type" : ControlScheme.KEYBOARD,
 		"mappings" : {
 			"right" : "move_right",
 			"left" : "move_left",
@@ -29,7 +29,7 @@ var _control_data: Dictionary = {
 	},
 	1 : {
 		"name" : "Controller",
-		"type" : types.CONTROLLER,
+		"type" : ControlScheme.CONTROLLER,
 		"mappings" : {
 			"right" : "controller_right",
 			"left" : "controller_left",
@@ -65,7 +65,7 @@ func get_control_type(control_id: int) -> int:
 	return _control_data[control_id]["type"]
 
 
-func get_control_data(control_id: int) -> Dictionary:
+func get_control_mappings(control_id: int) -> Dictionary:
 	"""
 	Returns the control mapping data from the given control id.
 	

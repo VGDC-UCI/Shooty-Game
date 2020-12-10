@@ -28,8 +28,8 @@ config/icon="res://src/resources/icon.png"
 [autoload]
 
 server="*res://src/main/server/server.gd"
-Classes="*res://src/main/util/characters.gd"
-ControlSchemes="*res://src/main/util/controls.gd"
+controls="*res://src/main/util/controls.gd"
+characters="*res://src/main/util/characters.gd"
 
 [display]
 

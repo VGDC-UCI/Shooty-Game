@@ -268,6 +268,8 @@ remote func start_game() -> void:
 	Starts the game.
 	"""
 	
+	var root_id: int = get_tree().get_network_unique_id()
+	
 	for player_id in _players:
 		var lobby_player: Node = _players[player_id]
 		var game_player: Node = preload("res://src/main/game/player/Player.tscn").instance()
@@ -276,8 +278,84 @@ remote func start_game() -> void:
 		game_player.set_username(lobby_player.get_username())
 		game_player.set_host(lobby_player.is_host())
 		
+		if player_id == root_id:
+			game_player.set_root_player(true)
+		
 		_players[player_id] = game_player
 	
 	_gamestate = gamestate.IN_GAME
 	
 	get_tree().change_scene(_GAME_SCENE_PATH)
+
+
+func send_player_movement(x: float, y: float) -> void:
+	"""
+	Send player movement to the server.
+	"""
+	
+	rpc_unreliable_id(1, "player_movement", x, y)
+
+
+remote func peer_movement(peer_id: int, x: float, y: float) -> void:
+	"""
+	Changes the position of a peer player based on their movement.
+	"""
+	
+	var root_id: int = get_tree().get_network_unique_id()
+	
+	if root_id != peer_id:
+		if peer_id in _players:
+			var player: Node = _players[peer_id]
+			
+			player.position.x = x
+			player.position.y = y
+
+
+func send_change_facing_direction(facing_direction: int) -> void:
+	"""
+	Sends a facing direction change to the server.
+	"""
+	
+	rpc_unreliable_id(1, "change_facing_direction", facing_direction)
+
+
+remote func change_facing_direction(peer_id: int, facing_direction: int) -> void:
+	"""
+	Changes the facing direction of the given player.
+	"""
+	
+	var root_id: int = get_tree().get_network_unique_id()
+	
+	if root_id != peer_id:
+		if peer_id in _players:
+			var player: Node = _players[peer_id]
+			
+			player.set_facing_direction(facing_direction)
+
+
+func send_change_gun_position(gun_position: int) -> void:
+	"""
+	Sends a gun change position request to the server.
+	"""
+	
+	rpc_unreliable_id(1, "change_gun_position", gun_position)
+
+
+remote func change_gun_position(peer_id: int, gun_position: int) -> void:
+	"""
+	Changes the gun position of the given player.
+	"""
+	
+	var root_id: int = get_tree().get_network_unique_id()
+	
+	if root_id != peer_id:
+		if peer_id in _players:
+			var player: Node = _players[peer_id]
+			var gun: Node = player.get_node("Gun")
+			
+			if gun_position == 1:
+				gun.scale.x = 1
+				gun.position.x = 40
+			else:
+				gun.scale.x = -1
+				gun.position.x = -40

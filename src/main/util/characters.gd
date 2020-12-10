@@ -35,7 +35,7 @@ func get_character_names() -> PoolStringArray:
 	return names
 
 
-func get_character_portrait_path(character_id: int) -> Resource:
+func get_character_portrait(character_id: int) -> Resource:
 	"""
 	Returns the character portrait for the given character.
 	
