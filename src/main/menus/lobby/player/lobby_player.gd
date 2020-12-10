@@ -10,6 +10,9 @@ extends Control
 
 
 var _username: String
+var _class_id: int = 0
+var _input_id: int = 0
+var _team: int = 1
 var _host: bool = false
 
 
@@ -27,6 +30,30 @@ func set_username(username: String) -> void:
 	"""
 	
 	_username = username
+
+
+func get_class_id() -> int:
+	return _class_id
+
+
+func set_class_id(class_id: int) -> void:
+	_class_id = class_id
+
+
+func get_input_id() -> int:
+	return _input_id
+
+
+func set_input_id(input_id) -> void:
+	_input_id = input_id
+
+
+func get_team() -> int:
+	return _team
+
+
+func set_team(team: int) -> void:
+	_team = team
 
 
 func is_host() -> bool:

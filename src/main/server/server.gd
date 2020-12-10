@@ -17,6 +17,7 @@ enum gamestate {
 
 const _MULTIPLAYER_SCENE_PATH: String = "res://src/main/menus/multiplayer/Multiplayer.tscn"
 const _LOBBY_SCENE_PATH: String = "res://src/main/menus/lobby/Lobby.tscn"
+const _CHARACTER_SELECTION_SCENE_PATH: String = "res://src/main/menus/character_selection/CharacterSelection.tscn"
 const _GAME_SCENE_PATH: String = "res://src/main/game/world/World.tscn"
 
 const MAIN_HOST: String = "18.208.252.217"
@@ -140,7 +141,7 @@ remote func setup_complete() -> void:
 	setup by the server.
 	"""
 	
-	get_tree().change_scene(_LOBBY_SCENE_PATH)
+	get_tree().change_scene(_CHARACTER_SELECTION_SCENE_PATH)
 
 
 remote func connect_peer(peer_id: int, username: String, host: bool) -> void:
