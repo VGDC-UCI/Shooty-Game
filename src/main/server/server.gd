@@ -19,7 +19,7 @@ const _MULTIPLAYER_SCENE_PATH: String = "res://src/main/menus/multiplayer/Multip
 const _LOBBY_SCENE_PATH: String = "res://src/main/menus/lobby/Lobby.tscn"
 const _GAME_SCENE_PATH: String = "res://src/main/game/world/World.tscn"
 
-const MAIN_HOST: String = "127.0.0.1"
+const MAIN_HOST: String = "18.208.252.217"
 const MAIN_PORT: int    = 10567
 
 
