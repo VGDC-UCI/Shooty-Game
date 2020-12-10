@@ -16,6 +16,8 @@ func _ready() -> void:
 	Also loads in all players into the lobby.
 	"""
 	
+	randomize()
+	
 	$Content/Buttons/StartButton.grab_focus()
 	
 	for player in server.get_players():

@@ -354,6 +354,36 @@ position = Vector2( -1250, -460 )
 [node name="6" type="Position2D" parent="SpawnPoints"]
 position = Vector2( 1250, -460 )
 
+[node name="7" type="Position2D" parent="SpawnPoints"]
+position = Vector2( -2400, 280 )
+
+[node name="8" type="Position2D" parent="SpawnPoints"]
+position = Vector2( 2400, 280 )
+
+[node name="9" type="Position2D" parent="SpawnPoints"]
+position = Vector2( 1600, 510 )
+
+[node name="10" type="Position2D" parent="SpawnPoints"]
+position = Vector2( -1600, 510 )
+
+[node name="11" type="Position2D" parent="SpawnPoints"]
+position = Vector2( -2600, 1080 )
+
+[node name="12" type="Position2D" parent="SpawnPoints"]
+position = Vector2( 2600, 1080 )
+
+[node name="13" type="Position2D" parent="SpawnPoints"]
+position = Vector2( 1100, 770 )
+
+[node name="14" type="Position2D" parent="SpawnPoints"]
+position = Vector2( -1100, 770 )
+
+[node name="15" type="Position2D" parent="SpawnPoints"]
+position = Vector2( 0, 750 )
+
+[node name="16" type="Position2D" parent="SpawnPoints"]
+position = Vector2( 0, -710 )
+
 [node name="Camera" type="Camera2D" parent="."]
 script = ExtResource( 4 )
 
