@@ -52,6 +52,7 @@ func name_changed(name: String) -> void:
 
 func class_changed(index: int) -> void:
 	_lobby_player.set_class_id(index)
+	server.send_class_change(index)
 	update_class_portrait()
 	emit_signal("changed")
 
@@ -63,6 +64,7 @@ func input_changed(index: int) -> void:
 
 func team_changed(_new_team: int) -> void:
 	_lobby_player.set_team(_new_team)
+	server.send_team_change(_new_team)
 	emit_signal("changed")
 
 

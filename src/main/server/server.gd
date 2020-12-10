@@ -264,6 +264,50 @@ remote func chat_message(player_id: int, message: String) -> void:
 				chat_box.remove_child(chat_box.get_child(0))
 
 
+func send_change_team(team: int) -> void:
+	"""
+	Sends a request to the server to change the team of the player.
+	"""
+	
+	rpc_id(1, "change_team", team)
+
+
+remote func change_team(peer_id: int, team: int) -> void:
+	"""
+	Changes the team of the given peer.
+	"""
+	
+	var root_id: int = get_tree().get_network_unique_id()
+	
+	if root_id != peer_id:
+		if peer_id in _players:
+			var player: Node = _players[peer_id]
+			
+			player.set_team(team)
+
+
+func send_class_change(class_id: int) -> void:
+	"""
+	Sends a request to the server to change the class of the player.
+	"""
+	
+	rpc_id(1, "change_class", class_id)
+
+
+remote func change_class(peer_id: int, class_id: int) -> void:
+	"""
+	Changes the class id of the given peer.
+	"""
+	
+	var root_id: int = get_tree().get_network_unique_id()
+	
+	if root_id != peer_id:
+		if peer_id in _players:
+			var player: Node = _players[peer_id]
+			
+			player.set_class_id(class_id)
+
+
 func request_to_start_game() -> void:
 	"""
 	Sends a request to the server to start the game.
@@ -286,6 +330,8 @@ remote func start_game() -> void:
 		game_player.set_name(lobby_player.get_name())
 		game_player.set_username(lobby_player.get_username())
 		game_player.set_host(lobby_player.is_host())
+		game_player.set_team(lobby_player.get_team())
+		game_player.set_character_id(lobby_player.get_class_id())
 		game_player._network_id = player_id
 		
 		if player_id == root_id:
