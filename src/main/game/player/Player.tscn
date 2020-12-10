@@ -1,4 +1,4 @@
-[gd_scene load_steps=75 format=2]
+[gd_scene load_steps=79 format=2]
 
 [ext_resource path="res://src/main/game/player/textures/Player_Fall.png" type="Texture" id=1]
 [ext_resource path="res://src/resources/fonts/montserrat_20.tres" type="DynamicFont" id=2]
@@ -10,6 +10,10 @@
 [ext_resource path="res://src/main/game/player/information/shield_bar.tres" type="StyleBox" id=8]
 [ext_resource path="res://src/main/game/player/information/health_bar.tres" type="StyleBox" id=9]
 [ext_resource path="res://src/main/game/player/information/progress_bar_back.tres" type="StyleBox" id=10]
+[ext_resource path="res://src/main/game/player/audio/jump..wav" type="AudioStream" id=11]
+[ext_resource path="res://src/main/game/player/audio/shoot.wav" type="AudioStream" id=12]
+[ext_resource path="res://src/main/game/player/audio/dash.wav" type="AudioStream" id=13]
+[ext_resource path="res://src/main/game/player/audio/hit.wav" type="AudioStream" id=14]
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 19.522, 50.776 )
@@ -286,28 +290,28 @@ region = Rect2( 2732, 4480, 683, 896 )
 
 [sub_resource type="AtlasTexture" id=56]
 flags = 4
-atlas = ExtResource( 1 )
-region = Rect2( 0, 0, 509, 1033 )
+atlas = ExtResource( 5 )
+region = Rect2( 2732, 3584, 683, 896 )
 
 [sub_resource type="AtlasTexture" id=57]
 flags = 4
 atlas = ExtResource( 1 )
-region = Rect2( 509, 0, 509, 1033 )
+region = Rect2( 0, 0, 509, 1033 )
 
 [sub_resource type="AtlasTexture" id=58]
 flags = 4
 atlas = ExtResource( 1 )
-region = Rect2( 1018, 0, 509, 1033 )
+region = Rect2( 509, 0, 509, 1033 )
 
 [sub_resource type="AtlasTexture" id=59]
 flags = 4
 atlas = ExtResource( 1 )
-region = Rect2( 1527, 0, 509, 1033 )
+region = Rect2( 1018, 0, 509, 1033 )
 
 [sub_resource type="AtlasTexture" id=60]
 flags = 4
-atlas = ExtResource( 5 )
-region = Rect2( 2732, 3584, 683, 896 )
+atlas = ExtResource( 1 )
+region = Rect2( 1527, 0, 509, 1033 )
 
 [sub_resource type="SpriteFrames" id=61]
 animations = [ {
@@ -321,14 +325,14 @@ animations = [ {
 "name": "run",
 "speed": 40.0
 }, {
-"frames": [ SubResource( 56 ), SubResource( 57 ), SubResource( 58 ), SubResource( 59 ) ],
-"loop": true,
-"name": "falling",
-"speed": 5.0
-}, {
-"frames": [ SubResource( 60 ) ],
+"frames": [ SubResource( 56 ) ],
 "loop": true,
 "name": "jumping",
+"speed": 5.0
+}, {
+"frames": [ SubResource( 57 ), SubResource( 58 ), SubResource( 59 ), SubResource( 60 ) ],
+"loop": true,
+"name": "falling",
 "speed": 5.0
 } ]
 
@@ -454,3 +458,15 @@ one_shot = true
 local_coords = false
 process_material = SubResource( 64 )
 texture = ExtResource( 6 )
+
+[node name="DashSFX" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource( 13 )
+
+[node name="HitSFX" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource( 14 )
+
+[node name="JumpSFX" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource( 11 )
+
+[node name="ShootSFX" type="AudioStreamPlayer2D" parent="."]
+stream = ExtResource( 12 )

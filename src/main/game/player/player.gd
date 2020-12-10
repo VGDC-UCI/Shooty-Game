@@ -316,6 +316,8 @@ func _do_jumping(controls_mappings: Dictionary, delta: float) -> void:
 			
 			_velocity.y = -_jump_force
 			_jump_time_left = 0
+
+			$JumpSFX.play()
 		
 
 
@@ -341,6 +343,7 @@ func _do_dashing(controls_mappings: Dictionary, delta: float) -> void:
 				_velocity = _dash_direction * _dash_force
 				
 				$DashParticles.emitting = true
+				$DashSFX.play()
 
 				if not _local:
 					server.send_dash_particles()
@@ -413,6 +416,8 @@ func shoot_bullet(shoot_direction: Vector2) -> void:
 	
 	_time_left_till_next_bullet = _fire_rate
 
+	$ShootSFX.play()
+
 
 func _move_camera() -> void:
 	if _root_player and not _local:
@@ -429,10 +434,12 @@ func on_hit(damage: float, from: Node) -> void:
 		_shield -= damage
 		if not _local:
 			server.send_change_health(_network_id, _health, _shield)
+		$HitSFX.play()
 	elif _health > 0:
 		_health -= damage
 		if not _local:
 			server.send_change_health(_network_id, _health, _shield)
+		$HitSFX.play()
 	else:
 		death()
 		from.add_kill()
