@@ -618,7 +618,8 @@ func add_kill() -> void:
 	
 	_kills += 1
 	
-	server.send_change_kills(_network_id, _kills)
+	if _network_id == get_tree().get_network_unique_id():
+		server.send_change_kills(_network_id, _kills)
 
 
 func get_deaths() -> int:
@@ -636,4 +637,5 @@ func add_death() -> void:
 	
 	_deaths += 1
 	
-	server.send_change_deaths(_network_id, _deaths)
+	if _network_id == get_tree().get_network_unique_id():
+		server.send_change_deaths(_network_id, _deaths)
