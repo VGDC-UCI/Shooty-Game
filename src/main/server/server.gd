@@ -145,15 +145,15 @@ remote func setup_player(username: String) -> void:
 			rpc_id(player_id, "connect_peer", peer_id, peer.get_username(), peer.is_host())
 
 
-remote func send_chat_message(message: String) -> void:
+remote func chat_message(message: String) -> void:
 	"""
 	Sends a chat message to all clients connected in the lobby.
 	"""
 	
 	var player_id: int = get_tree().get_rpc_sender_id()
 	
-	if gamestate == gamestate.PRE_GAME:
-		rpc("send_chat_message", player_id, message)
+	if _gamestate == gamestate.PRE_GAME:
+		rpc("chat_message", player_id, message)
 
 
 remote func start_game() -> void:
