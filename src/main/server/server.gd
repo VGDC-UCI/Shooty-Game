@@ -8,18 +8,19 @@ Author: Jacob Singleton
 extends Node
 
 
-const          _PORT: int = 10567
-const   _MAX_PLAYERS: int = 12
-
-var _network := NetworkedMultiplayerENet.new()
-var _players: Dictionary = {}
-
 enum gamestate {
 	PRE_GAME,
 	IN_GAME,
 	POST_GAME
 }
 
+
+const          _PORT: int = 10567
+const   _MAX_PLAYERS: int = 12
+
+
+var _network := NetworkedMultiplayerENet.new()
+var _players: Dictionary = {}
 var _gamestate: int = gamestate.PRE_GAME
 
 
@@ -56,11 +57,11 @@ func _on_player_connected(player_id: int) -> void:
 	print('Player (' + str(player_id) + ') connected.')
 	
 	var player = preload("res://src/main/game/Player.tscn").instance()
+	var player_list: Node = get_tree().current_scene.get_node("Players")
 	
 	player.set_name(str(player_id))
-	player.set_username(str(player_id))
 	
-	_get_current_scene().get_node("Players").add_child(player)
+	player_list.add_child(player)
 	
 	if not player_id in _players:
 		if len(_players) == 0:
@@ -79,19 +80,24 @@ func _on_player_disconnected(player_id: int) -> void:
 	print('Player (' + str(player_id) + ') disconnected.')
 	
 	if player_id in _players:
-		_get_current_scene().get_node("Players").remove_child(_get_current_scene().get_node("Players/" + str(player_id)))
+		var player: Node = _players[player_id]
+		var player_list: Node = get_tree().current_scene.get_node("Players")
+		
+		player_list.remove_child(player_list.get_node(str(player_id)))
 		_players.erase(player_id)
+		
+		if player.is_host() and len(_players) > 0:
+			_players.values()[0].set_host(true)
+			
+			rpc("set_host", _get_host_id())
 	
-	rpc("disconnect_player", player_id)
-	
-	if _get_host_id() == 0 and len(_players) > 0:
-		_players.values()[0].set_host(true)
-		rpc("set_host", _get_host_id())
+	rpc("disconnect_peer", player_id)
 
 
 func _get_host_id() -> int:
 	"""
 	Returns the network id of the host.
+	If there is no host, it returns 0.
 	"""
 	
 	for player_id in _players:
@@ -103,14 +109,6 @@ func _get_host_id() -> int:
 	return 0
 
 
-func _get_current_scene() -> Node:
-	"""
-	Returns the current scene in the game.
-	"""
-	
-	return get_tree().current_scene
-
-
 remote func get_all_players() -> Dictionary:
 	"""
 	Returns the dictionary of all players connected to the server.
@@ -119,29 +117,100 @@ remote func get_all_players() -> Dictionary:
 	return _players
 
 
-remote func change_username(player_id: int, username: String) -> void:
+remote func setup_player(username: String) -> void:
 	"""
 	Sets the username of the player who is calling the function remotely.
 	"""
 	
+	var player_id: int = get_tree().get_rpc_sender_id()
+	var player: Node = null
+	
+	if player_id in _players:
+		player = _players[player_id]
+	else:
+		player = preload("res://src/main/game/Player.tscn").instance()
+		
+		player.set_name(str(player_id))
+	
+	player.set_username(username)
+	rpc("connect_peer", player_id, username, player.is_host())
+	rpc_id(player_id, "setup_complete")
+	
+	# Send the player who is done with setup the list of
+	# players in the lobby currently.
+	for peer_id in _players:
+		if peer_id != player_id:
+			var peer: Node = _players[peer_id]
+			
+			rpc_id(player_id, "connect_peer", peer_id, peer.get_username(), peer.is_host())
+
+
+remote func send_chat_message(message: String) -> void:
+	"""
+	Sends a chat message to all clients connected in the lobby.
+	"""
+	
+	var player_id: int = get_tree().get_rpc_sender_id()
+	
+	if gamestate == gamestate.PRE_GAME:
+		rpc("send_chat_message", player_id, message)
+
+
+remote func start_game() -> void:
+	"""
+	Changes the gamestate from PRE_GAME to IN_GAME and relays
+	to all clients that the game is starting.
+	"""
+	
+	var player_id: int = get_tree().get_rpc_sender_id()
+	
+	if _get_host_id() == player_id:
+		_gamestate = gamestate.IN_GAME
+		
+		rpc("start_game")
+
+
+remote func player_movement(x: float, y: float) -> void:
+	"""
+	Sets the new position of the player and sends it to other clients.
+	"""
+	
+	var player_id: int = get_tree().get_rpc_sender_id()
+	
 	if player_id in _players:
 		var player: Node = _players[player_id]
 		
-		player.set_username(username)
+		player.set_x(x)
+		player.set_y(y)
 		
-		rpc("connect_peer", player_id, username, player.is_host())
-	
-	for id in _players:
-		var player: Node = _players[id]
-		
-		rpc_id(player_id, "connect_peer", id, player.get_username(), player.is_host())
-	
-	rpc_id(player_id, "done_configuring")
+		rpc_unreliable("peer_movement", player_id, x, y)
 
 
-remote func send_chat_message(player_id: int, message: String) -> void:
+remote func change_facing_direction(facing_direction: int) -> void:
 	"""
-	Relays chat message to clients connected.
+	Changes the facing direction of the given player.
 	"""
 	
-	rpc("send_chat_message", player_id, message)
+	var player_id: int = get_tree().get_rpc_sender_id()
+	
+	if player_id in _players:
+		var player: Node = _players[player_id]
+		
+		player.set_facing_direction(facing_direction)
+		
+		rpc_unreliable("change_facing_direction", player_id, facing_direction)
+
+
+remote func change_gun_position(gun_position: int) -> void:
+	"""
+	Changes the gun position of the given player.
+	"""
+	
+	var player_id: int = get_tree().get_rpc_sender_id()
+	
+	if player_id in _players:
+		var player: Node = _players[player_id]
+		
+		player.set_gun_position(gun_position)
+		
+		rpc_unreliable("change_gun_position", player_id, gun_position)
