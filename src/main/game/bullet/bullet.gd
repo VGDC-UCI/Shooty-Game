@@ -40,6 +40,9 @@ func _on_hit(hit_object: Node) -> void:
 
 	if hit_object != _player_owner:
 		queue_free()
+
+		if hit_object.has_method('get_team') and hit_object.get_team() == _player_owner.get_team(): # If the target is the same team as player
+			return
 		
 		if hit_object.is_in_group("Hittable"):
 			hit_object.on_hit(bullet_damage, _player_owner)
