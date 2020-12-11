@@ -558,6 +558,8 @@ func set_team(team: int) -> void:
 	"""
 	
 	_team = team
+	
+	$TeamContainer/TeamName.text = "Team " + str(team)
 
 
 func get_character_id() -> int:
