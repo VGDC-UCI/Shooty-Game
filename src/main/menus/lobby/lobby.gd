@@ -21,7 +21,24 @@ func _ready() -> void:
 	$Content/Buttons/StartButton.grab_focus()
 	
 	for player in server.get_players():
-		$Content/CenterBackground/Center/Players/PlayerList.add_child(player)
+		if player.get_team() == 1:
+			$Content/CenterBackground/Center/Players/Team1List.add_child(player)
+		else:
+			$Content/CenterBackground/Center/Players/Team2List.add_child(player)
+	
+	var character_select: Node = $Content/CenterBackground/Center/Settings/Character/Select
+	
+	for character_name in characters.get_character_names():
+		character_select.add_item(character_name)
+	
+	$Content/CenterBackground/Center/Settings/Portrait.texture = characters.get_character_portrait(server.get_root_player().get_class_id())
+	
+	var team_select: Node = $Content/CenterBackground/Center/Settings/Team/Select
+	
+	team_select.add_item("Team 1")
+	team_select.add_item("Team 2")
+	
+	team_select.select(server.get_root_player().get_team() - 1)
 	
 	if server.get_root_player().is_host():
 		$Content/Buttons/StartButton.set_visible(true)
@@ -59,3 +76,19 @@ func _on_message_box_text_entered(new_text: String):
 		message_box.set_text("")
 		
 		server.send_chat_message(new_text.to_lower())
+
+
+func _on_character_change(index):
+	"""
+	Called when the player changes what character they are playing.
+	"""
+	
+	server.send_class_change(index)
+
+
+func _on_team_change(index):
+	"""
+	Called when the player changes what team they are on.
+	"""
+	
+	server.send_change_team(index + 1)

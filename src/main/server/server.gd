@@ -17,7 +17,6 @@ enum gamestate {
 
 const _MULTIPLAYER_SCENE_PATH: String = "res://src/main/menus/multiplayer/Multiplayer.tscn"
 const _LOBBY_SCENE_PATH: String = "res://src/main/menus/lobby/Lobby.tscn"
-const _CHARACTER_SELECTION_SCENE_PATH: String = "res://src/main/menus/character_selection/CharacterSelection.tscn"
 const _GAME_SCENE_PATH: String = "res://src/main/game/world/World.tscn"
 
 const MAIN_HOST: String = "18.208.252.217"
@@ -141,10 +140,10 @@ remote func setup_complete() -> void:
 	setup by the server.
 	"""
 	
-	get_tree().change_scene(_CHARACTER_SELECTION_SCENE_PATH)
+	get_tree().change_scene(_LOBBY_SCENE_PATH)
 
 
-remote func connect_peer(peer_id: int, username: String, host: bool) -> void:
+remote func connect_peer(peer_id: int, username: String, host: bool, team: int) -> void:
 	"""
 	RPC Call sent by the server to connect a peer player.
 	"""
@@ -155,6 +154,7 @@ remote func connect_peer(peer_id: int, username: String, host: bool) -> void:
 		player.set_name(str(peer_id))
 		player.set_username(username)
 		player.set_host(host)
+		player.set_team(team)
 		
 		if host:
 			player.set_text(username + " (Host)")
@@ -164,7 +164,12 @@ remote func connect_peer(peer_id: int, username: String, host: bool) -> void:
 		var current_scene: Node = get_tree().current_scene
 		
 		if current_scene.get_name() == "Lobby":
-			var player_list: Node = current_scene.get_node("Content/CenterBackground/Center/Players/PlayerList")
+			var player_list: Node
+			
+			if player.get_team() == 1:
+				player_list = current_scene.get_node("Content/CenterBackground/Center/Players/Team1List")
+			else:
+				player_list = current_scene.get_node("Content/CenterBackground/Center/Players/Team2List")
 			
 			player_list.add_child(player)
 		
@@ -180,7 +185,12 @@ remote func disconnect_peer(player_id: int) -> void:
 	
 	if player_id in _players:
 		if current_scene.get_name() == "Lobby":
-			var player_list: Node = current_scene.get_node("Content/CenterBackground/Center/Players/PlayerList")
+			var player_list: Node = current_scene.get_node("Content/CenterBackground/Center/Players/Team1List")
+			
+			if _player_id_in_player_list(player_id, player_list):
+				player_list.remove_child(player_list.get_node(str(player_id)))
+				
+			player_list = current_scene.get_node("Content/CenterBackground/Center/Players/Team2List")
 			
 			if _player_id_in_player_list(player_id, player_list):
 				player_list.remove_child(player_list.get_node(str(player_id)))
@@ -282,13 +292,27 @@ remote func change_team(peer_id: int, team: int) -> void:
 	Changes the team of the given peer.
 	"""
 	
-	var root_id: int = get_tree().get_network_unique_id()
-	
-	if root_id != peer_id:
-		if peer_id in _players:
-			var player: Node = _players[peer_id]
+	if peer_id in _players:
+		var player: Node = _players[peer_id]
+		var old_team: int = player.get_team()
+		
+		player.set_team(team)
+		
+		if get_tree().current_scene.get_name() == "Lobby":
+			var player_list: Node
+			var new_player_list: Node
 			
-			player.set_team(team)
+			if old_team == 1:
+				player_list = get_tree().current_scene.get_node("Content/CenterBackground/Center/Players/Team1List")
+				new_player_list = get_tree().current_scene.get_node("Content/CenterBackground/Center/Players/Team2List")
+			else:
+				player_list = get_tree().current_scene.get_node("Content/CenterBackground/Center/Players/Team2List")
+				new_player_list = get_tree().current_scene.get_node("Content/CenterBackground/Center/Players/Team1List")
+			
+			var player_in_list: Node = player_list.get_node(str(peer_id))
+			
+			player_list.remove_child(player_in_list)
+			new_player_list.add_child(player)
 
 
 func send_class_change(class_id: int) -> void:
@@ -304,13 +328,15 @@ remote func change_class(peer_id: int, class_id: int) -> void:
 	Changes the class id of the given peer.
 	"""
 	
-	var root_id: int = get_tree().get_network_unique_id()
-	
-	if root_id != peer_id:
-		if peer_id in _players:
+	if peer_id in _players:
 			var player: Node = _players[peer_id]
 			
 			player.set_class_id(class_id)
+			
+			if get_tree().current_scene.get_name() == "Lobby" and peer_id == get_tree().get_network_unique_id():
+				var portrait = get_tree().current_scene.get_node("Content/CenterBackground/Center/Settings/Portrait")
+				
+				portrait.texture = characters.get_character_portrait(player.get_class_id())
 
 
 func request_to_start_game() -> void:
