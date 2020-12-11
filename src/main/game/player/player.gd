@@ -46,7 +46,7 @@ var _player_state = PlayerState.AIR
 var _animated_sprite: Node
 
 "Movement Variables"
-const _GRAVITY: int = 1200
+var _GRAVITY: int = 1200
 const _PLAYER_ACCELERATION: float = 1800.0
 const _PLAYER_DAMP: float = 0.7
 
@@ -109,7 +109,7 @@ func _ready() -> void:
 		_animated_sprite = $Hitbox/MollySprite
 	else:
 		_animated_sprite = $Hitbox/SallySprite
-		_jump_force = 1000
+		_jump_force = 800
 	
 	_animated_sprite.visible = true
 
@@ -289,6 +289,9 @@ func _do_horizontal_movement(controls_mappings: Dictionary, delta) -> void:
 	var old_x_input = _x_input
 	
 	_x_input = right_strength - left_strength
+	
+	if _character_id == 1:
+		_x_input *= 0.7
 	
 	var _old_facing_direction: int = _facing_direction
 	
