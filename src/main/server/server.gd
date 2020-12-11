@@ -143,7 +143,7 @@ remote func setup_complete() -> void:
 	get_tree().change_scene(_LOBBY_SCENE_PATH)
 
 
-remote func connect_peer(peer_id: int, username: String, host: bool, team: int) -> void:
+remote func connect_peer(peer_id: int, username: String, host: bool, team: int, character_id: int) -> void:
 	"""
 	RPC Call sent by the server to connect a peer player.
 	"""
@@ -155,6 +155,7 @@ remote func connect_peer(peer_id: int, username: String, host: bool, team: int) 
 		player.set_username(username)
 		player.set_host(host)
 		player.set_team(team)
+		player.set_class_id(character_id)
 		
 		if host:
 			player.set_text(username + " (Host)")

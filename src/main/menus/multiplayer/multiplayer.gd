@@ -80,7 +80,7 @@ func _connect_to_server(host: String, port: int) -> void:
 		var player: Node = preload("res://src/main/menus/lobby/player/LobbyPlayer.tscn").instance()
 		
 		player.set_username(username)
-		player.set_text(username + " (You)")
+		player.get_node("Name").text = username + " (You)"
 		
 		if not server.connect_to_server(host, port, player):
 			error_text.text = "Unable to connect to the server."

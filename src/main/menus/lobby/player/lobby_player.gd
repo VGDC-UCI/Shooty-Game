@@ -38,6 +38,8 @@ func get_class_id() -> int:
 
 func set_class_id(class_id: int) -> void:
 	_class_id = class_id
+	
+	$Character.texture = characters.get_character_portrait(class_id)
 
 
 func get_input_id() -> int:
@@ -70,3 +72,11 @@ func set_host(host: bool) -> void:
 	"""
 	
 	_host = host
+
+
+func set_text(username: String) -> void:
+	"""
+	Sets the username of the player.
+	"""
+	
+	$Name.text = username
