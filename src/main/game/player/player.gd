@@ -43,6 +43,7 @@ var _kills: int = 0
 var _deaths: int = 0
 
 var _player_state = PlayerState.AIR
+var _animated_sprite: Node
 
 "Movement Variables"
 const _GRAVITY: int = 1200
@@ -98,6 +99,21 @@ var _bullet_template = preload("res://src/main/game/bullet/Bullet.tscn")
 var _time_left_till_next_bullet = _fire_rate
 
 
+func _ready() -> void:
+	"""
+	Called when the player is first loaded in.
+	Sets the player values depending on the character.
+	"""
+	
+	if _character_id == 0:
+		_animated_sprite = $Hitbox/MollySprite
+	else:
+		_animated_sprite = $Hitbox/SallySprite
+		_jump_force = 1000
+	
+	_animated_sprite.visible = true
+
+
 func _process(_delta: float) -> void:
 	"""
 	Called every frame, updates the animated sprite and
@@ -117,35 +133,33 @@ func _move_player_facing_position() -> void:
 	Moves the player to the position they are facing.
 	"""
 	
-	$Hitbox/AnimatedSprite.flip_h = _facing_direction == FacingDirection.RIGHT
+	_animated_sprite.flip_h = _facing_direction == FacingDirection.RIGHT
 
 
 func _update_player_animations() -> void:
 	"""
 	Updates the player's sprite animations.
 	"""
-	
-	var animated_sprite: Node = $Hitbox/AnimatedSprite
 
 	# Scale Sprite based on velocity.
-	animated_sprite.scale.x = 0.12 * (1 + 0.05 * (abs(_velocity.x) / 500))
-	animated_sprite.scale.x = clamp(animated_sprite.scale.x, 0.12, 0.14)
-	animated_sprite.scale.y = 0.12 * (1 + 0.1 * (abs(_velocity.y) / 500))
-	animated_sprite.scale.y = clamp(animated_sprite.scale.y, 0.12, 0.13)
+	_animated_sprite.scale.x = 0.12 * (1 + 0.05 * (abs(_velocity.x) / 500))
+	_animated_sprite.scale.x = clamp(_animated_sprite.scale.x, 0.12, 0.14)
+	_animated_sprite.scale.y = 0.12 * (1 + 0.1 * (abs(_velocity.y) / 500))
+	_animated_sprite.scale.y = clamp(_animated_sprite.scale.y, 0.12, 0.13)
 	
 	match _player_state:
 		PlayerState.GROUND:
 			if _x_input != 0:
-				animated_sprite.play('run')
+				_animated_sprite.play('run')
 			else:
-				animated_sprite.play('idle')
+				_animated_sprite.play('idle')
 		PlayerState.AIR:
 			if _jump_time_left > 0:
-				animated_sprite.play('jumping')
+				_animated_sprite.play('jumping')
 			else:
-				animated_sprite.play('falling')
+				_animated_sprite.play('falling')
 		PlayerState.WALL:
-			animated_sprite.play('jumping')
+			_animated_sprite.play('jumping')
 
 
 func _move_gun_facing_position() -> void:
@@ -568,7 +582,7 @@ func set_facing_direction(facing_direction: int) -> void:
 	
 	_facing_direction = facing_direction
 	
-	$Hitbox/AnimatedSprite.flip_h = _facing_direction == FacingDirection.RIGHT
+	_animated_sprite.flip_h = _facing_direction == FacingDirection.RIGHT
 
 
 func get_player_state() -> int:
