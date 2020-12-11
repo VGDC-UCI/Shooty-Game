@@ -6,9 +6,6 @@
 [node name="LocalGame" instance=ExtResource( 1 )]
 script = ExtResource( 2 )
 
-[node name="Buttons" parent="Content" index="2"]
-rect_min_size = Vector2( 250, 90 )
-
 [node name="StartButton" parent="Content/Buttons" index="0"]
 visible = true
 

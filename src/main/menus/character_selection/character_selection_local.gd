@@ -37,7 +37,7 @@ func _on_ready_button_pressed() -> void:
 
 
 func _change_to_lobby() -> void:
-	var local_lobby: Node = load('res://src/main/menus/local game/LocalGame.tscn').instance()
+	var local_lobby: Node = load('res://src/main/menus/local game/LocalLobby.tscn').instance()
 	local_lobby.set_players(get_players())
 	var packed_local_lobby: PackedScene = PackedScene.new()
 	packed_local_lobby.pack(local_lobby)
