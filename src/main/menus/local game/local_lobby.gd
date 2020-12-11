@@ -11,7 +11,7 @@ extends Control
 
 var lobby_player_scene: PackedScene = load('res://src/main/menus/lobby/player/LobbyPlayer.tscn')
 
-var _players: Array = []
+export var _players: Array = []
 
 
 func _ready() -> void:
@@ -28,7 +28,9 @@ func _ready() -> void:
 
 	$Content/Buttons/StartButton.set_visible(true)
 
-	_add_new_player()
+
+func set_players(players: Array) -> void:
+	_players = players
 
 
 func _on_start_button_pressed() -> void:
@@ -37,12 +39,14 @@ func _on_start_button_pressed() -> void:
 	"""
 	for player_id in _players.size():
 		var lobby_player: Node = _players[player_id]
-		var game_player: Node = preload("res://src/main/game/player/Player.tscn").instance()
+		var game_player: Node = characters.get_character_scene(_players[player_id].get_class_id()).instance()
 
 		game_player.set_name(lobby_player.get_name())
 		game_player.set_username(lobby_player.get_username())
 		game_player.set_root_player(true)
 		game_player.set_local(true)
+		game_player._controls_id = _players[player_id].get_input_id()
+		game_player.set_team(_players[player_id].get_team())
 
 		_players[player_id] = game_player
 
@@ -68,25 +72,3 @@ func _on_leave_button_pressed() -> void:
 	# server.disconnect_reason = "You have left the server."
 
 	# server.disconnect_from_server()
-
-
-func _on_add_player_button_pressed() -> void:
-	"""
-	Called when the add player button is pressed.
-	"""
-	_add_new_player()
-
-
-func _add_new_player():
-	"""
-	Adds a player to the lobby
-	"""
-	var lobby_player: Node = lobby_player_scene.instance()
-	var player_list: Control = $Content/CenterBackground/Center/Players/PlayerList
-	var username: String = 'Player ' + str(player_list.get_child_count() + 1)
-
-	lobby_player.set_username(username)
-	lobby_player.text = username
-
-	_players.append(lobby_player)
-	player_list.add_child(lobby_player)
