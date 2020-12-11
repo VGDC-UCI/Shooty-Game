@@ -69,7 +69,34 @@ func _on_player_connected(player_id: int) -> void:
 		
 		_players[player_id] = player
 	
+	_add_player_to_team(player_id, player)
+	
 	rpc("set_host", _get_host_id())
+
+
+func _add_player_to_team(player_id: int, player: Node) -> void:
+	"""
+	Adds the given player to a team.
+	"""
+	
+	var team_1: int = 0
+	var team_2: int = 0
+	
+	for peer_id in _players:
+		if peer_id != player_id:
+			var peer: Node = _players[peer_id]
+			
+			if peer.get_team() == 1:
+				team_1 += 1
+			else:
+				team_2 += 1
+	
+	if team_1 > team_2:
+		player.set_team(2)
+		rpc("change_team", player_id, 2)
+	else:
+		player.set_team(1)
+		rpc("change_team", player_id, 1)
 
 
 func _on_player_disconnected(player_id: int) -> void:
@@ -136,7 +163,7 @@ remote func setup_player(username: String) -> void:
 		player.set_name(str(player_id))
 	
 	player.set_username(username)
-	rpc("connect_peer", player_id, username, player.is_host())
+	rpc("connect_peer", player_id, username, player.is_host(), player.get_team(), player.get_character())
 	rpc_id(player_id, "setup_complete")
 	
 	# Send the player who is done with setup the list of
@@ -145,7 +172,7 @@ remote func setup_player(username: String) -> void:
 		if peer_id != player_id:
 			var peer: Node = _players[peer_id]
 			
-			rpc_id(player_id, "connect_peer", peer_id, peer.get_username(), peer.is_host())
+			rpc_id(player_id, "connect_peer", peer_id, peer.get_username(), peer.is_host(), peer.get_team(), peer.get_character())
 
 
 remote func chat_message(message: String) -> void:
@@ -166,6 +193,11 @@ remote func change_team(team: int) -> void:
 	
 	var player_id: int = get_tree().get_rpc_sender_id()
 	
+	if player_id in _players:
+		var player: Node = _players[player_id]
+		
+		player.set_team(team)
+	
 	rpc("change_team", player_id, team)
 
 
@@ -175,6 +207,11 @@ remote func change_class(class_id: int) -> void:
 	"""
 	
 	var player_id: int = get_tree().get_rpc_sender_id()
+	
+	if player_id in _players:
+		var player: Node = _players[player_id]
+		
+		player.set_character(class_id)
 	
 	rpc("change_class", player_id, class_id)
 

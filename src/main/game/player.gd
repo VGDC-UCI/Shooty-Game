@@ -10,6 +10,8 @@ extends Node
 
 var _username: String
 var _host: bool = false
+var _team: int = 1
+var _character: int = 0
 
 var _x: float = 0
 var _y: float = 0
@@ -146,3 +148,35 @@ func set_x_input(x_input: float) -> void:
 	"""
 	
 	_x_input = x_input
+
+
+func get_team() -> int:
+	"""
+	Returns the team the player is on.
+	"""
+	
+	return _team
+
+
+func set_team(team: int) -> void:
+	"""
+	Sets what team this player is on.
+	"""
+	
+	_team = team
+
+
+func get_character() -> int:
+	"""
+	Returns the character the player is playing.
+	"""
+	
+	return _character
+
+
+func set_character(character: int) -> void:
+	"""
+	Sets the character this player is playing.
+	"""
+	
+	_character = character
