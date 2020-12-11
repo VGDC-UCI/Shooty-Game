@@ -15,7 +15,7 @@ var _character_data: Dictionary = {
 		"scene_path" : "res://src/main/game/player/classes/Molly.tscn"
 	},
 	1 : {
-		"name" : "Sally",
+		"name" : "Sally Lovelace",
 		"portrait" : "res://src/main/game/player/textures/sally_portrait.png",
 		"scene_path" : "res://src/main/game/player/classes/Sally.tscn"
 	}

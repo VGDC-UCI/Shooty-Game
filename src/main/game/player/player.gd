@@ -36,7 +36,7 @@ const _MAX_SHIELD: int = 10
 var _shield:       int = _MAX_SHIELD
 var _shield_pressed: bool = false
 
-const _MAX_HEALTH: int = 10
+var _MAX_HEALTH: int = 10
 var _health:       int = _MAX_HEALTH
 
 var _kills: int = 0
@@ -107,9 +107,12 @@ func _ready() -> void:
 	
 	if _character_id == 0:
 		_animated_sprite = $Hitbox/MollySprite
+		_jump_force = 600
+		_MAX_HEALTH = 10
 	else:
 		_animated_sprite = $Hitbox/SallySprite
 		_jump_force = 800
+		_MAX_HEALTH = 12
 	
 	_animated_sprite.visible = true
 
@@ -291,7 +294,7 @@ func _do_horizontal_movement(controls_mappings: Dictionary, delta) -> void:
 	_x_input = right_strength - left_strength
 	
 	if _character_id == 1:
-		_x_input *= 0.7
+		_x_input *= 0.45
 	
 	var _old_facing_direction: int = _facing_direction
 	
@@ -428,6 +431,9 @@ func shoot_bullet(shoot_direction: Vector2) -> void:
 	bullet.position = $Gun/BulletExit.position
 	bullet.scale *= _bullet_scale
 	bullet._player_owner = self
+	
+	if _character_id == 1:
+		bullet.bullet_damage = 2
 	
 	get_tree().current_scene.get_node("Bullets").add_child(bullet)
 	

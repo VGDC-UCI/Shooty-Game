@@ -199,6 +199,10 @@ remote func disconnect_peer(player_id: int) -> void:
 			
 			if _player_id_in_player_list(player_id, player_list):
 				player_list.remove_child(player_list.get_node(str(player_id)))
+			
+			var score_board: Node = current_scene.get_node("ScoreboardLayer/Scoreboard")
+			
+			score_board.remove_child(score_board.get_node(str(player_id)))
 		
 		_players.erase(player_id)
 

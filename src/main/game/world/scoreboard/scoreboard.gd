@@ -20,5 +20,6 @@ func initialize_board(players: Array) -> void:
 func _add_player(player: Player) -> void:
 	var player_score := player_score_scene.instance()
 	
+	player_score.set_name(player.get_name())
 	add_child(player_score)
 	player_score.track_player(player)
