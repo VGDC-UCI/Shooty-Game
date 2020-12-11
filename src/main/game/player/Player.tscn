@@ -1,4 +1,4 @@
-[gd_scene load_steps=27 format=2]
+[gd_scene load_steps=26 format=2]
 
 [ext_resource path="res://src/resources/fonts/montserrat_20.tres" type="DynamicFont" id=2]
 [ext_resource path="res://src/main/game/player/player.gd" type="Script" id=3]
@@ -11,86 +11,67 @@
 [ext_resource path="res://src/main/game/player/audio/shoot.wav" type="AudioStream" id=12]
 [ext_resource path="res://src/main/game/player/audio/dash.wav" type="AudioStream" id=13]
 [ext_resource path="res://src/main/game/player/audio/hit.wav" type="AudioStream" id=14]
-[ext_resource path="res://src/main/game/player/textures/sally_sprite_sheet.png" type="Texture" id=15]
 
 [sub_resource type="RectangleShape2D" id=1]
 extents = Vector2( 19.522, 50.776 )
 
-[sub_resource type="AtlasTexture" id=66]
-flags = 4
-atlas = ExtResource( 15 )
+[sub_resource type="AtlasTexture" id=2]
 region = Rect2( 4000, 0, 800, 801 )
 
-[sub_resource type="AtlasTexture" id=67]
-flags = 4
-atlas = ExtResource( 15 )
-region = Rect2( 3200, 0, 800, 801 )
-
-[sub_resource type="AtlasTexture" id=65]
-flags = 4
-atlas = ExtResource( 15 )
+[sub_resource type="AtlasTexture" id=3]
 region = Rect2( 0, 0, 800, 801 )
 
-[sub_resource type="AtlasTexture" id=68]
-flags = 4
-atlas = ExtResource( 15 )
+[sub_resource type="AtlasTexture" id=4]
 region = Rect2( 0, 0, 800, 801 )
 
-[sub_resource type="AtlasTexture" id=69]
-flags = 4
-atlas = ExtResource( 15 )
+[sub_resource type="AtlasTexture" id=5]
 region = Rect2( 800, 0, 800, 801 )
 
-[sub_resource type="AtlasTexture" id=70]
-flags = 4
-atlas = ExtResource( 15 )
+[sub_resource type="AtlasTexture" id=6]
 region = Rect2( 1600, 0, 800, 801 )
 
-[sub_resource type="AtlasTexture" id=71]
-flags = 4
-atlas = ExtResource( 15 )
+[sub_resource type="AtlasTexture" id=7]
 region = Rect2( 2400, 0, 800, 801 )
 
-[sub_resource type="AtlasTexture" id=72]
-flags = 4
-atlas = ExtResource( 15 )
+[sub_resource type="AtlasTexture" id=8]
 region = Rect2( 3200, 0, 800, 801 )
 
-[sub_resource type="AtlasTexture" id=73]
-flags = 4
-atlas = ExtResource( 15 )
+[sub_resource type="AtlasTexture" id=9]
 region = Rect2( 4000, 0, 800, 801 )
 
-[sub_resource type="SpriteFrames" id=61]
+[sub_resource type="AtlasTexture" id=10]
+region = Rect2( 3200, 0, 800, 801 )
+
+[sub_resource type="SpriteFrames" id=11]
 animations = [ {
-"frames": [ SubResource( 66 ) ],
+"frames": [ SubResource( 2 ) ],
 "loop": true,
 "name": "idle",
 "speed": 12.0
 }, {
-"frames": [ SubResource( 67 ) ],
-"loop": true,
-"name": "jumping",
-"speed": 5.0
-}, {
-"frames": [ SubResource( 65 ) ],
+"frames": [ SubResource( 3 ) ],
 "loop": true,
 "name": "falling",
 "speed": 5.0
 }, {
-"frames": [ SubResource( 68 ), SubResource( 69 ), SubResource( 70 ), SubResource( 71 ), SubResource( 72 ), SubResource( 73 ) ],
+"frames": [ SubResource( 4 ), SubResource( 5 ), SubResource( 6 ), SubResource( 7 ), SubResource( 8 ), SubResource( 9 ) ],
 "loop": true,
 "name": "run",
 "speed": 40.0
+}, {
+"frames": [ SubResource( 10 ) ],
+"loop": true,
+"name": "jumping",
+"speed": 5.0
 } ]
 
-[sub_resource type="Curve" id=62]
+[sub_resource type="Curve" id=12]
 _data = [ Vector2( 0, 1 ), 0.0, 0.0, 0, 0, Vector2( 1, 0.0291631 ), -2.74067, 0.0, 0, 0 ]
 
-[sub_resource type="CurveTexture" id=63]
-curve = SubResource( 62 )
+[sub_resource type="CurveTexture" id=13]
+curve = SubResource( 12 )
 
-[sub_resource type="ParticlesMaterial" id=64]
+[sub_resource type="ParticlesMaterial" id=14]
 emission_shape = 1
 emission_sphere_radius = 1.0
 flag_disable_z = true
@@ -100,7 +81,7 @@ initial_velocity = 19.0
 angular_velocity = -193.85
 orbit_velocity = 0.0
 orbit_velocity_random = 0.0
-scale_curve = SubResource( 63 )
+scale_curve = SubResource( 13 )
 
 [node name="Player" type="KinematicBody2D" groups=[
 "Collision",
@@ -115,13 +96,13 @@ shape = SubResource( 1 )
 [node name="MollySprite" type="AnimatedSprite" parent="Hitbox"]
 visible = false
 scale = Vector2( 0.12, 0.12 )
-frames = SubResource( 61 )
+frames = SubResource( 11 )
 animation = "falling"
 
 [node name="SallySprite" type="AnimatedSprite" parent="Hitbox"]
 visible = false
 scale = Vector2( 0.12, 0.12 )
-frames = SubResource( 61 )
+frames = SubResource( 11 )
 animation = "falling"
 
 [node name="Gun" type="Sprite" parent="."]
@@ -212,7 +193,7 @@ emitting = false
 amount = 100
 one_shot = true
 local_coords = false
-process_material = SubResource( 64 )
+process_material = SubResource( 14 )
 texture = ExtResource( 6 )
 
 [node name="DashSFX" type="AudioStreamPlayer2D" parent="."]
