@@ -41,7 +41,7 @@ alignment = 1
 
 [node name="LocalGame" parent="Menu/Buttons" instance=ExtResource( 6 )]
 margin_bottom = 66.0
-scene_to_load = "res://src/main/menus/character_selection/LocalCharacterSelection.tscn"
+scene_to_load = "res://src/main/menus/local_game/LocalLobby.tscn"
 
 [node name="Multiplayer" parent="Menu/Buttons" instance=ExtResource( 5 )]
 margin_top = 70.0

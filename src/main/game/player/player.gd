@@ -578,6 +578,10 @@ func set_character_id(character_id: int) -> void:
 	_character_id = character_id
 
 
+func set_controls_id(controls_id: int) -> void:
+	_controls_id = controls_id
+
+
 func get_facing_direction() -> int:
 	"""
 	Returns the facing direction of the player.

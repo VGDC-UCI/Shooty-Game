@@ -16,6 +16,7 @@ onready var team_options: SpinBox = $MarginContainer/VBoxContainer/Options/TeamO
 onready var remove_button: Button = $MarginContainer/VBoxContainer/Options/RemoveButton
 # Signals
 signal changed # Emitted when there is a change to any of the fields
+signal deleted(lobby_player) # Emitted when the card is deleted
 
 
 func _ready() -> void:
@@ -86,4 +87,5 @@ func toggle_editing(editable: bool = false) -> void: # Disables editing on the p
 
 
 func delete() -> void:
+	emit_signal('deleted', _lobby_player)
 	queue_free()
