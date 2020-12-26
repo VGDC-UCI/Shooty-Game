@@ -24,8 +24,8 @@ func _ready() -> void:
 	Initializes the player card by loading in all the available control schemes
 	and classes.
 	"""
-	get_available_control_schemes()
-	get_available_classes()
+	_get_available_control_schemes()
+	_get_available_classes()
 
 
 func set_lobby_player(lobby_player: Node) -> void:
@@ -37,66 +37,7 @@ func set_lobby_player(lobby_player: Node) -> void:
 	class_options.selected = _lobby_player.get_class_id()
 	input_options.selected = _lobby_player.get_input_id()
 	team_options.value = _lobby_player.get_team()
-	update_class_portrait()
-
-
-func get_available_control_schemes() -> void:
-	"""
-	Retrieves the available control schemes and loads it into the input options.
-	"""
-	input_options.clear() # Clear any previously saved input options.
-	for control_scheme_name in controls.get_control_names():
-		input_options.add_item(control_scheme_name)
-
-
-func get_available_classes() -> void:
-	"""
-	Retrieves the available classes and loads it into the class options.
-	"""
-	class_options.clear() # Clear any previously saved class options.
-	for class_title in characters.get_character_names():
-		class_options.add_item(class_title)
-
-
-func name_changed(name: String) -> void:
-	"""
-	Called when the name is modified.
-	"""
-	_lobby_player.set_username(name)
-	_lobby_player.text = name
-	emit_signal("changed")
-
-
-func class_changed(index: int) -> void:
-	"""
-	Called when the class changes.
-	"""
-	_lobby_player.set_class_id(index)
-	update_class_portrait()
-	emit_signal("changed")
-
-
-func input_changed(index: int) -> void:
-	"""
-	Called when the input scheme changes.
-	"""
-	_lobby_player.set_input_id(index)
-	emit_signal("changed")
-
-
-func team_changed(_new_team: int) -> void:
-	"""
-	Called when the team number changes.
-	"""
-	_lobby_player.set_team(_new_team)
-	emit_signal("changed")
-
-
-func update_class_portrait() -> void:
-	"""
-	Updates the displayed portrait image on the player card to the currently selected class.
-	"""
-	portrait_image.texture = characters.get_character_portrait(class_options.selected)
+	_update_class_portrait()
 
 
 func disable_name_editing() -> void:
@@ -129,3 +70,62 @@ func delete() -> void:
 	"""
 	emit_signal('deleted', _lobby_player)
 	queue_free()
+
+
+func _get_available_control_schemes() -> void:
+	"""
+	Retrieves the available control schemes and loads it into the input options.
+	"""
+	input_options.clear() # Clear any previously saved input options.
+	for control_scheme_name in controls.get_control_names():
+		input_options.add_item(control_scheme_name)
+
+
+func _get_available_classes() -> void:
+	"""
+	Retrieves the available classes and loads it into the class options.
+	"""
+	class_options.clear() # Clear any previously saved class options.
+	for class_title in characters.get_character_names():
+		class_options.add_item(class_title)
+
+
+func _update_class_portrait() -> void:
+	"""
+	Updates the displayed portrait image on the player card to the currently selected class.
+	"""
+	portrait_image.texture = characters.get_character_portrait(class_options.selected)
+
+
+func _name_changed(name: String) -> void:
+	"""
+	Called when the name is modified.
+	"""
+	_lobby_player.set_username(name)
+	_lobby_player.set_text(name)
+	emit_signal("changed")
+
+
+func _class_changed(index: int) -> void:
+	"""
+	Called when the class changes.
+	"""
+	_lobby_player.set_class_id(index)
+	_update_class_portrait()
+	emit_signal("changed")
+
+
+func _input_changed(index: int) -> void:
+	"""
+	Called when the input scheme changes.
+	"""
+	_lobby_player.set_input_id(index)
+	emit_signal("changed")
+
+
+func _team_changed(_new_team: int) -> void:
+	"""
+	Called when the team number changes.
+	"""
+	_lobby_player.set_team(_new_team)
+	emit_signal("changed")

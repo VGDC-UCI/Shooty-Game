@@ -80,8 +80,8 @@ margin_top = 128.0
 margin_right = 300.0
 margin_bottom = 148.0
 text = "Remove"
-[connection signal="text_changed" from="MarginContainer/VBoxContainer/Options/NameField" to="." method="name_changed"]
-[connection signal="item_selected" from="MarginContainer/VBoxContainer/Options/ClassOptions" to="." method="class_changed"]
-[connection signal="item_selected" from="MarginContainer/VBoxContainer/Options/InputOptions" to="." method="input_changed"]
-[connection signal="value_changed" from="MarginContainer/VBoxContainer/Options/TeamOptions" to="." method="team_changed"]
+[connection signal="text_changed" from="MarginContainer/VBoxContainer/Options/NameField" to="." method="_name_changed"]
+[connection signal="item_selected" from="MarginContainer/VBoxContainer/Options/ClassOptions" to="." method="_class_changed"]
+[connection signal="item_selected" from="MarginContainer/VBoxContainer/Options/InputOptions" to="." method="_input_changed"]
+[connection signal="value_changed" from="MarginContainer/VBoxContainer/Options/TeamOptions" to="." method="_team_changed"]
 [connection signal="pressed" from="MarginContainer/VBoxContainer/Options/RemoveButton" to="." method="delete"]
