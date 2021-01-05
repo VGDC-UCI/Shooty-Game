@@ -65,6 +65,10 @@ It mostly covers everything you need to know, but with a few caveats.
 3. Third, in the VM, you want to do wget (the link to the pck) to download the pck.
 4. The rest should just follow whatever is in the tutorial, but make sure you have the latest version of the Godot server executable instead of 3.1.1
 
+# Known Bugs
+
+Sally's sprites don't show up in Local Multiplayer but they do in Server Multiplayer
+
 # Resources
 
 ## General Game Stuff
