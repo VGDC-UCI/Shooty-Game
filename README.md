@@ -76,11 +76,13 @@ Introduction to State Machines:https://gameprogrammingpatterns.com/state.html
 ## General Networking:
 
 Networked Physics:https://www.gafferongames.com/post/introduction_to_networked_physics/
+
 Also the full website is pretty cool (General Networking Bible)https://gafferongames.com/
 
 ## Godot Networking:
 
 Multiplayer Tutorials: Used to build the prototype[Files · master · menip / Godot Multiplayer Tutorials · GitLab](https://gitlab.com/menip/godot-multiplayer-tutorials/-/tree/master)
+
 First video in a series on how to do dedicated servers in Godot.[Godot Multiplayer Server-Client Tutorial | Godot Dedicated Server #1 - YouTube](https://www.youtube.com/watch?v=lnFN6YabFKg)
 
 Very minimalistic tutorial on how to set up a godot dedicated server.https://mrminimal.gitlab.io/2018/07/26/godot-dedicated-server-tutorial.html
@@ -88,16 +90,23 @@ Very minimalistic tutorial on how to set up a godot dedicated server.https://mrm
 ## General Godot Stuff:
 
 How to format your gdscript codehttps://github.com/Scony/godot-gdscript-toolkit
+
 How to use the tileset editor:https://www.youtube.com/watch?v=V9OoaOlXc_4
+
 How to do camera on multiple people:https://www.youtube.com/watch?v=W7WsL3qaPqg
 
 ## FPS Networking:
 
 Source Engine Networking (Valve):https://developer.valvesoftware.com/wiki/Source_Multiplayer_Networking
+
 Overwatch Networking:https://www.youtube.com/watch?v=W3aieHjyNvw
+
 Halo Reach Networking:https://www.youtube.com/watch?v=h47zZrqjgLc
-Quake Cheatshttp://www.catb.org/esr/writings/quake-cheats.html
+
+Quake Cheats: http://www.catb.org/esr/writings/quake-cheats.html
+
 Tribes Networking Model:https://www.gamedevs.org/uploads/tribes-networking-model.pdf
+
 Extrapoliation/Dead Reckoning:https://www.gabrielgambetta.com/entity-interpolation.html
 
 MMO Networking (I Think): http://ithare.com/contents-of-development-and-deployment-of-massively-multiplayer-games-from-social-games-to-mmofps-with-stock-exchanges-in-between/
