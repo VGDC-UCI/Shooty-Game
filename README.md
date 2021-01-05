@@ -81,6 +81,8 @@ Also the full website is pretty cool (General Networking Bible)https://gafferong
 
 ## Godot Networking:
 
+Basic multiplayer documentation: https://docs.godotengine.org/en/stable/tutorials/networking/high_level_multiplayer.html
+
 Multiplayer Tutorials: Used to build the prototype[Files · master · menip / Godot Multiplayer Tutorials · GitLab](https://gitlab.com/menip/godot-multiplayer-tutorials/-/tree/master)
 
 First video in a series on how to do dedicated servers in Godot.[Godot Multiplayer Server-Client Tutorial | Godot Dedicated Server #1 - YouTube](https://www.youtube.com/watch?v=lnFN6YabFKg)
