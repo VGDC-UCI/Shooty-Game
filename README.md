@@ -95,7 +95,7 @@ Very minimalistic tutorial on how to set up a godot dedicated server.https://mrm
 
 ## General Godot Stuff:
 
-How to format your gdscript codehttps://github.com/Scony/godot-gdscript-toolkit
+How to format your gdscript code: https://github.com/Scony/godot-gdscript-toolkit
 
 How to use the tileset editor:https://www.youtube.com/watch?v=V9OoaOlXc_4
 
