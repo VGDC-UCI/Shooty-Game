@@ -2,6 +2,9 @@
 
 Shooty Game is a 2D battle arena based shooter where players are assigned to teams and try to kill the other team with infinite respawns.
 
+Base Repository and Readme created by Srayan Jana
+https://twitter.com/ValorzardK 
+
 # Base Game Setup:
 
 The base game and server are separate projects intentionally. The base game is in the “main” branch of this repository and the server is in the “server” branch of this repository.
