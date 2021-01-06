@@ -4,7 +4,7 @@ Shooty Game is a 2D battle arena based shooter where players are assigned to tea
 
 Base Repository and Readme created by Srayan Jana & Jacob Singleton:
 
-Sryan Twitter: https://twitter.com/ValorzardK 
+Srayan Twitter: https://twitter.com/ValorzardK 
 
 Shooty Game itch.io page: https://valorzard.itch.io/shooty-game
 
